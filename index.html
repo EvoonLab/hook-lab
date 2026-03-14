@@ -64,6 +64,12 @@ body::after{content:'';position:fixed;inset:0;background:radial-gradient(circle 
 [data-theme="light"] .fucina-entry,.fucina-block{background:var(--card)}
 [data-theme="light"] .daily-banner{background:var(--card);border-color:rgba(255,107,53,.12)}
 [data-theme="light"] .smart-filters{background:var(--card)}
+[data-theme="light"] .fight-card-a{background:rgba(255,59,48,.04);border-color:rgba(255,59,48,.2)}
+[data-theme="light"] .fight-card-b{background:rgba(52,120,247,.04);border-color:rgba(52,120,247,.2)}
+[data-theme="light"] .fight-judge-btn{background:rgba(0,0,0,.03)}
+[data-theme="light"] .fight-score-bar{background:rgba(168,85,247,.04)}
+[data-theme="light"] .fight-bracket-pair{background:rgba(168,85,247,.03)}
+[data-theme="light"] .fp-stat{background:rgba(168,85,247,.04)}
 [data-theme="light"] .team-overlay{background:rgba(0,0,0,.4)}
 [data-theme="light"] .team-card{background:var(--card);border-color:rgba(0,0,0,.08)}
 [data-theme="light"] .team-switch-btn{background:var(--card);border-color:rgba(0,0,0,.1);color:var(--t1)}
@@ -550,6 +556,55 @@ body::after{content:'';position:fixed;inset:0;background:radial-gradient(circle 
 .cat-arena .game-title{color:#ff3366}
 .sec-challenge span{color:#00b4d8}.sec-challenge::after{background:rgba(0,180,216,.15)}
 .sec-arena span{color:#ff3366}.sec-arena::after{background:rgba(255,51,102,.15)}
+.sec-fight span{color:#a855f7}.sec-fight::after{background:rgba(168,85,247,.15)}
+#grid4 .game-card::before{background:linear-gradient(135deg,#a855f7,#7c3aed)!important}
+#grid4 .game-card:hover{box-shadow:0 4px 25px rgba(168,85,247,.3)}
+#grid4 .game-card.active{border-color:#a855f7;box-shadow:0 0 25px rgba(168,85,247,.4)}
+.game-area.cat-fight{border-top:3px solid #a855f7;box-shadow:0 8px 32px rgba(168,85,247,.15)}
+.cat-fight .game-title{color:#a855f7}
+
+/* FIGHT UI */
+.fight-arena{display:flex;gap:12px;align-items:stretch;margin:16px 0}
+.fight-card{flex:1;padding:16px;border-radius:var(--r);min-height:100px;position:relative}
+.fight-card-a{background:rgba(255,59,48,.05);border:2px solid rgba(255,59,48,.25)}
+.fight-card-b{background:rgba(52,120,247,.05);border:2px solid rgba(52,120,247,.25)}
+.fight-label{font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:1px;margin-bottom:8px;display:flex;align-items:center;gap:6px}
+.fight-label-a{color:#ff3b30}
+.fight-label-b{color:#347cf7}
+.fight-text{font-size:.9rem;line-height:1.5;color:var(--t1);min-height:40px}
+.fight-text.loading{color:var(--t2);font-style:italic}
+.fight-vs{width:44px;height:44px;border-radius:50%;background:linear-gradient(135deg,#a855f7,#7c3aed);color:#fff;font-weight:900;font-size:.75rem;display:flex;align-items:center;justify-content:center;flex-shrink:0;align-self:center;box-shadow:0 4px 15px rgba(168,85,247,.4)}
+.fight-judge-bar{display:flex;gap:10px;justify-content:center;margin:20px 0 10px;flex-wrap:wrap}
+.fight-judge-btn{padding:12px 24px;border-radius:var(--rs);font-weight:700;font-size:.85rem;cursor:pointer;border:2px solid transparent;transition:all .2s;background:rgba(255,255,255,.06)}
+.fight-judge-btn:hover{transform:scale(1.05)}
+.fight-judge-btn.pick-a{background:rgba(255,59,48,.1);border-color:rgba(255,59,48,.3);color:#ff3b30}
+.fight-judge-btn.pick-a:hover{background:rgba(255,59,48,.2);box-shadow:0 4px 15px rgba(255,59,48,.3)}
+.fight-judge-btn.pick-tie{background:rgba(168,85,247,.1);border-color:rgba(168,85,247,.3);color:#a855f7}
+.fight-judge-btn.pick-tie:hover{background:rgba(168,85,247,.2)}
+.fight-judge-btn.pick-b{background:rgba(52,120,247,.1);border-color:rgba(52,120,247,.3);color:#347cf7}
+.fight-judge-btn.pick-b:hover{background:rgba(52,120,247,.2);box-shadow:0 4px 15px rgba(52,120,247,.3)}
+.fight-winner{padding:3px 10px;border-radius:10px;font-size:.65rem;font-weight:700;text-transform:uppercase;letter-spacing:1px;display:inline-block;margin-top:8px}
+.fight-winner.win-a{background:rgba(255,59,48,.15);color:#ff3b30}
+.fight-winner.win-b{background:rgba(52,120,247,.15);color:#347cf7}
+.fight-winner.win-tie{background:rgba(168,85,247,.15);color:#a855f7}
+.fight-score-bar{display:flex;justify-content:center;gap:20px;padding:12px;font-size:.85rem;background:rgba(168,85,247,.05);border:1px solid rgba(168,85,247,.15);border-radius:var(--rs);margin-bottom:14px}
+.fight-score-item{text-align:center}.fight-score-val{font-size:1.3rem;font-weight:900}.fight-score-label{font-size:.6rem;color:var(--t2);text-transform:uppercase}
+.fight-score-item.red .fight-score-val{color:#ff3b30}
+.fight-score-item.blue .fight-score-val{color:#347cf7}
+.fight-score-item.purple .fight-score-val{color:#a855f7}
+.fight-input-phase{max-width:500px;margin:0 auto 16px;text-align:center}
+.fight-input-phase textarea{width:100%;padding:12px;border-radius:var(--rs);border:1px solid rgba(255,255,255,.1);background:var(--input-bg);color:var(--t1);font-size:.9rem;resize:none}
+.fight-bracket{display:flex;flex-direction:column;gap:16px;margin:16px 0}
+.fight-bracket-round{text-align:center;padding:8px;font-size:.75rem;font-weight:700;color:#a855f7;text-transform:uppercase;letter-spacing:1px}
+.fight-bracket-pairs{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.fight-bracket-pair{background:rgba(168,85,247,.04);border:1px solid rgba(168,85,247,.12);border-radius:var(--rs);padding:12px;text-align:center}
+.fight-bracket-entry{padding:6px 10px;border-radius:8px;font-size:.8rem;margin:4px 0;cursor:pointer;transition:all .2s}
+.fight-bracket-entry:hover{background:rgba(168,85,247,.1)}
+.fight-bracket-entry.winner{background:rgba(168,85,247,.15);font-weight:700;color:#a855f7}
+.fight-bracket-vs{font-size:.65rem;color:var(--t2);font-weight:700}
+.fight-progress-bar{display:flex;justify-content:center;gap:16px;padding:10px 16px;margin-bottom:8px}
+.fp-stat{text-align:center;padding:6px 14px;background:rgba(168,85,247,.06);border:1px solid rgba(168,85,247,.12);border-radius:var(--rs)}
+.fp-val{font-size:1.1rem;font-weight:900;color:#a855f7}.fp-label{font-size:.55rem;color:var(--t2);text-transform:uppercase}
 
 /* GAME DESCRIPTION */
 .game-desc{max-width:560px;margin:0 auto 16px;padding:10px 16px;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.06);border-radius:var(--rs);text-align:center}
@@ -558,6 +613,7 @@ body::after{content:'';position:fixed;inset:0;background:radial-gradient(circle 
 .game-desc .gd-role.maestro{background:rgba(255,107,53,.12);color:var(--a1);border:1px solid rgba(255,107,53,.25)}
 .game-desc .gd-role.sfidante{background:rgba(255,51,102,.12);color:#ff3366;border:1px solid rgba(255,51,102,.25)}
 .game-desc .gd-role.controllore{background:rgba(0,180,216,.12);color:#00b4d8;border:1px solid rgba(0,180,216,.25)}
+.game-desc .gd-role.arbitro{background:rgba(168,85,247,.12);color:#a855f7;border:1px solid rgba(168,85,247,.25)}
 
 /* AI MAESTRO MID-GAME */
 .maestro-flash{text-align:center;padding:6px 14px;background:rgba(255,107,53,.1);border:1px solid rgba(255,107,53,.2);border-radius:20px;font-size:.8rem;font-weight:700;color:var(--a1);opacity:0;transition:opacity .5s;margin:6px auto;max-width:400px}
@@ -1077,6 +1133,10 @@ body::after{content:'';position:fixed;inset:0;background:radial-gradient(circle 
   .setup-types{flex-direction:column}.setup-type{min-width:100%}
   .hook-sources{flex-direction:column}.hook-source{min-width:100%}
   .mazzo-float{width:300px}
+  .fight-arena{flex-direction:column}.fight-vs{align-self:center}
+  .fight-judge-btn{padding:10px 16px;font-size:.8rem}
+  .fight-bracket-pairs{grid-template-columns:1fr}
+  .fight-progress-bar{flex-wrap:wrap;gap:8px}
   .editor-title-input{font-size:.9rem}
   .block-hint{display:none}
   .raccolta-stats{gap:6px}.raccolta-stat{min-width:70px;padding:8px 6px}
@@ -1536,6 +1596,19 @@ body::after{content:'';position:fixed;inset:0;background:radial-gradient(circle 
     <div class="game-card" onclick="openGame('formats')"><span class="icon">📱</span><div class="name">Formati</div><div class="desc">Story, Reel, Email</div></div>
   </div>
 
+  <div class="section-label sec-fight"><span>🥊 AI Fight</span></div>
+  <div class="fight-progress-bar" id="fightProgress"></div>
+  <div class="game-grid" id="grid4">
+    <div class="game-card" onclick="openGame('hookduel')"><span class="icon">🥊</span><div class="name">Duello Hook</div><div class="desc">Stile vs stile</div></div>
+    <div class="game-card" onclick="openGame('titleduel')"><span class="icon">📰</span><div class="name">Titoli in Guerra</div><div class="desc">Riscrittura virale</div></div>
+    <div class="game-card" onclick="openGame('ctaclash')"><span class="icon">🎯</span><div class="name">CTA Showdown</div><div class="desc">Chi fa cliccare?</div></div>
+    <div class="game-card" onclick="openGame('openingbattle')"><span class="icon">🎬</span><div class="name">Apertura Killer</div><div class="desc">Primi 3 secondi</div></div>
+    <div class="game-card" onclick="openGame('objectionduel')"><span class="icon">🛡️</span><div class="name">Muro Obiezioni</div><div class="desc">Logica vs emozione</div></div>
+    <div class="game-card" onclick="openGame('longvsshort')"><span class="icon">📏</span><div class="name">Lungo vs Corto</div><div class="desc">Formato che spacca</div></div>
+    <div class="game-card" onclick="openGame('angleduel')"><span class="icon">🔀</span><div class="name">Angolo Impossibile</div><div class="desc">Prospettive diverse</div></div>
+    <div class="game-card" onclick="openGame('tournament')"><span class="icon">🏆</span><div class="name">Il Torneo</div><div class="desc">Bracket eliminatorio</div></div>
+  </div>
+
   <div class="game-area" id="gameArea"></div>
 
   <div class="fucina-standalone" id="fucinaStandalone">
@@ -1707,6 +1780,7 @@ if(typeof renderFucinaEntry==='function')renderFucinaEntry();
 if(typeof renderLeaderboard==='function')renderLeaderboard();
 if(typeof renderChatHistory==='function'){renderChatHistory();updateChatStatus();}
 if(typeof renderArenaProgress==='function')renderArenaProgress();
+if(typeof renderFightProgress==='function'){fightStats=JSON.parse(localStorage.getItem(hlKey('fightStats'))||'{"rounds":0,"aWins":0,"bWins":0,"ties":0}');renderFightProgress();}
 const na=document.getElementById('notesArea');if(na)na.value=notes;
 }
 
@@ -3134,7 +3208,7 @@ document.addEventListener('DOMContentLoaded',()=>{
   if(ctx.who)document.getElementById('ctxWho').value=ctx.who;
   if(ctx.what)document.getElementById('ctxWhat').value=ctx.what;
   if(ctx.aud)document.getElementById('ctxAud').value=ctx.aud;
-  calcProfileCompletion();updateApiDot();initProfileCollapse();renderArenaProgress();
+  calcProfileCompletion();updateApiDot();initProfileCollapse();renderArenaProgress();renderFightProgress();
   updateSavedCount();updateStats();renderMondo();renderVoice();renderCalendar();initNotes();
   ['ctxWho','ctxWhat','ctxAud'].forEach(id=>{
     document.getElementById(id).addEventListener('keydown',e=>{if(e.key==='Enter')saveProfile();});
@@ -3188,7 +3262,7 @@ function renderDiffScreen(game,onSelect){
 }
 
 // ===== NAVIGATION =====
-const ALL_GAMES=['slot','flip','collision','devil','emotion','radar','archivio','mappa','moodring','scanner','speed','bridge','hotornot','chain','freestyle','sketch','battle','anatomy','remix','formats'];
+const ALL_GAMES=['slot','flip','collision','devil','emotion','radar','archivio','mappa','moodring','scanner','speed','bridge','hotornot','chain','freestyle','sketch','battle','anatomy','remix','formats','hookduel','titleduel','ctaclash','openingbattle','objectionduel','longvsshort','angleduel','tournament'];
 const GAME_INFO={
   slot:{cat:'inspire',desc:'3 rulli: Tema + Angolo + Hook. Blocca un rullo e rigira gli altri per la combo perfetta.',role:'maestro'},
   flip:{cat:'inspire',desc:'Capovolgi parole comuni e scopri il loro lato oscuro. Ogni flip è un pugno allo stomaco.',role:'maestro'},
@@ -3209,7 +3283,15 @@ const GAME_INFO={
   battle:{cat:'arena',desc:'L\'app ha scritto un hook. Riesci a scriverne uno migliore? Tu vs la macchina.',role:'sfidante'},
   anatomy:{cat:'arena',desc:'Smonta hook famosi. Indovina emozione, pattern e potenza. Impara smontando.',role:'controllore'},
   remix:{cat:'arena',desc:'Prendi un tuo hook salvato. Riscrivilo con un vincolo nuovo. Evolvi il tuo stile.',role:null},
-  formats:{cat:'arena',desc:'Story, Reel, Carousel, Email. Stesso hook, formato diverso. Rispetta le regole.',role:null}
+  formats:{cat:'arena',desc:'Story, Reel, Carousel, Email. Stesso hook, formato diverso. Rispetta le regole.',role:null},
+  hookduel:{cat:'fight',desc:'Due AI scrivono un hook sullo stesso tema con stili opposti. Tu giudichi chi spacca di più.',role:'arbitro'},
+  titleduel:{cat:'fight',desc:'Frase noiosa → due titoli virali. Curiosity gap vs numeri shock. Chi vince?',role:'arbitro'},
+  ctaclash:{cat:'fight',desc:'Due CTA per lo stesso prodotto. Urgenza vs valore. Quale fa cliccare?',role:'arbitro'},
+  openingbattle:{cat:'fight',desc:'Due aperture video sullo stesso tema. Controversia vs confessione. Chi cattura?',role:'arbitro'},
+  objectionduel:{cat:'fight',desc:'Stessa obiezione, due demolizioni. Logica vs emozione. Best of 3.',role:'arbitro'},
+  longvsshort:{cat:'fight',desc:'Stesso tema: un hook lungo narrativo vs uno ultra-corto. Quale colpisce?',role:'arbitro'},
+  angleduel:{cat:'fight',desc:'Stesso tema, angoli diversi. Quale prospettiva funziona meglio?',role:'arbitro'},
+  tournament:{cat:'fight',desc:'Torneo a eliminazione. 8 hook, 4 scontri, 1 campione. Tu decidi chi avanza.',role:'arbitro'}
 };
 const SPEED_CHALLENGES=["Usa un numero nel prossimo!","Inizia con 'POV:'","Max 8 parole!","Fai una domanda!","Cita un'emozione!","Inizia con 'Il giorno che...'","Confronto: X vs Y!","Inserisci un dato shock!","Parla in prima persona!","Usa 'perché' o 'ecco perché'!"];
 const CHAIN_CONSTRAINTS=["Solo parole di 2+ sillabe!","Prossima: un verbo!","Prossima: un'emozione!","Collega con qualcosa di fisico!","Prossima: una persona o ruolo!","Solo parole italiane!"];
@@ -3221,7 +3303,7 @@ function openGame(g){
   const info=GAME_INFO[g];
   if(info)area.classList.add('cat-'+info.cat);
   area.innerHTML='';
-  const fn={slot:renderSlot,flip:renderFlip,collision:renderCollision,devil:renderDevil,emotion:renderEmotion,radar:renderRadar,archivio:renderArchivio,mappa:renderMappa,moodring:renderMoodRing,scanner:renderScanner,speed:renderSpeed,bridge:renderBridge,hotornot:renderHotOrNot,chain:renderChain,freestyle:renderFreestyle,sketch:renderSketchGame,battle:renderBattle,anatomy:renderAnatomy,remix:renderRemix,formats:renderFormats};
+  const fn={slot:renderSlot,flip:renderFlip,collision:renderCollision,devil:renderDevil,emotion:renderEmotion,radar:renderRadar,archivio:renderArchivio,mappa:renderMappa,moodring:renderMoodRing,scanner:renderScanner,speed:renderSpeed,bridge:renderBridge,hotornot:renderHotOrNot,chain:renderChain,freestyle:renderFreestyle,sketch:renderSketchGame,battle:renderBattle,anatomy:renderAnatomy,remix:renderRemix,formats:renderFormats,hookduel:renderHookDuel,titleduel:renderTitleDuel,ctaclash:renderCTAClash,openingbattle:renderOpeningBattle,objectionduel:renderObjectionDuel,longvsshort:renderLongVsShort,angleduel:renderAngleDuel,tournament:renderTournament};
   if(fn[g])fn[g]();
   // Inject game description + AI role badge after title
   if(info){
@@ -3229,7 +3311,7 @@ function openGame(g){
     if(sub){
       let roleHTML='';
       if(info.role&&isAI()){
-        const rl={maestro:'🎓 AI Maestro',sfidante:'⚔️ AI Sfidante',controllore:'🎮 AI Controllore'};
+        const rl={maestro:'🎓 AI Maestro',sfidante:'⚔️ AI Sfidante',controllore:'🎮 AI Controllore',arbitro:'🥊 Arbitro'};
         roleHTML=`<span class="gd-role ${info.role}">${rl[info.role]}</span>`;
       }
       const desc=document.createElement('div');
@@ -3247,7 +3329,7 @@ function closeGame(){
   document.getElementById('gameArea').classList.remove('visible');
   currentGame=null;
   document.querySelectorAll('.game-card').forEach(c=>c.classList.remove('active'));
-  const gridMap={inspire:'grid1',challenge:'grid2',arena:'grid3'};
+  const gridMap={inspire:'grid1',challenge:'grid2',arena:'grid3',fight:'grid4'};
   const tg=document.getElementById(gridMap[lastGameGrid]||'grid1');
   if(tg)tg.scrollIntoView({behavior:'smooth',block:'start'});
   setTimeout(checkSmartTips,1000);
@@ -4430,6 +4512,438 @@ function renderFormats(){const a=document.getElementById('gameArea');const fmt=r
 function updateWordCount(){const t=document.getElementById('fmtIn').value.trim();const wc=t?t.split(/\s+/).length:0;const el=document.getElementById('fmtWC');el.textContent=`${wc}/${fmtState.format.maxWords} parole`;el.style.color=wc>fmtState.format.maxWords?'#ff4444':'var(--t2)';}
 function submitFormat(){const t=document.getElementById('fmtIn').value.trim();if(!t){showToast('Scrivi!');return;}const wc=t.split(/\s+/).length;const overLimit=wc>fmtState.format.maxWords;document.getElementById('fmtIn').disabled=true;document.getElementById('fmtRes').innerHTML=`<div style="text-align:center;margin:16px 0">${overLimit?'<div style="font-size:.8rem;color:#ff4444;margin-bottom:8px">⚠️ Troppe parole! (-2 dalla valutazione)</div>':''}<div style="font-size:.75rem;text-transform:uppercase;letter-spacing:2px;color:var(--a1);font-weight:700">Quanto spacca?</div><div class="star-rating" id="fmtStars" style="margin-top:8px">${[1,2,3,4,5].map(s=>`<span class="star" style="font-size:1.8rem" onclick="rateFormat(${s},${overLimit})">★</span>`).join('')}</div></div>`;}
 function rateFormat(r,over){const penalty=over?2:0;const finalR=Math.max(1,r-penalty);const mult=getStreakMultiplier();const xp=Math.round(finalR*8*mult);stats.gamesPlayed++;stats.hooksWritten++;addXP(xp);updateArenaProgress('formats',xp,finalR>=4);renderArenaProgress();const t=document.getElementById('fmtIn').value.trim();recordHook(t,'formats',finalR);recordSession('formats',finalR*10,1,{format:fmtState.format.name,rating:finalR});saveItem('Formato',`[${fmtState.format.name}] ${fmtState.tema}\n→ ${t} [${finalR}★]`);pulseCoach();document.getElementById('fmtRes').innerHTML=`<div class="score-display"><div class="score-big">${finalR}⭐</div><div class="score-label">${fmtState.format.name}</div><div class="score-detail">${over?'Penalità parole! ':''}+${xp} XP</div></div>${postGameCoachHTML('formats',{rating:finalR})}<div class="game-actions"><button class="action-btn btn-hot" onclick="renderFormats()">📱 Altro</button></div>`;}
+
+// ===== AI FIGHT ENGINE =====
+let fightStats=JSON.parse(localStorage.getItem(hlKey('fightStats'))||'{"rounds":0,"aWins":0,"bWins":0,"ties":0}');
+function saveFightStats(){localStorage.setItem(hlKey('fightStats'),JSON.stringify(fightStats));}
+
+const FIGHT_FALLBACKS={
+  hookduel:[
+    {a:"Smetti di fingere che va tutto bene. Il tuo business sta morendo e lo sai.",b:"Tre anni fa ero al verde. Oggi? Il mio business fattura 6 cifre. Ecco cosa ho capito."},
+    {a:"Il 90% di voi fallirà. E il motivo è ridicolo.",b:"Mia nonna mi ha insegnato più sul business di qualsiasi corso online."},
+    {a:"Se il tuo contenuto non vende, il problema sei tu. Punto.",b:"Ho pianto dopo il mio primo lancio flop. Ma quella lezione mi ha cambiato la vita."}
+  ],
+  titleduel:[
+    {a:"Il segreto che nessun guru vuole che tu sappia (e il motivo ti lascerà senza parole)",b:"347% di vendite in più: i 3 numeri che hanno ribaltato il mio business in 30 giorni"},
+    {a:"Ho scoperto perché i tuoi post non funzionano (la risposta ti farà arrabbiare)",b:"Studio su 10.000 post virali rivela: solo 4 pattern funzionano. Ecco i dati."}
+  ],
+  ctaclash:[
+    {a:"⚡ Solo 7 posti rimasti. Tra 24h il prezzo raddoppia. Decidi ORA.",b:"🎯 Immagina di svegliarti domani con un business che lavora per te. Inizia il viaggio."},
+    {a:"🔥 ULTIMI 3! Chi non agisce ora perde per sempre questa opportunità.",b:"💎 Investi in te stesso oggi. Il ROI? Una vita che ami vivere ogni giorno."}
+  ],
+  openingbattle:[
+    {a:"Tutto quello che ti hanno detto sul marketing è sbagliato. E te lo dimostro in 60 secondi.",b:"Ero seduto in macchina, al buio, dopo l'ennesimo fallimento. Poi ho aperto il telefono e..."},
+    {a:"I guru del marketing vi stanno mentendo. E lo fanno di proposito.",b:"Ho registrato questo video 3 volte perché non riuscivo a trattenere le lacrime."}
+  ],
+  objectionduel:[
+    {a:"'Costa troppo' → Costa troppo rispetto a cosa? Al caffè che bevi ogni giorno? Quello sì che è un costo senza ritorno.",b:"'Costa troppo' → Lo diceva anche Marco. Poi ha provato e in 30 giorni ha recuperato 10x l'investimento. Oggi mi ringrazia ogni settimana."},
+    {a:"'Non ho tempo' → Hai 24 ore come Elon Musk. La differenza? Le priorità. Se non è prioritario, il tuo business non è prioritario.",b:"'Non ho tempo' → Sai cosa mi disse mia figlia? 'Papà, non ti vedo mai.' Quel giorno ho automatizzato tutto. Ora ho più tempo di prima."}
+  ],
+  longvsshort:[
+    {a:"Tre anni fa lavoravo 14 ore al giorno per uno stipendio che bastava a malapena. Oggi il mio business gira in automatico mentre io scrivo questo post dalla spiaggia. Non magia: sistema.",b:"14 ore al giorno. Stipendio misero. Poi ho scoperto i sistemi."},
+    {a:"Sai qual è la differenza tra chi vende e chi no? Non è il prodotto, non è il prezzo, non è il marketing. È una cosa sola: la storia che racconti. Chi sa raccontare, vende.",b:"Chi sa raccontare, vende. Il resto è rumore."}
+  ],
+  angleduel:[
+    {a:"[Angolo: Paura] Se non cambi adesso, tra un anno sarai esattamente nello stesso punto. O peggio.",b:"[Angolo: Curiosità] C'è un metodo che il 3% dei creator usa. Gli altri non ne hanno idea."},
+    {a:"[Angolo: Autorità] 10 anni, 500+ clienti, un pattern chiaro: chi fa questo, vince.",b:"[Angolo: Empatia] So esattamente come ti senti. Ci sono passato. Ecco la via d'uscita."}
+  ],
+  tournament:[
+    {a:"Il tuo primo cliente non ti troverà mai se continui così.",b:"Ho trovato il mio primo cliente in un modo assurdo."},
+    {a:"Smetti di postare senza strategia. È come guidare bendato.",b:"Ogni post è un seme. Alcuni impiegano mesi a fiorire."},
+    {a:"Nessuno ti deve niente. Smettila di lamentarti e inizia a vendere.",b:"Il giorno che ho smesso di vendere, ho iniziato a guadagnare."},
+    {a:"3 errori fatali che uccidono il 90% dei business online.",b:"Il mio mentore mi disse una cosa che non dimenticherò mai."}
+  ]
+};
+
+async function fightGenerate(sysA,sysB,userPrompt,maxTokens=200){
+  if(!isAI())return null;
+  try{
+    const[a,b]=await Promise.all([
+      aiCall(sysA,userPrompt,maxTokens,0.9),
+      aiCall(sysB,userPrompt,maxTokens,0.85)
+    ]);
+    return{a,b};
+  }catch(e){console.warn('Fight generate failed:',e);return null;}
+}
+
+function fightArenaHTML(textA,textB,labelA,labelB,loading=false){
+  return`<div class="fight-arena">
+    <div class="fight-card fight-card-a">
+      <div class="fight-label fight-label-a">🔴 ${labelA}</div>
+      <div class="fight-text${loading?' loading':''}" id="fightTextA">${textA}</div>
+    </div>
+    <div class="fight-vs">VS</div>
+    <div class="fight-card fight-card-b">
+      <div class="fight-label fight-label-b">🔵 ${labelB}</div>
+      <div class="fight-text${loading?' loading':''}" id="fightTextB">${textB}</div>
+    </div>
+  </div>`;
+}
+
+function fightJudgeHTML(gameId,roundData){
+  const d=JSON.stringify(roundData).replace(/'/g,"\\'").replace(/"/g,'&quot;');
+  return`<div class="fight-judge-bar" id="fightJudgeBar">
+    <button class="fight-judge-btn pick-a" onclick="fightJudge('${gameId}','a',JSON.parse(this.parentElement.dataset.rd))">🔴 AI-A Vince</button>
+    <button class="fight-judge-btn pick-tie" onclick="fightJudge('${gameId}','tie',JSON.parse(this.parentElement.dataset.rd))">🤝 Pareggio</button>
+    <button class="fight-judge-btn pick-b" onclick="fightJudge('${gameId}','b',JSON.parse(this.parentElement.dataset.rd))">🔵 AI-B Vince</button>
+  </div>`;
+}
+
+function fightJudge(gameId,winner,roundData){
+  sClick();
+  const mult=getStreakMultiplier();
+  const baseXP=roundData.baseXP||15;
+  const xp=Math.round(baseXP*mult);
+  fightStats.rounds++;
+  if(winner==='a')fightStats.aWins++;
+  else if(winner==='b')fightStats.bWins++;
+  else fightStats.ties++;
+  saveFightStats();
+  stats.gamesPlayed++;
+  addXP(xp);
+  recordSession(gameId,xp,0,{winner,...roundData});
+  renderFightProgress();
+
+  const textA=document.getElementById('fightTextA')?.textContent||'';
+  const textB=document.getElementById('fightTextB')?.textContent||'';
+  const winText=winner==='a'?textA:winner==='b'?textB:'(pareggio)';
+  if(winText&&winText!=='(pareggio)')recordHook(winText,gameId,winner==='tie'?3:5);
+
+  const winLabel=winner==='a'?'🔴 AI-A':winner==='b'?'🔵 AI-B':'🤝 Pareggio';
+  const winClass=winner==='a'?'win-a':winner==='b'?'win-b':'win-tie';
+  const bar=document.getElementById('fightJudgeBar');
+  if(bar){
+    bar.innerHTML=`<div style="text-align:center;width:100%">
+      <div class="fight-winner ${winClass}">${winLabel} — +${xp} XP</div>
+      ${postGameCoachHTML(gameId,{winner,textA,textB})}
+      <div class="game-actions" style="margin-top:14px">
+        <button class="action-btn btn-hot" onclick="openGame('${gameId}')">🔄 Rivincita</button>
+        <button class="save-btn" id="fightSaveBtn">⭐ Salva</button>
+      </div></div>`;
+    document.getElementById('fightSaveBtn').onclick=function(){saveItem('Fight',gameId+': '+winLabel+'\n🔴 '+textA+'\n🔵 '+textB);showToast('Salvato!');};
+  }
+  pulseCoach();
+}
+
+function renderFightProgress(){
+  const el=document.getElementById('fightProgress');
+  if(!el)return;
+  if(fightStats.rounds===0){el.innerHTML='';return;}
+  el.innerHTML=`<div class="fp-stat red"><div class="fp-val">${fightStats.aWins}</div><div class="fp-label">AI-A Vince</div></div>
+    <div class="fp-stat blue"><div class="fp-val">${fightStats.bWins}</div><div class="fp-label">AI-B Vince</div></div>
+    <div class="fp-stat purple"><div class="fp-val">${fightStats.ties}</div><div class="fp-label">Pareggio</div></div>
+    <div class="fp-stat"><div class="fp-val">${fightStats.rounds}</div><div class="fp-label">Round</div></div>`;
+}
+
+// ===== FIGHT GAME 1: HOOK DUEL =====
+async function renderHookDuel(){
+  const a=document.getElementById('gameArea');const tema=smartTema();
+  a.innerHTML=`<button class="back-btn" onclick="closeGame()">← Indietro</button>
+    <div class="game-title">🥊 Duello Hook</div><p class="game-subtitle">Due stili. Un vincitore. Tu giudichi.</p>
+    <div style="text-align:center;margin-bottom:14px"><span style="padding:8px 16px;background:rgba(168,85,247,.1);border:1px solid rgba(168,85,247,.2);border-radius:20px;font-size:.85rem;font-weight:700;color:#a855f7">🎯 ${tema}</span></div>
+    ${fightArenaHTML('Sto scrivendo...','Sto scrivendo...','AI Aggressivo','AI Empatico',true)}
+    <div id="fightJudgeBar"><div style="text-align:center;color:var(--t2);font-size:.8rem">⏳ Le AI stanno scrivendo...</div></div>`;
+  const ctx=getCtxPrompt();
+  const sysA=`Sei un copywriter italiano aggressivo, diretto, brutale. Usi shock value e provocazione per catturare l'attenzione. Scrivi UN SOLO hook (1-2 frasi max). ${ctx}`;
+  const sysB=`Sei un copywriter italiano empatico, narrativo. Usi storie personali e vulnerabilità per connetterti. Scrivi UN SOLO hook (1-2 frasi max). ${ctx}`;
+  const result=await fightGenerate(sysA,sysB,`Scrivi un hook sul tema: "${tema}"`,150);
+  const fb=rand(FIGHT_FALLBACKS.hookduel);
+  const tA=result?.a||fb.a;const tB=result?.b||fb.b;
+  const elA=document.getElementById('fightTextA');const elB=document.getElementById('fightTextB');
+  if(elA){elA.textContent=tA;elA.classList.remove('loading');}
+  if(elB){elB.textContent=tB;elB.classList.remove('loading');}
+  document.getElementById('fightJudgeBar').outerHTML=fightJudgeHTML('hookduel',{tema,baseXP:15});
+  document.getElementById('fightJudgeBar').dataset.rd=JSON.stringify({tema,baseXP:15});
+}
+
+// ===== FIGHT GAME 2: TITLE DUEL =====
+async function renderTitleDuel(){
+  const a=document.getElementById('gameArea');
+  a.innerHTML=`<button class="back-btn" onclick="closeGame()">← Indietro</button>
+    <div class="game-title">📰 Titoli in Guerra</div><p class="game-subtitle">Scrivi una frase banale. Le AI la trasformano in titolo virale.</p>
+    <div class="fight-input-phase">
+      <textarea id="titleDuelInput" rows="2" placeholder="Es: Ho iniziato a vendere online e guadagno bene..."></textarea>
+      <div class="game-actions" style="margin-top:10px"><button class="action-btn btn-hot" onclick="startTitleDuel()">⚡ Sfida!</button></div>
+    </div>
+    <div id="titleDuelArena"></div>`;
+}
+async function startTitleDuel(){
+  const input=document.getElementById('titleDuelInput');const frase=input.value.trim();
+  if(!frase){showToast('Scrivi una frase!');return;}
+  input.disabled=true;
+  const arena=document.getElementById('titleDuelArena');
+  arena.innerHTML=fightArenaHTML('Sto riscrivendo...','Sto riscrivendo...','Curiosity Gap','Numeri Shock',true)+
+    `<div id="fightJudgeBar"><div style="text-align:center;color:var(--t2);font-size:.8rem">⏳ Riscrittura in corso...</div></div>`;
+  const ctx=getCtxPrompt();
+  const sysA=`Sei un copywriter italiano esperto di curiosity gap. Riscrivi la frase come titolo virale che crea curiosità irresistibile. Scrivi SOLO il titolo, nient'altro. ${ctx}`;
+  const sysB=`Sei un copywriter italiano esperto di data-driven headlines. Riscrivi la frase come titolo virale con numeri, dati e statistiche specifiche. Scrivi SOLO il titolo, nient'altro. ${ctx}`;
+  const result=await fightGenerate(sysA,sysB,`Riscrivi questa frase come titolo virale: "${frase}"`,120);
+  const fb=rand(FIGHT_FALLBACKS.titleduel);
+  const tA=result?.a||fb.a;const tB=result?.b||fb.b;
+  const elA=document.getElementById('fightTextA');const elB=document.getElementById('fightTextB');
+  if(elA){elA.textContent=tA;elA.classList.remove('loading');}
+  if(elB){elB.textContent=tB;elB.classList.remove('loading');}
+  document.getElementById('fightJudgeBar').outerHTML=fightJudgeHTML('titleduel',{frase,baseXP:20});
+  document.getElementById('fightJudgeBar').dataset.rd=JSON.stringify({frase,baseXP:20});
+}
+
+// ===== FIGHT GAME 3: CTA CLASH =====
+async function renderCTAClash(){
+  const a=document.getElementById('gameArea');
+  const scenarios=['un corso online di marketing','un ebook sulla produttività','una consulenza 1-to-1','un software di automazione','un abbonamento premium','un workshop dal vivo','un template pack per social','una community esclusiva'];
+  const scenario=rand(scenarios);
+  a.innerHTML=`<button class="back-btn" onclick="closeGame()">← Indietro</button>
+    <div class="game-title">🎯 CTA Showdown</div><p class="game-subtitle">Due call-to-action. Quale fa cliccare?</p>
+    <div style="text-align:center;margin-bottom:14px"><span style="padding:8px 16px;background:rgba(168,85,247,.1);border:1px solid rgba(168,85,247,.2);border-radius:20px;font-size:.85rem;font-weight:700;color:#a855f7">Prodotto: ${scenario}</span></div>
+    ${fightArenaHTML('Sto scrivendo...','Sto scrivendo...','Urgenza/Scarsità','Beneficio/Valore',true)}
+    <div id="fightJudgeBar"><div style="text-align:center;color:var(--t2);font-size:.8rem">⏳ Le AI stanno scrivendo...</div></div>`;
+  const ctx=getCtxPrompt();
+  const sysA=`Sei un copywriter italiano esperto di urgenza e scarsità. Scrivi UNA call-to-action breve (1-2 frasi) che spinge ad agire SUBITO usando urgenza, timer, posti limitati. ${ctx}`;
+  const sysB=`Sei un copywriter italiano esperto di value-based selling. Scrivi UNA call-to-action breve (1-2 frasi) che fa desiderare il prodotto mostrando il beneficio e la trasformazione. ${ctx}`;
+  const result=await fightGenerate(sysA,sysB,`Scrivi una CTA per: ${scenario}`,120);
+  const fb=rand(FIGHT_FALLBACKS.ctaclash);
+  const tA=result?.a||fb.a;const tB=result?.b||fb.b;
+  const elA=document.getElementById('fightTextA');const elB=document.getElementById('fightTextB');
+  if(elA){elA.textContent=tA;elA.classList.remove('loading');}
+  if(elB){elB.textContent=tB;elB.classList.remove('loading');}
+  document.getElementById('fightJudgeBar').outerHTML=fightJudgeHTML('ctaclash',{scenario,baseXP:15});
+  document.getElementById('fightJudgeBar').dataset.rd=JSON.stringify({scenario,baseXP:15});
+}
+
+// ===== FIGHT GAME 4: OPENING BATTLE =====
+async function renderOpeningBattle(){
+  const a=document.getElementById('gameArea');const tema=smartTema();
+  a.innerHTML=`<button class="back-btn" onclick="closeGame()">← Indietro</button>
+    <div class="game-title">🎬 Apertura Killer</div><p class="game-subtitle">I primi 3 secondi. Chi cattura di più?</p>
+    <div style="text-align:center;margin-bottom:14px"><span style="padding:8px 16px;background:rgba(168,85,247,.1);border:1px solid rgba(168,85,247,.2);border-radius:20px;font-size:.85rem;font-weight:700;color:#a855f7">🎯 ${tema}</span></div>
+    ${fightArenaHTML('Sto scrivendo...','Sto scrivendo...','Controversia','Confessione',true)}
+    <div id="fightJudgeBar"><div style="text-align:center;color:var(--t2);font-size:.8rem">⏳ Le AI stanno scrivendo...</div></div>`;
+  const ctx=getCtxPrompt();
+  const sysA=`Sei un copywriter italiano che apre i video con affermazioni CONTROVERSE che dividono. Scrivi l'apertura di un video (2-3 frasi) che inizia con uno statement provocatorio e polarizzante. ${ctx}`;
+  const sysB=`Sei un copywriter italiano che apre i video con confessioni personali crude. Scrivi l'apertura di un video (2-3 frasi) che inizia con una vulnerabilità reale e toccante. ${ctx}`;
+  const result=await fightGenerate(sysA,sysB,`Scrivi l'apertura di un video sul tema: "${tema}"`,200);
+  const fb=rand(FIGHT_FALLBACKS.openingbattle);
+  const tA=result?.a||fb.a;const tB=result?.b||fb.b;
+  const elA=document.getElementById('fightTextA');const elB=document.getElementById('fightTextB');
+  if(elA){elA.textContent=tA;elA.classList.remove('loading');}
+  if(elB){elB.textContent=tB;elB.classList.remove('loading');}
+  document.getElementById('fightJudgeBar').outerHTML=fightJudgeHTML('openingbattle',{tema,baseXP:20});
+  document.getElementById('fightJudgeBar').dataset.rd=JSON.stringify({tema,baseXP:20});
+}
+
+// ===== FIGHT GAME 5: OBJECTION DUEL (Best of 3) =====
+let objectionState={round:0,scoreA:0,scoreB:0,objections:[]};
+const COMMON_OBJECTIONS=['Costa troppo','Non ho tempo','Non fa per me','Ci devo pensare','Ne ho già provati altri','Non sono sicuro che funzioni','Il mio caso è diverso','Non ho le competenze','È troppo complicato','Ora non è il momento giusto'];
+async function renderObjectionDuel(){
+  objectionState={round:0,scoreA:0,scoreB:0,objections:[...COMMON_OBJECTIONS].sort(()=>Math.random()-.5).slice(0,3)};
+  playObjectionRound();
+}
+async function playObjectionRound(){
+  const a=document.getElementById('gameArea');const r=objectionState.round;
+  if(r>=3){
+    const winner=objectionState.scoreA>objectionState.scoreB?'AI-A 🔴':objectionState.scoreB>objectionState.scoreA?'AI-B 🔵':'Pareggio 🤝';
+    const totalXP=Math.round(25*getStreakMultiplier());
+    addXP(totalXP);recordSession('objectionduel',totalXP,3,{scoreA:objectionState.scoreA,scoreB:objectionState.scoreB});
+    a.innerHTML=`<button class="back-btn" onclick="closeGame()">← Indietro</button>
+      <div class="game-title">🛡️ Muro Obiezioni</div><p class="game-subtitle">Risultato finale!</p>
+      <div class="fight-score-bar"><div class="fight-score-item red"><div class="fight-score-val">${objectionState.scoreA}</div><div class="fight-score-label">AI Logico</div></div>
+        <div class="fight-score-item purple"><div class="fight-score-val">vs</div><div class="fight-score-label"></div></div>
+        <div class="fight-score-item blue"><div class="fight-score-val">${objectionState.scoreB}</div><div class="fight-score-label">AI Emotivo</div></div></div>
+      <div class="score-display"><div class="score-big">${winner}</div><div class="score-detail">+${totalXP} XP</div></div>
+      ${postGameCoachHTML('objectionduel',{scoreA:objectionState.scoreA,scoreB:objectionState.scoreB})}
+      <div class="game-actions"><button class="action-btn btn-hot" onclick="renderObjectionDuel()">🔄 Rivincita</button></div>`;
+    pulseCoach();return;
+  }
+  const obj=objectionState.objections[r];
+  a.innerHTML=`<button class="back-btn" onclick="closeGame()">← Indietro</button>
+    <div class="game-title">🛡️ Muro Obiezioni</div><p class="game-subtitle">Best of 3 — Round ${r+1}/3</p>
+    <div class="fight-score-bar"><div class="fight-score-item red"><div class="fight-score-val">${objectionState.scoreA}</div><div class="fight-score-label">AI Logico</div></div>
+      <div class="fight-score-item purple"><div class="fight-score-val">vs</div><div class="fight-score-label">Round ${r+1}</div></div>
+      <div class="fight-score-item blue"><div class="fight-score-val">${objectionState.scoreB}</div><div class="fight-score-label">AI Emotivo</div></div></div>
+    <div style="text-align:center;margin-bottom:14px"><span style="padding:10px 20px;background:rgba(255,255,255,.06);border:2px solid rgba(168,85,247,.3);border-radius:var(--r);font-size:1rem;font-weight:700;color:var(--t1)">💬 "${obj}"</span></div>
+    ${fightArenaHTML('Sto demolendo...','Sto demolendo...','AI Logico','AI Emotivo',true)}
+    <div id="fightJudgeBar"><div style="text-align:center;color:var(--t2);font-size:.8rem">⏳ Le AI stanno demolendo l\'obiezione...</div></div>`;
+  const ctx=getCtxPrompt();
+  const sysA=`Sei un closer italiano esperto di logica e reframing. Smonta l'obiezione del cliente con LOGICA pura: riformula, usa confronti, dati. Rispondi in 2-3 frasi. ${ctx}`;
+  const sysB=`Sei un closer italiano esperto di storytelling emotivo. Smonta l'obiezione del cliente con EMOZIONE: racconta una storia, crea identificazione. Rispondi in 2-3 frasi. ${ctx}`;
+  const result=await fightGenerate(sysA,sysB,`Il cliente dice: "${obj}". Smonta questa obiezione.`,180);
+  const fb=rand(FIGHT_FALLBACKS.objectionduel);
+  const tA=result?.a||fb.a;const tB=result?.b||fb.b;
+  const elA=document.getElementById('fightTextA');const elB=document.getElementById('fightTextB');
+  if(elA){elA.textContent=tA;elA.classList.remove('loading');}
+  if(elB){elB.textContent=tB;elB.classList.remove('loading');}
+  document.getElementById('fightJudgeBar').innerHTML=`
+    <button class="fight-judge-btn pick-a" onclick="judgeObjectionRound('a')">🔴 Logico</button>
+    <button class="fight-judge-btn pick-tie" onclick="judgeObjectionRound('tie')">🤝 Pari</button>
+    <button class="fight-judge-btn pick-b" onclick="judgeObjectionRound('b')">🔵 Emotivo</button>`;
+}
+function judgeObjectionRound(w){
+  sClick();
+  if(w==='a')objectionState.scoreA++;
+  else if(w==='b')objectionState.scoreB++;
+  else{objectionState.scoreA++;objectionState.scoreB++;}
+  fightStats.rounds++;
+  if(w==='a')fightStats.aWins++;else if(w==='b')fightStats.bWins++;else fightStats.ties++;
+  saveFightStats();renderFightProgress();
+  objectionState.round++;
+  playObjectionRound();
+}
+
+// ===== FIGHT GAME 6: LONG VS SHORT =====
+async function renderLongVsShort(){
+  const a=document.getElementById('gameArea');const tema=smartTema();
+  a.innerHTML=`<button class="back-btn" onclick="closeGame()">← Indietro</button>
+    <div class="game-title">📏 Lungo vs Corto</div><p class="game-subtitle">Story hook vs pugno secco. Chi vince?</p>
+    <div style="text-align:center;margin-bottom:14px"><span style="padding:8px 16px;background:rgba(168,85,247,.1);border:1px solid rgba(168,85,247,.2);border-radius:20px;font-size:.85rem;font-weight:700;color:#a855f7">🎯 ${tema}</span></div>
+    ${fightArenaHTML('Sto scrivendo il racconto...','Sto cercando le 8 parole...','Long Copy (3-4 frasi)','Ultra-Short (max 8 parole)',true)}
+    <div id="fightJudgeBar"><div style="text-align:center;color:var(--t2);font-size:.8rem">⏳ Le AI stanno scrivendo...</div></div>`;
+  const ctx=getCtxPrompt();
+  const sysA=`Sei un copywriter italiano narrativo. Scrivi un hook lungo in 3-4 frasi che costruisce tensione e crea un arco narrativo. ${ctx}`;
+  const sysB=`Sei un copywriter italiano minimalista. Scrivi un hook in MASSIMO 8 PAROLE. Brutale, telegrafico, pugno nello stomaco. Solo le parole scelte, nient'altro. ${ctx}`;
+  const result=await fightGenerate(sysA,sysB,`Scrivi un hook sul tema: "${tema}"`,200);
+  const fb=rand(FIGHT_FALLBACKS.longvsshort);
+  const tA=result?.a||fb.a;const tB=result?.b||fb.b;
+  const elA=document.getElementById('fightTextA');const elB=document.getElementById('fightTextB');
+  if(elA){elA.textContent=tA;elA.classList.remove('loading');elA.style.fontSize='0.85rem';}
+  if(elB){elB.textContent=tB;elB.classList.remove('loading');elB.style.fontSize='1.2rem';elB.style.fontWeight='900';elB.style.textAlign='center';elB.style.padding='20px 0';}
+  document.getElementById('fightJudgeBar').outerHTML=fightJudgeHTML('longvsshort',{tema,baseXP:15});
+  document.getElementById('fightJudgeBar').dataset.rd=JSON.stringify({tema,baseXP:15});
+}
+
+// ===== FIGHT GAME 7: ANGLE DUEL =====
+async function renderAngleDuel(){
+  const a=document.getElementById('gameArea');const tema=smartTema();
+  const angoli=[...DB.angoli].sort(()=>Math.random()-.5);
+  const angA=angoli[0],angB=angoli[1]||angoli[0];
+  a.innerHTML=`<button class="back-btn" onclick="closeGame()">← Indietro</button>
+    <div class="game-title">🔀 Angolo Impossibile</div><p class="game-subtitle">Stesso tema, angoli diversi. Quale funziona?</p>
+    <div style="text-align:center;margin-bottom:14px"><span style="padding:8px 16px;background:rgba(168,85,247,.1);border:1px solid rgba(168,85,247,.2);border-radius:20px;font-size:.85rem;font-weight:700;color:#a855f7">🎯 ${tema}</span></div>
+    ${fightArenaHTML('Sto scrivendo...','Sto scrivendo...',angA,angB,true)}
+    <div id="fightJudgeBar"><div style="text-align:center;color:var(--t2);font-size:.8rem">⏳ Le AI stanno scrivendo...</div></div>`;
+  const ctx=getCtxPrompt();
+  const sysA=`Sei un copywriter italiano. Scrivi UN hook (1-2 frasi) usando QUESTO angolo specifico: "${angA}". L'angolo deve essere chiaro e dominante nel tuo hook. ${ctx}`;
+  const sysB=`Sei un copywriter italiano. Scrivi UN hook (1-2 frasi) usando QUESTO angolo specifico: "${angB}". L'angolo deve essere chiaro e dominante nel tuo hook. ${ctx}`;
+  const result=await fightGenerate(sysA,sysB,`Tema: "${tema}". Scrivi un hook con l'angolo assegnato.`,150);
+  const fb=rand(FIGHT_FALLBACKS.angleduel);
+  const tA=result?.a||fb.a;const tB=result?.b||fb.b;
+  const elA=document.getElementById('fightTextA');const elB=document.getElementById('fightTextB');
+  if(elA){elA.textContent=tA;elA.classList.remove('loading');}
+  if(elB){elB.textContent=tB;elB.classList.remove('loading');}
+  document.getElementById('fightJudgeBar').outerHTML=fightJudgeHTML('angleduel',{tema,angA,angB,baseXP:15});
+  document.getElementById('fightJudgeBar').dataset.rd=JSON.stringify({tema,angA,angB,baseXP:15});
+}
+
+// ===== FIGHT GAME 8: TOURNAMENT =====
+let tournamentState=null;
+const TOURNEY_PERSONAS=[
+  {name:'Il Provocatore',sys:'Sei un copywriter italiano provocatorio e polarizzante. Usi shock value e affermazioni forti.'},
+  {name:'Il Narratore',sys:'Sei un copywriter italiano narrativo. Usi storie personali ed emozioni per connetterti.'},
+  {name:'Il Tecnico',sys:'Sei un copywriter italiano data-driven. Usi numeri, statistiche e prove concrete.'},
+  {name:'L\'Empatico',sys:'Sei un copywriter italiano empatico. Capisci il dolore del pubblico e lo abbracci.'},
+  {name:'Il Minimalista',sys:'Sei un copywriter italiano minimalista. Poche parole, massimo impatto. Max 10 parole.'},
+  {name:'Il Guru',sys:'Sei un copywriter italiano che parla con autorità assoluta. Esperienza e saggezza trasudano.'},
+  {name:'Il Ribelle',sys:'Sei un copywriter italiano contrarian. Vai contro la corrente, sfidi le convenzioni.'},
+  {name:'Il Coach',sys:'Sei un copywriter italiano motivazionale. Ispiri azione e fiducia in se stessi.'}
+];
+async function renderTournament(){
+  const tema=smartTema();
+  const personas=[...TOURNEY_PERSONAS].sort(()=>Math.random()-.5).slice(0,8);
+  tournamentState={tema,personas,round:0,bracket:[],results:[]};
+  // Generate 8 hooks
+  const a=document.getElementById('gameArea');
+  a.innerHTML=`<button class="back-btn" onclick="closeGame()">← Indietro</button>
+    <div class="game-title">🏆 Il Torneo</div><p class="game-subtitle">8 personalità AI. 4 scontri. 1 campione.</p>
+    <div style="text-align:center;margin-bottom:14px"><span style="padding:8px 16px;background:rgba(168,85,247,.1);border:1px solid rgba(168,85,247,.2);border-radius:20px;font-size:.85rem;font-weight:700;color:#a855f7">🎯 ${tema}</span></div>
+    <div style="text-align:center;color:var(--t2);font-size:.85rem;margin:20px 0">⏳ 8 AI stanno scrivendo i loro hook...</div>
+    <div class="fight-bracket" id="tourneyBracket"></div>`;
+  const ctx=getCtxPrompt();
+  let hooks=[];
+  if(isAI()){
+    const promises=personas.map(p=>aiCall(`${p.sys} Scrivi UN hook (1-2 frasi). ${ctx}`,`Tema: "${tema}"`,120,0.9));
+    const results=await Promise.all(promises);
+    hooks=results.map((h,i)=>({persona:personas[i].name,text:h||rand(FIGHT_FALLBACKS.tournament)[Math.random()>.5?'a':'b']}));
+  }else{
+    const fb=FIGHT_FALLBACKS.tournament;
+    hooks=personas.map((p,i)=>({persona:p.name,text:fb[i%fb.length][Math.random()>.5?'a':'b']}));
+  }
+  tournamentState.bracket=hooks;
+  tournamentState.round=1;
+  renderTourneyRound();
+}
+function renderTourneyRound(){
+  const a=document.getElementById('gameArea');
+  const br=tournamentState.bracket;const rd=tournamentState.round;
+  const roundNames={1:'Quarti di Finale',2:'Semifinale',3:'FINALE'};
+  if(br.length<=1){
+    // Winner!
+    const champ=br[0];
+    const totalXP=Math.round(40*getStreakMultiplier());
+    addXP(totalXP);stats.gamesPlayed++;
+    recordHook(champ.text,'tournament',5);
+    recordSession('tournament',totalXP,1,{champion:champ.persona});
+    fightStats.rounds++;fightStats.aWins++;saveFightStats();renderFightProgress();
+    a.innerHTML=`<button class="back-btn" onclick="closeGame()">← Indietro</button>
+      <div class="game-title">🏆 Il Torneo</div><p class="game-subtitle">Abbiamo un campione!</p>
+      <div class="score-display" style="margin:20px 0">
+        <div style="font-size:.7rem;text-transform:uppercase;letter-spacing:2px;color:var(--a1);font-weight:700">Campione</div>
+        <div class="score-big">🏆</div>
+        <div style="font-size:1rem;font-weight:700;color:#a855f7;margin:8px 0">${champ.persona}</div>
+        <div style="font-size:.95rem;color:var(--t1);line-height:1.5;padding:10px;background:rgba(168,85,247,.06);border-radius:var(--rs);margin:10px 0">"${champ.text}"</div>
+        <div class="score-detail">+${totalXP} XP</div>
+      </div>
+      ${postGameCoachHTML('tournament',{champion:champ})}
+      <div class="game-actions"><button class="action-btn btn-hot" onclick="renderTournament()">🏆 Nuovo Torneo</button>
+        <button class="save-btn" onclick="saveItem('Torneo','🏆 ${champ.persona}: ${champ.text.replace(/'/g,"\\'")}');showToast('Salvato!')">⭐ Salva</button></div>`;
+    pulseCoach();return;
+  }
+  // Show pairs
+  const pairs=[];
+  for(let i=0;i<br.length;i+=2){pairs.push([br[i],br[i+1]||{persona:'BYE',text:'—'}]);}
+  tournamentState._pairs=pairs;tournamentState._picks=[];
+  a.innerHTML=`<button class="back-btn" onclick="closeGame()">← Indietro</button>
+    <div class="game-title">🏆 Il Torneo</div><p class="game-subtitle">${roundNames[rd]||'Round '+rd} — ${br.length} concorrenti</p>
+    <div style="text-align:center;margin-bottom:10px"><span style="padding:6px 14px;background:rgba(168,85,247,.1);border:1px solid rgba(168,85,247,.2);border-radius:20px;font-size:.8rem;font-weight:600;color:#a855f7">🎯 ${tournamentState.tema}</span></div>
+    <div id="tourneyPairs"></div>`;
+  renderTourneyPair(0);
+}
+function renderTourneyPair(idx){
+  const pairs=tournamentState._pairs;
+  if(idx>=pairs.length){
+    // Advance to next round
+    tournamentState.bracket=tournamentState._picks;
+    tournamentState.round++;
+    setTimeout(renderTourneyRound,500);
+    return;
+  }
+  const[hA,hB]=pairs[idx];
+  const el=document.getElementById('tourneyPairs');
+  el.innerHTML=`<div style="text-align:center;font-size:.7rem;color:var(--t2);margin-bottom:8px;text-transform:uppercase;letter-spacing:1px">Scontro ${idx+1}/${pairs.length}</div>
+    <div class="fight-arena">
+      <div class="fight-card fight-card-a">
+        <div class="fight-label fight-label-a">🔴 ${hA.persona}</div>
+        <div class="fight-text" id="fightTextA">${hA.text}</div>
+      </div>
+      <div class="fight-vs">VS</div>
+      <div class="fight-card fight-card-b">
+        <div class="fight-label fight-label-b">🔵 ${hB.persona}</div>
+        <div class="fight-text" id="fightTextB">${hB.text}</div>
+      </div>
+    </div>
+    <div class="fight-judge-bar">
+      <button class="fight-judge-btn pick-a" onclick="pickTourneyWinner(${idx},'a')">🔴 ${hA.persona}</button>
+      <button class="fight-judge-btn pick-b" onclick="pickTourneyWinner(${idx},'b')">🔵 ${hB.persona}</button>
+    </div>`;
+}
+function pickTourneyWinner(idx,side){
+  sClick();
+  const pair=tournamentState._pairs[idx];
+  const winner=side==='a'?pair[0]:pair[1];
+  tournamentState._picks.push(winner);
+  fightStats.rounds++;if(side==='a')fightStats.aWins++;else fightStats.bWins++;
+  saveFightStats();renderFightProgress();
+  addXP(Math.round(10*getStreakMultiplier()));
+  renderTourneyPair(idx+1);
+}
 
 // ===== EXPORT =====
 function exportHook(text,format){

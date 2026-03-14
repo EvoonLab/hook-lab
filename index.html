@@ -217,7 +217,9 @@ body::after{content:'';position:fixed;inset:0;background:radial-gradient(circle 
 .game-card:nth-child(5)::before{background:var(--gw)}.game-card:nth-child(6)::before{background:var(--ge)}
 .game-card:hover{transform:translateY(-3px);box-shadow:0 4px 25px rgba(255,107,53,.3);background:var(--card2)}
 .game-card.active{border-color:var(--a4);box-shadow:0 0 25px rgba(255,107,53,.4)}
-.game-card .icon{font-size:1.6rem;margin-bottom:4px;display:block}
+.game-card .icon{font-size:1.6rem;margin-bottom:4px;display:block;line-height:1}
+.game-card .icon svg{width:28px;height:28px;filter:drop-shadow(0 2px 4px rgba(0,0,0,.3))}
+.game-card:hover .icon svg{filter:drop-shadow(0 2px 8px rgba(255,107,53,.5));transform:scale(1.1);transition:all .3s}
 .game-card .name{font-size:.75rem;font-weight:700}
 .game-card .desc{font-size:.6rem;color:var(--t2);line-height:1.2;margin-top:2px}
 #grid2{grid-template-columns:repeat(6,1fr)}
@@ -1723,48 +1725,48 @@ body.light .shimmer::after{background:linear-gradient(90deg,transparent 0%,rgba(
 <div class="container">
   <div class="section-label"><span>&#127922; Ispirazione</span></div>
   <div class="game-grid" id="grid1">
-    <div class="game-card" onclick="openGame('slot')"><span class="icon">&#127920;</span><div class="name">La Slot</div><div class="desc">Combo casuali</div></div>
-    <div class="game-card" onclick="openGame('flip')"><span class="icon">&#128260;</span><div class="name">Ribaltamento</div><div class="desc">Capovolgi tutto</div></div>
-    <div class="game-card" onclick="openGame('collision')"><span class="icon">&#128165;</span><div class="name">Collisione</div><div class="desc">Mondi che scontrano</div></div>
-    <div class="game-card" onclick="openGame('devil')"><span class="icon">&#128520;</span><div class="name">Avv. Diavolo</div><div class="desc">Demolisci credenze</div></div>
-    <div class="game-card" onclick="openGame('emotion')"><span class="icon">&#127919;</span><div class="name">Emozione x Tema</div><div class="desc">Roulette emotiva</div></div>
-    <div class="game-card" onclick="openGame('radar')"><span class="icon">📡</span><div class="name">Il Radar</div><div class="desc">Trend scanner</div></div>
-    <div class="game-card" onclick="openGame('archivio')"><span class="icon">💙</span><div class="name">Archivio Emotivo</div><div class="desc">Memory bank</div></div>
-    <div class="game-card" onclick="openGame('mappa')"><span class="icon">🗺</span><div class="name">La Mappa</div><div class="desc">Connetti idee</div></div>
-    <div class="game-card" onclick="openGame('moodring')"><span class="icon">🎨</span><div class="name">Mood Ring</div><div class="desc">Mood ispirazionale</div></div>
-    <div class="game-card" onclick="openGame('scanner')"><span class="icon">🔍</span><div class="name">Lo Scanner</div><div class="desc">Pattern finder</div></div>
+    <div class="game-card" onclick="openGame('slot')"><span class="icon"><svg viewBox="0 0 32 32"><rect x="3" y="6" width="26" height="20" rx="4" fill="none" stroke="#ff6b35" stroke-width="2"/><rect x="7" y="10" width="6" height="12" rx="1.5" fill="#ff6b3533" stroke="#ff6b35" stroke-width="1"/><rect x="15" y="10" width="6" height="12" rx="1.5" fill="#e8930c33" stroke="#e8930c" stroke-width="1"/><rect x="23" y="10" width="3" height="12" rx="1.5" fill="#ffb08833" stroke="#ffb088" stroke-width="1"/><circle cx="10" cy="16" r="2" fill="#ff6b35"/><circle cx="18" cy="16" r="2" fill="#e8930c"/></svg></span><div class="name">La Slot</div><div class="desc">Combo casuali</div></div>
+    <div class="game-card" onclick="openGame('flip')"><span class="icon"><svg viewBox="0 0 32 32"><path d="M8 10h16v14H8z" rx="2" fill="none" stroke="#e8930c" stroke-width="2"/><path d="M16 10v14" stroke="#e8930c" stroke-width="1.5" stroke-dasharray="2 2"/><path d="M10 17l3-3 3 3" fill="none" stroke="#ff6b35" stroke-width="2" stroke-linecap="round"/><path d="M22 17l-3 3-3-3" fill="none" stroke="#ffb088" stroke-width="2" stroke-linecap="round"/></svg></span><div class="name">Ribaltamento</div><div class="desc">Capovolgi tutto</div></div>
+    <div class="game-card" onclick="openGame('collision')"><span class="icon"><svg viewBox="0 0 32 32"><circle cx="11" cy="16" r="6" fill="#ff6b3522" stroke="#ff6b35" stroke-width="2"/><circle cx="21" cy="16" r="6" fill="#e8930c22" stroke="#e8930c" stroke-width="2"/><path d="M15 13l2 3-2 3M17 13l-2 3 2 3" stroke="#ffb088" stroke-width="1.5" stroke-linecap="round"/></svg></span><div class="name">Collisione</div><div class="desc">Mondi che scontrano</div></div>
+    <div class="game-card" onclick="openGame('devil')"><span class="icon"><svg viewBox="0 0 32 32"><circle cx="16" cy="18" r="7" fill="#6c5ce722" stroke="#a855f7" stroke-width="2"/><path d="M9 13l3 4M23 13l-3 4" stroke="#a855f7" stroke-width="2" stroke-linecap="round"/><path d="M13 20q3 3 6 0" fill="none" stroke="#a855f7" stroke-width="1.5" stroke-linecap="round"/><circle cx="13.5" cy="17" r="1" fill="#a855f7"/><circle cx="18.5" cy="17" r="1" fill="#a855f7"/></svg></span><div class="name">Avv. Diavolo</div><div class="desc">Demolisci credenze</div></div>
+    <div class="game-card" onclick="openGame('emotion')"><span class="icon"><svg viewBox="0 0 32 32"><circle cx="16" cy="16" r="10" fill="none" stroke="#fd79a8" stroke-width="2"/><circle cx="16" cy="16" r="6" fill="#fd79a822"/><circle cx="16" cy="16" r="2.5" fill="#fd79a8"/><path d="M16 6v2M16 24v2M6 16h2M24 16h2" stroke="#fd79a8" stroke-width="1.5" stroke-linecap="round"/><path d="M9 9l1.5 1.5M21.5 21.5l1.5 1.5M23 9l-1.5 1.5M10.5 21.5l-1.5 1.5" stroke="#fd79a866" stroke-width="1" stroke-linecap="round"/></svg></span><div class="name">Emozione x Tema</div><div class="desc">Roulette emotiva</div></div>
+    <div class="game-card" onclick="openGame('radar')"><span class="icon"><svg viewBox="0 0 32 32"><circle cx="16" cy="16" r="10" fill="none" stroke="#0984e3" stroke-width="1.5"/><circle cx="16" cy="16" r="6" fill="none" stroke="#0984e366" stroke-width="1"/><circle cx="16" cy="16" r="2" fill="none" stroke="#0984e344" stroke-width="1"/><path d="M16 16L22 10" stroke="#0984e3" stroke-width="2" stroke-linecap="round"/><circle cx="21" cy="12" r="1.5" fill="#00b894"/><circle cx="12" cy="20" r="1" fill="#0984e3"/></svg></span><div class="name">Il Radar</div><div class="desc">Trend scanner</div></div>
+    <div class="game-card" onclick="openGame('archivio')"><span class="icon"><svg viewBox="0 0 32 32"><path d="M16 8l8 5v10l-8 5-8-5V13z" fill="#00cec922" stroke="#00cec9" stroke-width="2" stroke-linejoin="round"/><path d="M16 18v10M8 13l8 5 8-5" fill="none" stroke="#00cec9" stroke-width="1.5"/><circle cx="16" cy="14" r="2" fill="#00cec9"/></svg></span><div class="name">Archivio Emotivo</div><div class="desc">Memory bank</div></div>
+    <div class="game-card" onclick="openGame('mappa')"><span class="icon"><svg viewBox="0 0 32 32"><circle cx="10" cy="10" r="3" fill="#fdcb6e33" stroke="#fdcb6e" stroke-width="1.5"/><circle cx="24" cy="10" r="3" fill="#ff6b3533" stroke="#ff6b35" stroke-width="1.5"/><circle cx="16" cy="24" r="3" fill="#e8930c33" stroke="#e8930c" stroke-width="1.5"/><path d="M13 10h8M11.5 12.5l3 9M20.5 12.5l-3 9" stroke="#ffb088" stroke-width="1.5" stroke-linecap="round" stroke-dasharray="3 2"/></svg></span><div class="name">La Mappa</div><div class="desc">Connetti idee</div></div>
+    <div class="game-card" onclick="openGame('moodring')"><span class="icon"><svg viewBox="0 0 32 32"><circle cx="16" cy="16" r="10" fill="none" stroke="url(#moodGrad)" stroke-width="2.5"/><defs><linearGradient id="moodGrad" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#ff6b35"/><stop offset="50%" stop-color="#a855f7"/><stop offset="100%" stop-color="#0984e3"/></linearGradient></defs><circle cx="16" cy="16" r="5" fill="url(#moodGrad)" opacity=".2"/><circle cx="16" cy="16" r="2" fill="url(#moodGrad)"/></svg></span><div class="name">Mood Ring</div><div class="desc">Mood ispirazionale</div></div>
+    <div class="game-card" onclick="openGame('scanner')"><span class="icon"><svg viewBox="0 0 32 32"><circle cx="14" cy="14" r="7" fill="none" stroke="#e8930c" stroke-width="2"/><path d="M19 19l7 7" stroke="#e8930c" stroke-width="2.5" stroke-linecap="round"/><path d="M11 14h6M14 11v6" stroke="#e8930c" stroke-width="1.5" stroke-linecap="round" opacity=".6"/></svg></span><div class="name">Lo Scanner</div><div class="desc">Pattern finder</div></div>
   </div>
 
   <div class="section-label sec-challenge"><span>&#9889; Sfide Interattive</span></div>
   <div class="game-grid" id="grid2">
-    <div class="game-card" onclick="openGame('speed')"><span class="icon">&#9889;</span><div class="name">Speed Hook</div><div class="desc">60 sec, scrivi!</div></div>
-    <div class="game-card" onclick="openGame('bridge')"><span class="icon">&#127753;</span><div class="name">Il Ponte</div><div class="desc">Collega 2 mondi</div></div>
-    <div class="game-card" onclick="openGame('hotornot')"><span class="icon">&#128293;</span><div class="name">Hot or Not</div><div class="desc">Giudica al volo</div></div>
-    <div class="game-card" onclick="openGame('chain')"><span class="icon">&#9939;</span><div class="name">La Catena</div><div class="desc">Word chain a tempo</div></div>
-    <div class="game-card" onclick="openGame('freestyle')"><span class="icon">&#9997;</span><div class="name">Freestyle</div><div class="desc">Scrivi con vincoli</div></div>
-    <div class="game-card" onclick="openGame('sketch')"><span class="icon">&#9999;</span><div class="name">Sketch Hook</div><div class="desc">Disegna + scrivi</div></div>
+    <div class="game-card" onclick="openGame('speed')"><span class="icon"><svg viewBox="0 0 32 32"><circle cx="16" cy="17" r="9" fill="none" stroke="#ffd93d" stroke-width="2"/><path d="M16 11v6l4 3" fill="none" stroke="#ffd93d" stroke-width="2" stroke-linecap="round"/><path d="M13 6h6" stroke="#ffd93d" stroke-width="2" stroke-linecap="round"/><path d="M16 6v3" stroke="#ffd93d" stroke-width="1.5"/></svg></span><div class="name">Speed Hook</div><div class="desc">60 sec, scrivi!</div></div>
+    <div class="game-card" onclick="openGame('bridge')"><span class="icon"><svg viewBox="0 0 32 32"><rect x="3" y="14" width="8" height="8" rx="2" fill="#00b89422" stroke="#00b894" stroke-width="1.5"/><rect x="21" y="14" width="8" height="8" rx="2" fill="#0984e322" stroke="#0984e3" stroke-width="1.5"/><path d="M11 18q5-8 10 0" fill="none" stroke="#fdcb6e" stroke-width="2" stroke-linecap="round"/></svg></span><div class="name">Il Ponte</div><div class="desc">Collega 2 mondi</div></div>
+    <div class="game-card" onclick="openGame('hotornot')"><span class="icon"><svg viewBox="0 0 32 32"><path d="M16 6c-4 0-7 3-7 6.5C9 18 16 26 16 26s7-8 7-13.5C23 9 20 6 16 6z" fill="#ff475722" stroke="#ff4757" stroke-width="2"/><path d="M13 14l2 2 4-5" fill="none" stroke="#ff4757" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></span><div class="name">Hot or Not</div><div class="desc">Giudica al volo</div></div>
+    <div class="game-card" onclick="openGame('chain')"><span class="icon"><svg viewBox="0 0 32 32"><ellipse cx="11" cy="14" rx="5" ry="3.5" fill="none" stroke="#fdcb6e" stroke-width="2" transform="rotate(-30 11 14)"/><ellipse cx="21" cy="18" rx="5" ry="3.5" fill="none" stroke="#e8930c" stroke-width="2" transform="rotate(-30 21 18)"/><ellipse cx="16" cy="16" rx="4" ry="3" fill="none" stroke="#ff6b35" stroke-width="2" transform="rotate(-30 16 16)"/></svg></span><div class="name">La Catena</div><div class="desc">Word chain a tempo</div></div>
+    <div class="game-card" onclick="openGame('freestyle')"><span class="icon"><svg viewBox="0 0 32 32"><path d="M8 24l3-12 10 8z" fill="#a855f722" stroke="#a855f7" stroke-width="2" stroke-linejoin="round"/><path d="M11 12l2-4" stroke="#a855f7" stroke-width="2" stroke-linecap="round"/><circle cx="13" cy="7" r="1.5" fill="#a855f7"/></svg></span><div class="name">Freestyle</div><div class="desc">Scrivi con vincoli</div></div>
+    <div class="game-card" onclick="openGame('sketch')"><span class="icon"><svg viewBox="0 0 32 32"><path d="M22 6l4 4-14 14H8v-4z" fill="#e8930c22" stroke="#e8930c" stroke-width="2" stroke-linejoin="round"/><path d="M18 10l4 4" stroke="#e8930c" stroke-width="1.5"/><path d="M8 26h16" stroke="#e8930c" stroke-width="1.5" stroke-linecap="round" stroke-dasharray="2 3"/></svg></span><div class="name">Sketch Hook</div><div class="desc">Disegna + scrivi</div></div>
   </div>
 
   <div class="section-label sec-arena"><span>&#127942; Arena</span></div>
   <div class="arena-progress" id="arenaProgress"></div>
   <div class="game-grid" id="grid3">
-    <div class="game-card" onclick="openGame('battle')"><span class="icon">⚔️</span><div class="name">Battaglia</div><div class="desc">Tu vs l'app</div></div>
-    <div class="game-card" onclick="openGame('anatomy')"><span class="icon">🔬</span><div class="name">Anatomia</div><div class="desc">Smonta gli hook</div></div>
-    <div class="game-card" onclick="openGame('remix')"><span class="icon">🔄</span><div class="name">Remix</div><div class="desc">Evolvi i tuoi hook</div></div>
-    <div class="game-card" onclick="openGame('formats')"><span class="icon">📱</span><div class="name">Formati</div><div class="desc">Story, Reel, Email</div></div>
+    <div class="game-card" onclick="openGame('battle')"><span class="icon"><svg viewBox="0 0 32 32"><path d="M10 6l-4 12h7l-3 10 14-14h-8l4-8z" fill="#ff475722" stroke="#ff4757" stroke-width="2" stroke-linejoin="round"/></svg></span><div class="name">Battaglia</div><div class="desc">Tu vs l'app</div></div>
+    <div class="game-card" onclick="openGame('anatomy')"><span class="icon"><svg viewBox="0 0 32 32"><circle cx="16" cy="13" r="5" fill="none" stroke="#0984e3" stroke-width="2"/><path d="M16 18v6M12 28h8" stroke="#0984e3" stroke-width="2" stroke-linecap="round"/><path d="M12 13h8M16 9v8" stroke="#0984e3" stroke-width="1" opacity=".5"/></svg></span><div class="name">Anatomia</div><div class="desc">Smonta gli hook</div></div>
+    <div class="game-card" onclick="openGame('remix')"><span class="icon"><svg viewBox="0 0 32 32"><path d="M8 12h10a5 5 0 010 10H8" fill="none" stroke="#00b894" stroke-width="2"/><path d="M24 20H14a5 5 0 010-10h10" fill="none" stroke="#00b894" stroke-width="2"/><path d="M5 9l3 3-3 3M27 17l-3 3 3 3" fill="none" stroke="#00b894" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></span><div class="name">Remix</div><div class="desc">Evolvi i tuoi hook</div></div>
+    <div class="game-card" onclick="openGame('formats')"><span class="icon"><svg viewBox="0 0 32 32"><rect x="10" y="4" width="12" height="24" rx="3" fill="none" stroke="#a855f7" stroke-width="2"/><path d="M14 6h4" stroke="#a855f7" stroke-width="1.5" stroke-linecap="round"/><rect x="12" y="10" width="8" height="10" rx="1" fill="#a855f722"/><circle cx="16" cy="25" r="1" fill="#a855f7"/></svg></span><div class="name">Formati</div><div class="desc">Story, Reel, Email</div></div>
   </div>
 
   <div class="section-label sec-fight"><span>🥊 AI Fight</span></div>
   <div class="fight-progress-bar" id="fightProgress"></div>
   <div class="game-grid" id="grid4">
-    <div class="game-card" onclick="openGame('hookduel')"><span class="icon">🥊</span><div class="name">Duello Hook</div><div class="desc">Stile vs stile</div></div>
-    <div class="game-card" onclick="openGame('titleduel')"><span class="icon">📰</span><div class="name">Titoli in Guerra</div><div class="desc">Riscrittura virale</div></div>
-    <div class="game-card" onclick="openGame('ctaclash')"><span class="icon">🎯</span><div class="name">CTA Showdown</div><div class="desc">Chi fa cliccare?</div></div>
-    <div class="game-card" onclick="openGame('openingbattle')"><span class="icon">🎬</span><div class="name">Apertura Killer</div><div class="desc">Primi 3 secondi</div></div>
-    <div class="game-card" onclick="openGame('objectionduel')"><span class="icon">🛡️</span><div class="name">Muro Obiezioni</div><div class="desc">Logica vs emozione</div></div>
-    <div class="game-card" onclick="openGame('longvsshort')"><span class="icon">📏</span><div class="name">Lungo vs Corto</div><div class="desc">Formato che spacca</div></div>
-    <div class="game-card" onclick="openGame('angleduel')"><span class="icon">🔀</span><div class="name">Angolo Impossibile</div><div class="desc">Prospettive diverse</div></div>
-    <div class="game-card" onclick="openGame('tournament')"><span class="icon">🏆</span><div class="name">Il Torneo</div><div class="desc">Bracket eliminatorio</div></div>
+    <div class="game-card" onclick="openGame('hookduel')"><span class="icon"><svg viewBox="0 0 32 32"><path d="M8 20a6 6 0 0112 0" fill="#ff6b3522" stroke="#ff6b35" stroke-width="2"/><path d="M12 20a6 6 0 0112 0" fill="#e8930c22" stroke="#e8930c" stroke-width="2"/><path d="M16 8v6M13 10l3 4 3-4" fill="none" stroke="#ff6b35" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></span><div class="name">Duello Hook</div><div class="desc">Stile vs stile</div></div>
+    <div class="game-card" onclick="openGame('titleduel')"><span class="icon"><svg viewBox="0 0 32 32"><rect x="4" y="7" width="24" height="18" rx="2" fill="none" stroke="#636e72" stroke-width="2"/><path d="M8 12h16M8 16h12M8 20h8" stroke="#636e72" stroke-width="2" stroke-linecap="round"/><path d="M22 18l4 4M22 22l4-4" stroke="#ff4757" stroke-width="2" stroke-linecap="round"/></svg></span><div class="name">Titoli in Guerra</div><div class="desc">Riscrittura virale</div></div>
+    <div class="game-card" onclick="openGame('ctaclash')"><span class="icon"><svg viewBox="0 0 32 32"><circle cx="16" cy="16" r="10" fill="none" stroke="#ff6b35" stroke-width="2"/><circle cx="16" cy="16" r="6" fill="none" stroke="#e8930c" stroke-width="1.5"/><circle cx="16" cy="16" r="2.5" fill="#ff6b35"/><path d="M16 3v3M16 26v3M3 16h3M26 16h3" stroke="#ff6b3566" stroke-width="1.5"/></svg></span><div class="name">CTA Showdown</div><div class="desc">Chi fa cliccare?</div></div>
+    <div class="game-card" onclick="openGame('openingbattle')"><span class="icon"><svg viewBox="0 0 32 32"><path d="M6 8h20v16H6z" fill="none" stroke="#e8930c" stroke-width="2" rx="2"/><path d="M13 13l7 3.5-7 3.5z" fill="#e8930c" stroke="none"/></svg></span><div class="name">Apertura Killer</div><div class="desc">Primi 3 secondi</div></div>
+    <div class="game-card" onclick="openGame('objectionduel')"><span class="icon"><svg viewBox="0 0 32 32"><path d="M16 5l10 6v10l-10 6-10-6V11z" fill="#0984e322" stroke="#0984e3" stroke-width="2" stroke-linejoin="round"/><path d="M12 16h8M16 12v8" stroke="#0984e3" stroke-width="2" stroke-linecap="round"/></svg></span><div class="name">Muro Obiezioni</div><div class="desc">Logica vs emozione</div></div>
+    <div class="game-card" onclick="openGame('longvsshort')"><span class="icon"><svg viewBox="0 0 32 32"><rect x="4" y="8" width="8" height="16" rx="2" fill="#fdcb6e33" stroke="#fdcb6e" stroke-width="2"/><rect x="16" y="12" width="12" height="8" rx="2" fill="#ff6b3533" stroke="#ff6b35" stroke-width="2"/><path d="M13 16h2" stroke="#e8930c" stroke-width="1.5" stroke-linecap="round" stroke-dasharray="1 2"/></svg></span><div class="name">Lungo vs Corto</div><div class="desc">Formato che spacca</div></div>
+    <div class="game-card" onclick="openGame('angleduel')"><span class="icon"><svg viewBox="0 0 32 32"><path d="M6 26L16 6l10 20" fill="none" stroke="#a855f7" stroke-width="2" stroke-linejoin="round"/><path d="M16 6v20" stroke="#a855f766" stroke-width="1" stroke-dasharray="2 2"/><circle cx="16" cy="6" r="2" fill="#a855f7"/><circle cx="6" cy="26" r="2" fill="#fd79a8"/><circle cx="26" cy="26" r="2" fill="#00b894"/></svg></span><div class="name">Angolo Impossibile</div><div class="desc">Prospettive diverse</div></div>
+    <div class="game-card" onclick="openGame('tournament')"><span class="icon"><svg viewBox="0 0 32 32"><path d="M11 8h10v3a5 5 0 01-10 0z" fill="#ffd93d33" stroke="#ffd93d" stroke-width="2"/><path d="M16 16v5" stroke="#ffd93d" stroke-width="2"/><path d="M12 21h8" stroke="#ffd93d" stroke-width="2" stroke-linecap="round"/><path d="M7 8l4 3M25 8l-4 3" stroke="#ffd93d" stroke-width="1.5" stroke-linecap="round"/><circle cx="16" cy="11" r="1" fill="#ffd93d"/></svg></span><div class="name">Il Torneo</div><div class="desc">Bracket eliminatorio</div></div>
   </div>
 
   <div class="game-area" id="gameArea"></div>
@@ -2466,16 +2468,37 @@ function initChat(){
 }
 
 async function aiGenerateHook(tema,extra=''){
-  const sys=`Sei un copywriter italiano esperto di hook virali per social media. ${getCtxPrompt()} Scrivi SOLO l'hook, niente altro. Max 2 frasi. Deve essere provocatorio, emotivo, diretto. Stile: parlato italiano, niente formalità.`;
+  const sys=`Sei un copywriter italiano di livello mondiale specializzato in hook virali per social media. ${getCtxPrompt()}
+
+REGOLE FONDAMENTALI:
+- Scrivi SOLO l'hook, niente intro, niente spiegazioni
+- Max 2 frasi. La prima DEVE fermare lo scroll
+- Usa una di queste leve: curiosity gap, contrasto shock, dato specifico, domanda provocatoria, confessione personale, lista numerata
+- Linguaggio PARLATO italiano — come parleresti al bar con un amico, zero formalità
+- NON usare: "scopri come", "incredibile", "fantastico", clickbait generico
+- INIZIA con: un numero, una negazione ("Non"), una provocazione ("Il problema è che"), una confessione ("Ho")
+- Deve far pensare "Devo leggere il resto"`;
   return aiCall(sys,`Genera un hook virale sul tema: "${tema}". ${extra}`.trim());
 }
 async function aiBattleHook(tema){
-  const sys=`Sei un copywriter italiano esperto di viral content. ${getCtxPrompt()} Genera UN solo hook virale sul tema dato. Max 2 frasi brevi. Provocatorio, emotivo, diretto. Scrivi SOLO l'hook.`;
+  const sys=`Sei un copywriter italiano esperto di viral content. ${getCtxPrompt()} Genera UN solo hook virale sul tema dato. Max 2 frasi brevi. Usa una leva a scelta tra: paradosso, dato shock, confessione, domanda retorica, lista, contrasto. Scrivi come parli — zero formalità. Scrivi SOLO l'hook.`;
   return aiCall(sys,`Tema: "${tema}". Scrivi un hook potente.`,150);
 }
 async function aiEvaluateHook(hookText){
-  const sys=`Sei un esperto di viral content italiano. ${getCtxPrompt()} Valuta l'hook dato con: 1) Punteggio 1-5 (solo numero), 2) Una riga di feedback diretto e utile. Formato: PUNTEGGIO|FEEDBACK`;
-  const r=await aiCall(sys,`Valuta questo hook: "${hookText}"`,100,0.3);
+  const sys=`Sei un direttore creativo italiano con 15 anni di esperienza in content virali. ${getCtxPrompt()} Valuta l'hook con occhio critico e SPECIFICO.
+
+Formato ESATTO della risposta: PUNTEGGIO|FEEDBACK
+
+CRITERI DI VALUTAZIONE:
+- Scroll-stopping power (ferma davvero lo scroll?)
+- Specificità (evita il generico — numeri, nomi, dettagli concreti)
+- Leva psicologica (curiosità, paura, desiderio, appartenenza?)
+- Tono (suona come un post virale o come un volantino?)
+- Target match (parla AL pubblico dell'utente?)
+
+5 = Virale sicuro | 4 = Forte | 3 = Medio | 2 = Debole | 1 = Da rifare
+Il feedback DEVE suggerire UNA modifica concreta per migliorarlo.`;
+  const r=await aiCall(sys,`Valuta questo hook: "${hookText}"`,150,0.3);
   if(!r)return null;
   const parts=r.split('|');
   const score=parseInt(parts[0])||3;
@@ -2484,16 +2507,31 @@ async function aiEvaluateHook(hookText){
 }
 async function aiCoachFeedback(gameType,data){
   const history=analyzePlayer();
-  const sys=`Sei un coach creativo italiano, diretto e motivante. ${getCtxPrompt()} Dai feedback breve (1-2 frasi) basato sui dati. Stile: colloquiale, come un amico che ti sprona. Non usare emoji.`;
-  const prompt=`Gioco: ${gameType}. Dati sessione: ${JSON.stringify(data)}. Stats globali: ${history.totalHooks} hook scritti, ${history.totalSessions} sessioni, media ${history.avgRating}/5. Gioco preferito: ${history.favGame}. Dai un feedback mirato.`;
-  return aiCall(sys,prompt,150,0.5);
+  const sys=`Sei un coach creativo italiano — diretto, motivante, specifico. ${getCtxPrompt()} Dai feedback in 2-3 frasi basato sui DATI concreti. NON dire "bravo" generico. Analizza: cosa ha fatto bene, cosa può migliorare, e suggerisci UN esercizio specifico. Stile: colloquiale, come un personal trainer. Non usare emoji.`;
+  const prompt=`Gioco: ${gameType}. Dati sessione: ${JSON.stringify(data)}. Stats globali: ${history.totalHooks} hook scritti, ${history.totalSessions} sessioni, media ${history.avgRating}/5. Gioco preferito: ${history.favGame}. Trend: ${history.trend}. Dai un feedback mirato e specifico.`;
+  return aiCall(sys,prompt,200,0.5);
 }
 async function aiRemixSuggestion(original,constraint){
-  const sys=`Sei un copywriter italiano esperto di riformulazione creativa. ${getCtxPrompt()} L'utente ha scritto un hook e deve riscriverlo con un vincolo specifico. Dai un SUGGERIMENTO strategico (1-2 frasi) su come approcciare il remix: indica quale leva emotiva o tecnica usare. Non riscrivere l'hook per lui.`;
-  return aiCall(sys,`Hook originale: "${original}". Vincolo: ${constraint}. Suggerisci la strategia migliore per il remix.`,150,0.7);
+  const sys=`Sei un copywriter italiano esperto di riformulazione creativa. ${getCtxPrompt()} L'utente ha scritto un hook e deve riscriverlo con un vincolo specifico.
+
+Dai un SUGGERIMENTO STRATEGICO in 2-3 frasi:
+1. Identifica la leva psicologica dell'hook originale
+2. Spiega COME adattarla al vincolo (quale tecnica usare)
+3. Dai un esempio di struttura (senza scrivere l'hook completo)
+NON riscrivere l'hook per lui — guidalo.`;
+  return aiCall(sys,`Hook originale: "${original}". Vincolo: ${constraint}. Suggerisci la strategia migliore per il remix.`,200,0.7);
 }
 async function aiGenerateSlotCombo(){
-  const sys=`Sei un esperto di content strategy italiano. ${getCtxPrompt()} Genera una combinazione TEMA + ANGOLO + HOOK per contenuti virali. Il tema deve essere specifico e attuale. L'angolo deve essere una prospettiva originale. L'hook deve spaccare. Formato ESATTO:\nTEMA|ANGOLO|HOOK\nSolo questo, nient'altro.`;
+  const sys=`Sei un esperto di content strategy italiano. ${getCtxPrompt()} Genera una combinazione TEMA + ANGOLO + HOOK per contenuti virali.
+
+REGOLE:
+- TEMA: specifico e concreto (non "business" → "freelancer che fatturano sotto i 50k")
+- ANGOLO: prospettiva controintuitiva o inaspettata (non l'ovvio)
+- HOOK: frase che ferma lo scroll, max 2 frasi, linguaggio parlato
+
+Formato ESATTO (una riga):
+TEMA|ANGOLO|HOOK
+Solo questo, nient'altro.`;
   const r=await aiCall(sys,'Genera una combo virale originale e provocatoria per social media.',150,0.85);
   if(!r)return null;
   const parts=r.split('|');
@@ -2504,22 +2542,59 @@ async function aiGenerateSlotCombo(){
 // === AI ENRICHMENT PER GIOCO ===
 // Genera connessione creativa tra 2 parole (Collisione)
 async function aiCollisionHook(wordA,wordB){
-  const sys=`Sei un copywriter italiano esperto di hook virali e connessioni inaspettate. ${getCtxPrompt()} Ti do 2 parole da mondi diversi. Crea UN hook virale che le collega in modo geniale, provocatorio e inaspettato. L'hook deve sembrare una rivelazione — il tipo di frase che fa dire "Non ci avevo mai pensato!". Max 2 frasi punchy. Scrivi SOLO l'hook, nient'altro.`;
+  const sys=`Sei un copywriter italiano maestro di connessioni inaspettate e analogie potenti. ${getCtxPrompt()}
+
+Ti do 2 parole da mondi diversi. Il tuo compito:
+1. Trova il PONTE nascosto tra i due concetti (cosa hanno in comune a livello profondo?)
+2. Trasformalo in UN hook virale che fa dire "Geniale, non ci avevo mai pensato!"
+
+TECNICHE DA USARE (scegline una):
+- Metafora: "X è il Y del Z"
+- Parallelismo: "Come X fa Y, così Z fa W"
+- Contrasto: "Tutti vedono X come Y, ma in realtà è Z"
+- Lezione nascosta: "Cosa mi ha insegnato X su Y"
+
+Max 2 frasi punchy. Scrivi SOLO l'hook, nient'altro.`;
   return aiCall(sys,`Collega queste 2 parole in un hook virale per social media:\n1. "${wordA}"\n2. "${wordB}"\nTrova la connessione nascosta tra questi 2 mondi e trasformala in un hook che ferma lo scroll.`,180);
 }
 // Genera contrarian fresco (Avvocato del Diavolo)
 async function aiDevilContrarian(belief){
-  const sys=`Sei un provocatore italiano esperto di content virali. ${getCtxPrompt()} Ti do una credenza comune. Scrivi un RIBALTONE provocatorio e diretto: demolisci quella credenza in 1-2 frasi brutali, come parleresti a un amico. Scrivi SOLO il ribaltone.`;
-  return aiCall(sys,`Credenza da demolire: "${belief}"`,120);
+  const sys=`Sei un provocatore italiano esperto di content virali e pensiero critico. ${getCtxPrompt()}
+
+Ti do una credenza comune. Demoliscila con un RIBALTONE che:
+- NON è semplicemente il contrario (troppo banale)
+- Attacca il presupposto nascosto dietro la credenza
+- Usa dati, logica o un esempio concreto per smontarla
+- Fa sentire il lettore "intelligente" per aver capito
+
+Max 2 frasi brutali e dirette. Scrivi SOLO il ribaltone, come parleresti a un amico.`;
+  return aiCall(sys,`Credenza da demolire: "${belief}"`,150);
 }
 // Genera risultato emozione x tema
 async function aiEmotionResult(emotion,tema){
-  const sys=`Sei un copywriter italiano esperto di hook emotivi. ${getCtxPrompt()} Ti do un'emozione e un tema. Genera UN hook virale che usa quell'emozione su quel tema. Max 1-2 frasi punchy. Scrivi SOLO l'hook.`;
-  return aiCall(sys,`Emozione: "${emotion}". Tema: "${tema}". Genera un hook che colpisce con quell'emozione.`,100);
+  const sys=`Sei un copywriter italiano esperto di hook emotivi e psicologia del contenuto. ${getCtxPrompt()}
+
+Ti do un'emozione e un tema. Genera UN hook virale che:
+- Evoca quell'emozione nei PRIMI 3 secondi di lettura
+- È specifico al tema (non generico)
+- Usa il linguaggio sensoriale (far "sentire" l'emozione, non dirla)
+- NON nominare l'emozione direttamente — falla provare
+
+Max 2 frasi punchy. Scrivi SOLO l'hook.`;
+  return aiCall(sys,`Emozione: "${emotion}". Tema: "${tema}". Genera un hook che colpisce con quell'emozione.`,120);
 }
 // Genera coppia flip fresca
 async function aiFlipPair(){
-  const sys=`Sei un provocatore italiano esperto di ribaltoni concettuali e content virali. ${getCtxPrompt()} Genera UNA coppia per il gioco del Flip: una parola/concetto comune che tutti vedono come positivo (max 3 parole) e il suo RIBALTONE shock — la verità brutale che nessuno dice, provocatoria e diretta (max 8 parole). Formato ESATTO: PAROLA|RIBALTONE. Solo questo, nient'altro.`;
+  const sys=`Sei un provocatore italiano esperto di ribaltoni concettuali. ${getCtxPrompt()}
+
+Genera UNA coppia per il gioco del Flip:
+- PAROLA: un concetto che TUTTI vedono come positivo/desiderabile (max 3 parole)
+- RIBALTONE: la verità scomoda che nessuno dice — specifico, provocatorio, concreto (max 10 parole)
+
+Il ribaltone NON deve essere il semplice contrario. Deve essere una RIVELAZIONE.
+
+Formato ESATTO: PAROLA|RIBALTONE
+Solo questo, nient'altro.`;
   const r=await aiCall(sys,'Genera una coppia parola → ribaltone shock originale e provocatoria per social media.',120);
   if(!r)return null;
   const parts=r.split('|');
@@ -2528,8 +2603,15 @@ async function aiFlipPair(){
 }
 // Genera hook freschi per Hot or Not
 async function aiHotOrNotHooks(count=3){
-  const sys=`Sei un copywriter italiano. ${getCtxPrompt()} Genera ${count} hook virali diversi per social media, uno per riga. Mix di stili: provocatorio, emotivo, curioso. Solo hook, niente numeri o prefissi.`;
-  const r=await aiCall(sys,`Genera ${count} hook virali diversi, uno per riga.`,200);
+  const sys=`Sei un copywriter italiano esperto di viral content. ${getCtxPrompt()}
+
+Genera ${count} hook virali DIVERSI tra loro, uno per riga. Ogni hook deve:
+- Usare una leva psicologica DIVERSA (curiosità, paura, desiderio, appartenenza, etc.)
+- Essere specifico (numeri, nomi, dettagli concreti)
+- Sembrare un vero post virale, NON un esercizio scolastico
+
+NON usare numeri o prefissi. Solo gli hook, uno per riga.`;
+  const r=await aiCall(sys,`Genera ${count} hook virali diversi, uno per riga.`,250);
   if(!r)return[];
   return r.split('\n').map(l=>l.trim()).filter(l=>l.length>10).slice(0,count);
 }

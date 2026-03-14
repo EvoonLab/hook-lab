@@ -874,6 +874,37 @@ body.light .tour-tooltip{box-shadow:0 12px 40px rgba(0,0,0,.15),0 0 0 1px rgba(2
 body.light .tour-progress{background:rgba(0,0,0,.06)}
 body.light .tour-btn-back{background:rgba(0,0,0,.05);color:var(--t2)}
 
+/* ===== LEVEL-UP CELEBRATION ===== */
+.lvup-overlay{position:fixed;inset:0;z-index:90000;pointer-events:none;display:flex;align-items:center;justify-content:center;opacity:0;transition:opacity .3s}
+.lvup-overlay.active{opacity:1}
+.lvup-badge{font-size:3rem;font-weight:900;background:linear-gradient(135deg,#ff6b35,#e8930c,#ffb088);-webkit-background-clip:text;-webkit-text-fill-color:transparent;transform:scale(0);animation:lvupPop .8s cubic-bezier(.17,.67,.21,1.27) forwards;text-shadow:none;filter:drop-shadow(0 0 30px rgba(255,107,53,.5))}
+.lvup-sub{font-size:1rem;color:var(--t2);margin-top:4px;opacity:0;animation:lvupFade .5s .6s forwards}
+@keyframes lvupPop{0%{transform:scale(0) rotate(-10deg)}50%{transform:scale(1.25) rotate(3deg)}70%{transform:scale(.95) rotate(-1deg)}100%{transform:scale(1) rotate(0)}}
+@keyframes lvupFade{to{opacity:1}}
+.lvup-particle{position:fixed;pointer-events:none;z-index:90001;border-radius:50%;will-change:transform,opacity}
+.lvup-star{width:8px;height:8px;background:var(--a2);box-shadow:0 0 6px var(--a2);animation:lvupStar var(--dur,.8s) cubic-bezier(.25,.46,.45,.94) forwards}
+.lvup-confetti{width:6px;height:12px;border-radius:2px;animation:lvupConfetti var(--dur,1s) cubic-bezier(.25,.46,.45,.94) forwards}
+@keyframes lvupStar{0%{transform:translate(0,0) scale(1);opacity:1}100%{transform:translate(var(--tx,50px),var(--ty,-120px)) scale(0);opacity:0}}
+@keyframes lvupConfetti{0%{transform:translate(0,0) rotate(0deg);opacity:1}100%{transform:translate(var(--tx,30px),var(--ty,200px)) rotate(var(--rot,360deg));opacity:0}}
+.lvup-ring{position:fixed;pointer-events:none;z-index:89999;border-radius:50%;border:3px solid var(--a2);width:0;height:0;opacity:0;animation:lvupRing .8s .1s cubic-bezier(.25,.46,.45,.94) forwards}
+@keyframes lvupRing{0%{width:0;height:0;opacity:.8}100%{width:300px;height:300px;opacity:0;border-width:1px}}
+
+/* ===== SCROLL REVEAL ===== */
+.reveal{opacity:0;transform:translateY(30px);transition:opacity .6s cubic-bezier(.4,0,.2,1),transform .6s cubic-bezier(.4,0,.2,1)}
+.reveal.visible{opacity:1;transform:translateY(0)}
+.game-card.reveal{transition-delay:calc(var(--ri,0) * 60ms)}
+
+/* ===== SHIMMER LOADING ===== */
+.shimmer{position:relative;overflow:hidden}
+.shimmer::after{content:'';position:absolute;inset:0;background:linear-gradient(90deg,transparent 0%,rgba(255,255,255,.06) 50%,transparent 100%);animation:shimmerSlide 1.5s infinite;transform:translateX(-100%)}
+@keyframes shimmerSlide{to{transform:translateX(100%)}}
+body.light .shimmer::after{background:linear-gradient(90deg,transparent 0%,rgba(0,0,0,.04) 50%,transparent 100%)}
+.ai-loading-dots{display:inline-flex;gap:4px;align-items:center;padding:4px 0}
+.ai-loading-dots span{width:6px;height:6px;border-radius:50%;background:var(--a2);opacity:.3;animation:shimDot 1.2s infinite}
+.ai-loading-dots span:nth-child(2){animation-delay:.2s}
+.ai-loading-dots span:nth-child(3){animation-delay:.4s}
+@keyframes shimDot{0%,100%{opacity:.3;transform:scale(1)}50%{opacity:1;transform:scale(1.3)}}
+
 /* KEYBOARD HINT */
 .kb-hint{font-size:.65rem;color:var(--a5);opacity:.7;margin-top:6px;text-align:center;font-family:'SF Mono',Monaco,'Cascadia Code','Fira Code',monospace;letter-spacing:.5px}
 .kb-hint kbd{padding:2px 7px;background:rgba(255,107,53,.1);border:1px solid rgba(255,107,53,.25);border-radius:4px;font-family:inherit;font-size:.6rem;color:var(--a3);font-weight:600}
@@ -2207,15 +2238,24 @@ async function aiCallAnthropic(url,model,systemPrompt,userMessages,maxTokens,tem
 }
 async function aiCall(systemPrompt,userPrompt,maxTokens=300,temperature=0.9,slot='primary'){
   if(!isAI(slot))return null;
+  // Show shimmer in game area if visible
+  const ga=document.getElementById('gameArea');
+  const shTarget=(ga&&ga.offsetHeight>0)?ga:null;
+  let sh=null;
+  if(shTarget){sh=showShimmer(shTarget);}
   try{
     const s=aiSettings[slot]||aiSettings.primary;
     const p=AI_PROVIDERS[s.provider]||AI_PROVIDERS.openai;
     const url=getAiUrl(slot),model=getAiModel(slot);
+    let result;
     if(p.format==='anthropic'){
-      return await aiCallAnthropic(url,model,systemPrompt,[{role:'user',content:userPrompt}],maxTokens,temperature,s.apiKey);
+      result=await aiCallAnthropic(url,model,systemPrompt,[{role:'user',content:userPrompt}],maxTokens,temperature,s.apiKey);
+    }else{
+      result=await aiCallOpenAI(url,model,[{role:'system',content:systemPrompt},{role:'user',content:userPrompt}],maxTokens,temperature,s.apiKey,s.provider);
     }
-    return await aiCallOpenAI(url,model,[{role:'system',content:systemPrompt},{role:'user',content:userPrompt}],maxTokens,temperature,s.apiKey,s.provider);
-  }catch(e){console.warn('AI call failed:',e);return null;}
+    if(sh)sh.remove();
+    return result;
+  }catch(e){if(sh)sh.remove();console.warn('AI call failed:',e);return null;}
 }
 async function chatAiCall(chatMsgs){
   if(!isAI())return null;
@@ -3336,7 +3376,78 @@ function playTone(freq,dur,type='sine',vol=0.15){
 function sClick(){playTone(800,.08,'sine',0.1);}
 function sSave(){playTone(523,.1);setTimeout(()=>playTone(659,.1),80);setTimeout(()=>playTone(784,.15),160);}
 function sWarn(){playTone(440,.15,'square',0.08);setTimeout(()=>playTone(440,.15,'square',0.08),200);}
-function sLevelUp(){[523,659,784,1047].forEach((f,i)=>setTimeout(()=>playTone(f,.18,'sine',0.12),i*120));}
+function sLevelUp(){[523,659,784,1047].forEach((f,i)=>setTimeout(()=>playTone(f,.18,'sine',0.12),i*120));showLevelUpCelebration();}
+
+// ===== LEVEL-UP CELEBRATION =====
+function showLevelUpCelebration(){
+  const lv=getLevel();
+  // Overlay with text
+  const ov=document.createElement('div');ov.className='lvup-overlay';
+  ov.innerHTML='<div style="text-align:center"><div class="lvup-badge">⬆️ LEVEL '+lv+'!</div><div class="lvup-sub">Nuovo livello sbloccato — continua così!</div></div>';
+  document.body.appendChild(ov);
+  requestAnimationFrame(()=>ov.classList.add('active'));
+  // Expanding ring
+  const ring=document.createElement('div');ring.className='lvup-ring';
+  const cx=window.innerWidth/2,cy=window.innerHeight/2;
+  ring.style.left=(cx-150)+'px';ring.style.top=(cy-150)+'px';
+  document.body.appendChild(ring);
+  // Particles burst
+  spawnLvParticles(cx,cy);
+  // Pulse the level badge
+  const badge=document.getElementById('lvBadge');
+  if(badge){badge.style.transition='transform .4s cubic-bezier(.17,.67,.21,1.27)';badge.style.transform='scale(1.5)';setTimeout(()=>{badge.style.transform='scale(1)';},600);}
+  // Cleanup
+  setTimeout(()=>{ov.classList.remove('active');setTimeout(()=>{ov.remove();ring.remove();},400);},2800);
+}
+function spawnLvParticles(cx,cy){
+  const colors=['#ff6b35','#e8930c','#ffb088','#ff4757','#ffd93d','#6c5ce7','#00b894','#fd79a8'];
+  // Stars (burst outward)
+  for(let i=0;i<16;i++){
+    const p=document.createElement('div');p.className='lvup-particle lvup-star';
+    const angle=(Math.PI*2/16)*i;const dist=80+Math.random()*100;
+    p.style.left=cx+'px';p.style.top=cy+'px';
+    p.style.background=colors[i%colors.length];p.style.boxShadow='0 0 6px '+colors[i%colors.length];
+    p.style.setProperty('--tx',Math.cos(angle)*dist+'px');
+    p.style.setProperty('--ty',Math.sin(angle)*dist+'px');
+    p.style.setProperty('--dur',(.5+Math.random()*.5)+'s');
+    document.body.appendChild(p);
+    setTimeout(()=>p.remove(),1500);
+  }
+  // Confetti (fall with gravity)
+  for(let i=0;i<24;i++){
+    const p=document.createElement('div');p.className='lvup-particle lvup-confetti';
+    p.style.left=(cx-100+Math.random()*200)+'px';p.style.top=(cy-60+Math.random()*40)+'px';
+    p.style.background=colors[i%colors.length];
+    p.style.setProperty('--tx',(-80+Math.random()*160)+'px');
+    p.style.setProperty('--ty',(100+Math.random()*200)+'px');
+    p.style.setProperty('--rot',(200+Math.random()*520)+'deg');
+    p.style.setProperty('--dur',(.7+Math.random()*.8)+'s');
+    p.style.width=(4+Math.random()*6)+'px';p.style.height=(8+Math.random()*10)+'px';
+    document.body.appendChild(p);
+    setTimeout(()=>p.remove(),2000);
+  }
+}
+
+// ===== SCROLL REVEAL =====
+function initScrollReveal(){
+  const targets=document.querySelectorAll('.game-card,.grid-section,.side-card,.daily-banner');
+  targets.forEach((el,i)=>{el.classList.add('reveal');el.style.setProperty('--ri',i%10);});
+  const obs=new IntersectionObserver((entries)=>{
+    entries.forEach(e=>{if(e.isIntersecting){e.target.classList.add('visible');obs.unobserve(e.target);}});
+  },{threshold:0.1,rootMargin:'0px 0px -40px 0px'});
+  targets.forEach(el=>obs.observe(el));
+}
+
+// ===== SHIMMER HELPERS =====
+function showShimmer(container){
+  if(!container)return;
+  const sh=document.createElement('div');
+  sh.className='shimmer';sh.id='aiShimmer';
+  sh.style.cssText='border-radius:var(--r);padding:20px;background:var(--card);min-height:60px;display:flex;align-items:center;justify-content:center';
+  sh.innerHTML='<div class="ai-loading-dots"><span></span><span></span><span></span></div><span style="margin-left:10px;color:var(--t2);font-size:.8rem">L\'AI sta pensando...</span>';
+  container.appendChild(sh);return sh;
+}
+function removeShimmer(){const s=document.getElementById('aiShimmer');if(s)s.remove();}
 function sGameEnd(){playTone(784,.12);setTimeout(()=>playTone(659,.12),100);setTimeout(()=>playTone(523,.2),200);animateScore();}
 function sCorrect(){playTone(523,.08);setTimeout(()=>playTone(784,.12),80);}
 function sWrong(){playTone(300,.15,'square',0.08);setTimeout(()=>playTone(250,.2,'square',0.06),120);}
@@ -6771,10 +6882,13 @@ class GuidedTour{
       cz.addEventListener('click',handler,{once:true});
       this._interactionCleanup=()=>cz.removeEventListener('click',handler);
     }else if(step.event==='input'){
-      cz.style.pointerEvents='none'; // Let user type in real input
+      // Hide click zone and punch a hole in the overlay so user can type in the real input
+      cz.style.display='none';
+      this.overlay.querySelector('svg').style.pointerEvents='none';
+      el.focus();
       const handler=function(){if(el.value.trim().length>=2){el.removeEventListener('input',handler);setTimeout(()=>self.next(),600);}};
       el.addEventListener('input',handler);
-      this._interactionCleanup=()=>el.removeEventListener('input',handler);
+      this._interactionCleanup=()=>{el.removeEventListener('input',handler);self.overlay.querySelector('svg').style.pointerEvents='auto';};
     }
   }
   _cleanInteraction(){if(this._interactionCleanup){this._interactionCleanup();this._interactionCleanup=null;}this.clickZone.style.display='none';this.clickZone.style.pointerEvents='auto';}
@@ -7190,6 +7304,7 @@ document.addEventListener('DOMContentLoaded',()=>{
   initLayout();
   renderSidebar();
   initKeyboard();
+  setTimeout(()=>{initScrollReveal();},100);
   setTimeout(showOnboarding,300);
   setTimeout(checkSmartTips,2000);
   // PWA Service Worker

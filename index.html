@@ -566,6 +566,11 @@ body::after{content:'';position:fixed;inset:0;background:radial-gradient(circle 
 /* SOUND TOGGLE */
 .sound-toggle{position:absolute;top:12px;right:12px;background:none;border:none;font-size:1rem;cursor:pointer;opacity:.5;transition:var(--tr);z-index:5}
 .sound-toggle:hover{opacity:1}
+.theme-toggle-btn{position:absolute;top:10px;right:52px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.12);border-radius:20px;padding:5px 14px 5px 10px;font-size:.85rem;cursor:pointer;display:flex;align-items:center;gap:5px;color:var(--t1);transition:var(--tr);z-index:5;backdrop-filter:blur(8px)}
+.theme-toggle-btn:hover{background:rgba(255,107,53,.15);border-color:var(--a2)}
+.theme-toggle-btn .tt-label{font-size:.7rem;font-weight:600;letter-spacing:.5px;text-transform:uppercase}
+[data-theme="light"] .theme-toggle-btn{background:rgba(0,0,0,.06);border-color:rgba(0,0,0,.1);color:var(--t1)}
+[data-theme="light"] .theme-toggle-btn:hover{background:rgba(255,107,53,.1)}
 #themeToggle{opacity:.8;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.15);border-radius:20px;padding:4px 10px;font-size:.9rem}
 #themeToggle:hover{opacity:1;background:rgba(255,255,255,.2);transform:scale(1.1)}
 [data-theme="light"] #themeToggle{background:rgba(0,0,0,.06);border-color:rgba(0,0,0,.1)}
@@ -1392,7 +1397,7 @@ body.light .shimmer::after{background:linear-gradient(90deg,transparent 0%,rgba(
   <p class="sub">Palestra creativa per contenuti che spaccano</p>
   <span class="badge">DSS Edition</span>
   <button class="sound-toggle" id="soundToggle" onclick="toggleSound()">🔊</button>
-  <button class="sound-toggle" id="themeToggle" onclick="toggleTheme()" title="Cambia tema" style="left:auto;right:52px">🌙</button>
+  <button class="theme-toggle-btn" id="themeToggle" onclick="toggleTheme()" title="Cambia tema">🌙 <span class="tt-label">Tema</span></button>
 </header>
 
 <div class="stats-bar">
@@ -2262,7 +2267,11 @@ async function chatAiCall(chatMsgs){
   const s=aiSettings.primary;
   const p=AI_PROVIDERS[s.provider]||AI_PROVIDERS.openai;
   const url=getAiUrl('primary'),model=getAiModel('primary');
-  const sysContent='Sei un assistente esperto di social media, copywriting e content creation in italiano. Parli in modo diretto e colloquiale.\n\n'+getCtxPrompt();
+  let mazzoCtx='';
+  if(chatMazzoContext.length){
+    mazzoCtx='\n\nHOOK DAL MAZZO DELL\'UTENTE (analizzali, ragionaci sopra, migliorali o usali come base):\n'+chatMazzoContext.map((h,i)=>(i+1)+'. "'+h+'"').join('\n')+'\n\nQuando l\'utente ti manda un hook dal mazzo: analizzalo in profondità, spiega perché funziona o no, suggerisci varianti migliori, e proponi come usarlo in uno script. NON limitarti a dire "bello" — sii specifico e utile.';
+  }
+  const sysContent='Sei un coach esperto di social media, copywriting e content creation in italiano. Parli in modo diretto e colloquiale. Sei concreto e specifico — mai generico. Quando analizzi un hook: (1) identifica la leva psicologica usata, (2) spiega perché funziona o fallisce, (3) dai 2-3 varianti migliori, (4) suggerisci il contesto ideale (reel, carosello, storia). Quando generi: usa il contesto dell\'utente (nicchia, tono, pubblico) per personalizzare.\n\n'+getCtxPrompt()+mazzoCtx;
   const recent=chatMsgs.slice(-20).map(m=>({role:m.role==='assistant'?'assistant':'user',content:m.content}));
   if(p.format==='anthropic'){
     return await aiCallAnthropic(url,model,sysContent,recent,800,0.8,s.apiKey);
@@ -6565,12 +6574,16 @@ function renderMazzoFloat(){
     insertFromMazzo(savedItems[idx].text);
   };
 }
+let chatMazzoContext=[];
 function insertFromMazzo(text){
   if(mazzoFloatTarget===null)return;
   if(mazzoFloatTarget==='chat'){
+    // Add to structured context so AI actually reasons about it
+    chatMazzoContext.push(text);
     const input=document.getElementById('chatInput');
-    if(input){input.value=text;input.focus();input.style.height='auto';input.style.height=Math.min(input.scrollHeight,100)+'px';}
-    closeMazzoFloat();showToast('Inserito nella chat!');sClick();return;
+    const prefix='Analizza e lavora su questo hook dal mio mazzo:\n\n"'+text+'"\n\n';
+    if(input){input.value=prefix;input.focus();input.style.height='auto';input.style.height=Math.min(input.scrollHeight,100)+'px';}
+    closeMazzoFloat();showToast('Hook inserito — l\'AI lo analizzerà!');sClick();return;
   }
   const ta=document.getElementById('blockText'+mazzoFloatTarget);
   if(ta){
@@ -7048,28 +7061,50 @@ function endFocusMode(hooks,target){
 // Export Pack
 function exportPack(){
   if(!savedItems.length){showToast('Nessun hook nel Mazzo!');return;}
-  const top10=savedItems.slice(0,10);
-  let text='═══════════════════════════\n';
-  text+='   HOOK LAB — EXPORT PACK\n';
-  text+='   '+new Date().toLocaleDateString('it-IT',{day:'numeric',month:'long',year:'numeric'})+'\n';
-  text+='═══════════════════════════\n\n';
-  text+='📊 STATS\n';
-  text+='XP: '+stats.xp+' · LV '+getLevel()+' · Giocate: '+stats.gamesPlayed+' · Hook: '+stats.hooksWritten+' · Streak: '+(stats.streak||0)+'🔥\n\n';
-  text+='⭐ TOP '+top10.length+' HOOK\n';
-  text+='───────────────────────────\n';
-  top10.forEach((item,i)=>{
-    const clean=item.text.replace(/\[.*?\]/g,'').trim();
-    text+='\n'+(i+1)+'. '+clean+'\n';
-    if(item.type)text+='   ['+item.type+']\n';
+  const dateStr=new Date().toLocaleDateString('it-IT',{day:'numeric',month:'long',year:'numeric'});
+  const lv=getLevel();
+  // Group by type
+  const byType={};
+  savedItems.forEach(it=>{
+    const t=it.type||'Altro';
+    if(!byType[t])byType[t]=[];
+    byType[t].push(it);
   });
-  text+='\n═══════════════════════════\n';
-  text+='Generato con Hook Lab — DSS Edition\n';
-  const blob=new Blob([text],{type:'text/plain'});
-  const url=URL.createObjectURL(blob);
-  const a=document.createElement('a');
-  a.href=url;a.download='hooklab-export-'+new Date().toISOString().split('T')[0]+'.txt';
-  a.click();URL.revokeObjectURL(url);
-  showToast('Export scaricato!');
+  const typeColors={'Slot':'#ff6b35','Collisione':'#e8930c','Flip':'#00b894','Emozione':'#fd79a8','Diavolo':'#6c5ce7','Radar':'#0984e3','Remix':'#fdcb6e','Combo':'#e17055','Fight':'#a855f7','Archivio':'#00cec9','Altro':'#636e72'};
+  let cards='';
+  for(const[type,items] of Object.entries(byType)){
+    const color=typeColors[type]||'#636e72';
+    cards+='<div style="margin-bottom:24px"><h3 style="color:'+color+';font-size:14px;text-transform:uppercase;letter-spacing:1px;margin-bottom:10px;border-bottom:2px solid '+color+'33;padding-bottom:6px">'+type+' ('+items.length+')</h3>';
+    items.forEach((it,i)=>{
+      const clean=it.text.replace(/\[.*?\]/g,'').replace(/</g,'&lt;').trim();
+      const stars=it.rating?'<span style="color:#e8930c">'+('★'.repeat(it.rating))+'</span>':'';
+      cards+='<div style="background:#f8f9fa;border-left:3px solid '+color+';padding:10px 14px;margin-bottom:8px;border-radius:0 8px 8px 0;font-size:13px;line-height:1.5"><div style="color:#2d3436">'+clean+'</div>'+stars+'</div>';
+    });
+    cards+='</div>';
+  }
+  const html='<!DOCTYPE html><html><head><meta charset="utf-8"><title>Hook Lab Export — '+dateStr+'</title><style>@media print{body{-webkit-print-color-adjust:exact;print-color-adjust:exact}}</style></head><body style="font-family:-apple-system,system-ui,sans-serif;max-width:700px;margin:0 auto;padding:40px 20px;color:#2d3436;background:white">'
+    +'<div style="text-align:center;margin-bottom:30px;padding-bottom:20px;border-bottom:3px solid #ff6b35">'
+    +'<h1 style="font-size:28px;margin:0;background:linear-gradient(135deg,#ff6b35,#e8930c);-webkit-background-clip:text;-webkit-text-fill-color:transparent">🎯 HOOK LAB</h1>'
+    +'<p style="color:#636e72;margin:4px 0 0;font-size:13px">Export Pack — '+dateStr+'</p></div>'
+    +'<div style="display:grid;grid-template-columns:repeat(5,1fr);gap:10px;margin-bottom:28px;text-align:center">'
+    +'<div style="background:#fff5f0;border-radius:10px;padding:12px 8px"><div style="font-size:20px;font-weight:800;color:#ff6b35">LV '+lv+'</div><div style="font-size:10px;color:#636e72">Livello</div></div>'
+    +'<div style="background:#fff5f0;border-radius:10px;padding:12px 8px"><div style="font-size:20px;font-weight:800;color:#e8930c">'+stats.xp+'</div><div style="font-size:10px;color:#636e72">XP</div></div>'
+    +'<div style="background:#fff5f0;border-radius:10px;padding:12px 8px"><div style="font-size:20px;font-weight:800;color:#ff6b35">'+stats.gamesPlayed+'</div><div style="font-size:10px;color:#636e72">Giocate</div></div>'
+    +'<div style="background:#fff5f0;border-radius:10px;padding:12px 8px"><div style="font-size:20px;font-weight:800;color:#e8930c">'+stats.hooksWritten+'</div><div style="font-size:10px;color:#636e72">Hook</div></div>'
+    +'<div style="background:#fff5f0;border-radius:10px;padding:12px 8px"><div style="font-size:20px;font-weight:800;color:#ff6b35">'+(stats.streak||0)+'🔥</div><div style="font-size:10px;color:#636e72">Streak</div></div>'
+    +'</div>'
+    +'<h2 style="font-size:18px;margin-bottom:16px">📦 '+savedItems.length+' Hook nel Mazzo</h2>'
+    +cards
+    +'<div style="text-align:center;margin-top:30px;padding-top:16px;border-top:1px solid #dfe6e9;color:#b2bec3;font-size:11px">Generato con Hook Lab — DSS Edition<br>Usa Ctrl+P / ⌘P per salvare come PDF</div>'
+    +'</body></html>';
+  const w=window.open('','_blank');
+  if(w){w.document.write(html);w.document.close();}else{
+    const blob=new Blob([html],{type:'text/html'});
+    const url=URL.createObjectURL(blob);
+    const a=document.createElement('a');a.href=url;a.download='hooklab-export-'+new Date().toISOString().split('T')[0]+'.html';
+    a.click();URL.revokeObjectURL(url);
+  }
+  showToast('Export aperto! Premi Ctrl+P per salvare come PDF');
 }
 
 // ===== SIDEBAR LAYOUT =====

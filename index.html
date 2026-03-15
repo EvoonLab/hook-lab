@@ -1027,6 +1027,136 @@ body::after{content:'';position:fixed;inset:0;background:radial-gradient(circle 
 [data-theme="light"] .sparkline-bar{background:linear-gradient(180deg,#0984e3,#74b9ff)}
 [data-theme="light"] .skill-progress-track{background:rgba(0,0,0,.04)}
 [data-theme="light"] .improve-tips{background:rgba(9,132,227,.02);border-color:rgba(9,132,227,.08)}
+
+/* ===== AUTORUN AI ===== */
+.autorun-fab{position:fixed;bottom:190px;right:16px;width:50px;height:50px;border-radius:50%;background:linear-gradient(135deg,#00b4d8,#a855f7);color:#fff;font-size:1.3rem;border:none;cursor:pointer;z-index:100;box-shadow:0 4px 20px rgba(168,85,247,.4);display:flex;align-items:center;justify-content:center;transition:var(--tr);animation:autorunPulse 3s infinite}
+.autorun-fab:hover{transform:scale(1.12);box-shadow:0 6px 28px rgba(168,85,247,.5)}
+@keyframes autorunPulse{0%,100%{box-shadow:0 4px 20px rgba(168,85,247,.4)}50%{box-shadow:0 4px 28px rgba(0,180,216,.5)}}
+.autorun-overlay{position:fixed;inset:0;z-index:300;background:rgba(10,10,15,.92);backdrop-filter:blur(8px);display:flex;flex-direction:column;overflow:hidden}
+.autorun-header{display:flex;align-items:center;justify-content:space-between;padding:16px 24px;border-bottom:1px solid rgba(255,255,255,.08);flex-shrink:0}
+.autorun-header span{font-size:1.1rem;font-weight:900;background:linear-gradient(135deg,#00b4d8,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.autorun-close{background:none;border:1px solid rgba(255,255,255,.15);color:#fff;width:36px;height:36px;border-radius:50%;cursor:pointer;font-size:1rem;display:flex;align-items:center;justify-content:center;transition:var(--tr)}
+.autorun-close:hover{background:rgba(255,255,255,.1)}
+.autorun-content{flex:1;overflow-y:auto;padding:24px;display:flex;flex-direction:column;align-items:center}
+.autorun-setup{max-width:520px;width:100%}
+.autorun-setup-card{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.08);border-radius:16px;padding:24px;margin-bottom:16px;animation:arCardIn .4s ease}
+@keyframes arCardIn{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
+.autorun-setup-card h3{font-size:.9rem;font-weight:800;color:#fff;margin:0 0 14px;display:flex;align-items:center;gap:8px}
+.autorun-setup-card h3 span{font-size:1.2rem}
+.autorun-setup-card label{display:block;font-size:.72rem;font-weight:600;color:rgba(255,255,255,.5);text-transform:uppercase;letter-spacing:1px;margin-bottom:8px}
+.autorun-setup-card input,.autorun-setup-card textarea{width:100%;padding:12px 14px;border-radius:10px;border:1px solid rgba(255,255,255,.1);background:rgba(255,255,255,.04);color:#fff;font-size:.85rem;outline:none;transition:var(--tr);box-sizing:border-box}
+.autorun-setup-card input:focus,.autorun-setup-card textarea:focus{border-color:rgba(0,180,216,.4);box-shadow:0 0 0 3px rgba(0,180,216,.1)}
+.autorun-chips{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:4px}
+.autorun-chip{padding:8px 16px;border-radius:20px;font-size:.78rem;font-weight:600;border:1px solid rgba(255,255,255,.12);background:rgba(255,255,255,.04);color:rgba(255,255,255,.7);cursor:pointer;transition:var(--tr)}
+.autorun-chip:hover{background:rgba(0,180,216,.1);border-color:rgba(0,180,216,.3)}
+.autorun-chip.active{background:linear-gradient(135deg,rgba(0,180,216,.2),rgba(168,85,247,.2));border-color:rgba(0,180,216,.5);color:#fff}
+.autorun-advanced{margin-top:8px}
+.autorun-advanced summary{font-size:.75rem;font-weight:600;color:rgba(255,255,255,.5);cursor:pointer;padding:8px 0}
+.autorun-slider-row{display:flex;align-items:center;gap:12px;margin:10px 0}
+.autorun-slider-row label{min-width:80px;font-size:.72rem;color:rgba(255,255,255,.5)}
+.autorun-slider-row input[type=range]{flex:1;accent-color:#00b4d8}
+.autorun-slider-row .ar-val{font-size:.78rem;font-weight:700;color:#00b4d8;min-width:30px;text-align:center}
+.autorun-launch-btn{display:block;width:100%;padding:16px;border-radius:14px;border:none;background:linear-gradient(135deg,#00b4d8,#a855f7);color:#fff;font-size:1rem;font-weight:900;cursor:pointer;margin-top:12px;transition:var(--tr);box-shadow:0 6px 24px rgba(168,85,247,.3)}
+.autorun-launch-btn:hover{transform:translateY(-2px);box-shadow:0 8px 32px rgba(168,85,247,.4)}
+.autorun-launch-btn:disabled{opacity:.5;cursor:not-allowed;transform:none}
+
+/* Pipeline */
+.autorun-pipeline{max-width:520px;width:100%}
+.autorun-progress{margin-bottom:20px}
+.autorun-progress-label{font-size:.75rem;font-weight:600;color:rgba(255,255,255,.6);margin-bottom:6px;display:flex;justify-content:space-between}
+.autorun-progress-bar{height:6px;border-radius:3px;background:rgba(255,255,255,.08);overflow:hidden}
+.autorun-progress-fill{height:100%;border-radius:3px;background:linear-gradient(90deg,#00b4d8,#a855f7);transition:width .5s ease}
+.autorun-timeline{position:relative;padding-left:28px}
+.autorun-timeline::before{content:'';position:absolute;left:11px;top:0;bottom:0;width:2px;background:rgba(255,255,255,.06)}
+.autorun-stage{position:relative;margin-bottom:14px;animation:arCardIn .4s ease}
+.autorun-stage-dot{position:absolute;left:-28px;top:14px;width:22px;height:22px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.65rem;transition:var(--tr)}
+.autorun-stage.pending .autorun-stage-dot{background:rgba(255,255,255,.06);color:rgba(255,255,255,.3)}
+.autorun-stage.running .autorun-stage-dot{background:linear-gradient(135deg,#00b4d8,#a855f7);color:#fff;animation:arDotPulse 1.5s infinite}
+.autorun-stage.done .autorun-stage-dot{background:rgba(16,185,129,.2);color:#10b981}
+.autorun-stage.error .autorun-stage-dot{background:rgba(239,68,68,.2);color:#ef4444}
+@keyframes arDotPulse{0%,100%{box-shadow:0 0 0 0 rgba(0,180,216,.4)}50%{box-shadow:0 0 0 8px rgba(0,180,216,0)}}
+.autorun-stage-card{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.06);border-radius:12px;padding:14px 16px;transition:var(--tr)}
+.autorun-stage.running .autorun-stage-card{border-color:rgba(0,180,216,.3);background:rgba(0,180,216,.04)}
+.autorun-stage.done .autorun-stage-card{border-color:rgba(16,185,129,.2)}
+.autorun-stage-header{display:flex;align-items:center;gap:8px;margin-bottom:4px}
+.autorun-stage-icon{font-size:1rem}
+.autorun-stage-name{font-size:.82rem;font-weight:700;color:#fff}
+.autorun-stage-status{font-size:.68rem;color:rgba(255,255,255,.4)}
+.autorun-stage.running .autorun-stage-status{color:#00b4d8}
+.autorun-stage.done .autorun-stage-status{color:#10b981}
+.autorun-stage-output{font-size:.78rem;color:rgba(255,255,255,.7);margin-top:8px;padding-top:8px;border-top:1px solid rgba(255,255,255,.06);line-height:1.5;display:none}
+.autorun-stage.done .autorun-stage-output{display:block}
+@keyframes arShimmer{0%{background-position:-200% 0}100%{background-position:200% 0}}
+.autorun-stage.running .autorun-stage-card::after{content:'';position:absolute;inset:0;border-radius:12px;background:linear-gradient(90deg,transparent,rgba(0,180,216,.05),transparent);background-size:200% 100%;animation:arShimmer 2s infinite;pointer-events:none}
+.autorun-stage.running .autorun-stage-card{position:relative;overflow:hidden}
+
+/* Result */
+.autorun-result{max-width:520px;width:100%}
+.autorun-result-hero{background:linear-gradient(135deg,rgba(0,180,216,.08),rgba(168,85,247,.08));border:2px solid rgba(168,85,247,.3);border-radius:16px;padding:24px;margin-bottom:20px;text-align:center;animation:arCardIn .5s ease}
+.autorun-result-hero h3{font-size:.75rem;font-weight:600;color:rgba(255,255,255,.5);text-transform:uppercase;letter-spacing:2px;margin:0 0 12px}
+.autorun-result-hook{font-size:1.15rem;font-weight:800;color:#fff;line-height:1.5;margin-bottom:16px}
+.autorun-result-actions{display:flex;gap:8px;justify-content:center;flex-wrap:wrap}
+.autorun-result-actions button{padding:10px 18px;border-radius:10px;font-size:.78rem;font-weight:700;border:none;cursor:pointer;transition:var(--tr)}
+.ar-btn-save{background:linear-gradient(135deg,#00b4d8,#a855f7);color:#fff}
+.ar-btn-save:hover{transform:translateY(-1px);box-shadow:0 4px 16px rgba(168,85,247,.3)}
+.ar-btn-copy{background:rgba(255,255,255,.08);color:#fff;border:1px solid rgba(255,255,255,.12)!important}
+[data-theme="light"] .ar-btn-copy{background:rgba(0,0,0,.05);color:var(--t1);border-color:rgba(0,0,0,.1)!important}
+[data-theme="light"] .ar-btn-discuss{background:rgba(168,85,247,.06);border-color:rgba(168,85,247,.15)!important}
+.ar-btn-discuss{background:rgba(168,85,247,.12);color:#c084fc;border:1px solid rgba(168,85,247,.2)!important}
+.autorun-alts{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:20px}
+.autorun-alt-card{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:10px;padding:12px;font-size:.75rem;color:rgba(255,255,255,.7);cursor:pointer;transition:var(--tr);line-height:1.4}
+.autorun-alt-card:hover{border-color:rgba(0,180,216,.3);background:rgba(0,180,216,.04)}
+.autorun-alt-card .alt-label{font-size:.6rem;font-weight:700;color:rgba(255,255,255,.3);text-transform:uppercase;letter-spacing:1px;margin-bottom:6px}
+.autorun-script-section{margin-bottom:20px}
+.autorun-script-section h3{font-size:.8rem;font-weight:700;color:#fff;margin:0 0 12px;display:flex;align-items:center;gap:8px}
+.autorun-script-block{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:10px;padding:14px;margin-bottom:8px}
+.autorun-script-block .asb-label{font-size:.65rem;font-weight:700;color:#a855f7;text-transform:uppercase;letter-spacing:1px;margin-bottom:6px}
+.autorun-script-block .asb-text{font-size:.8rem;color:rgba(255,255,255,.8);line-height:1.6}
+.autorun-script-block .asb-save{font-size:.65rem;color:rgba(0,180,216,.7);cursor:pointer;margin-top:6px;display:inline-block}
+.autorun-script-block .asb-save:hover{color:#00b4d8}
+
+/* Discussion mini-chat */
+.autorun-discuss{margin-top:8px}
+.autorun-discuss h3{font-size:.8rem;font-weight:700;color:#fff;margin:0 0 12px;display:flex;align-items:center;gap:8px}
+.autorun-discuss-messages{max-height:300px;overflow-y:auto;margin-bottom:12px}
+.autorun-discuss-msg{padding:10px 14px;border-radius:10px;margin-bottom:8px;font-size:.8rem;line-height:1.5;max-width:90%;animation:arCardIn .3s ease}
+.autorun-discuss-msg.user{background:rgba(0,180,216,.12);color:#fff;margin-left:auto;border-bottom-right-radius:4px}
+.autorun-discuss-msg.ai{background:rgba(255,255,255,.06);color:rgba(255,255,255,.85);border-bottom-left-radius:4px}
+.autorun-discuss-input{display:flex;gap:8px}
+.autorun-discuss-input input{flex:1;padding:10px 14px;border-radius:10px;border:1px solid rgba(255,255,255,.1);background:rgba(255,255,255,.04);color:#fff;font-size:.82rem;outline:none}
+.autorun-discuss-input input:focus{border-color:rgba(0,180,216,.4)}
+.autorun-discuss-input button{padding:10px 16px;border-radius:10px;background:linear-gradient(135deg,#00b4d8,#a855f7);color:#fff;border:none;font-weight:700;cursor:pointer;font-size:.82rem}
+.autorun-cancel-btn{display:block;margin:16px auto 0;padding:10px 24px;border-radius:10px;background:rgba(239,68,68,.1);border:1px solid rgba(239,68,68,.2);color:#ef4444;font-size:.75rem;font-weight:600;cursor:pointer;transition:var(--tr)}
+.autorun-cancel-btn:hover{background:rgba(239,68,68,.2)}
+
+/* Light theme overrides */
+[data-theme="light"] .autorun-overlay{background:rgba(255,255,255,.96)}
+[data-theme="light"] .autorun-header{border-color:rgba(0,0,0,.06)}
+[data-theme="light"] .autorun-close{border-color:rgba(0,0,0,.1);color:var(--t1)}
+[data-theme="light"] .autorun-setup-card{background:rgba(0,0,0,.02);border-color:rgba(0,0,0,.06)}
+[data-theme="light"] .autorun-setup-card h3{color:var(--t1)}
+[data-theme="light"] .autorun-setup-card input,[data-theme="light"] .autorun-setup-card textarea{background:rgba(0,0,0,.02);border-color:rgba(0,0,0,.08);color:var(--t1)}
+[data-theme="light"] .autorun-chip{background:rgba(0,0,0,.03);border-color:rgba(0,0,0,.08);color:var(--t2)}
+[data-theme="light"] .autorun-chip.active{background:linear-gradient(135deg,rgba(0,180,216,.1),rgba(168,85,247,.1));border-color:rgba(0,180,216,.4);color:var(--t1)}
+[data-theme="light"] .autorun-stage-card{background:rgba(0,0,0,.02);border-color:rgba(0,0,0,.06)}
+[data-theme="light"] .autorun-stage-name{color:var(--t1)}
+[data-theme="light"] .autorun-stage-output{color:var(--t2)}
+[data-theme="light"] .autorun-result-hero{background:linear-gradient(135deg,rgba(0,180,216,.04),rgba(168,85,247,.04));border-color:rgba(168,85,247,.15)}
+[data-theme="light"] .autorun-result-hook{color:var(--t1)}
+[data-theme="light"] .autorun-alt-card{background:rgba(0,0,0,.02);border-color:rgba(0,0,0,.06);color:var(--t2)}
+[data-theme="light"] .autorun-script-block{background:rgba(0,0,0,.02);border-color:rgba(0,0,0,.06)}
+[data-theme="light"] .autorun-script-block .asb-text{color:var(--t1)}
+[data-theme="light"] .autorun-discuss-msg.user{background:rgba(0,180,216,.08)}
+[data-theme="light"] .autorun-discuss-msg.ai{background:rgba(0,0,0,.03);color:var(--t1)}
+[data-theme="light"] .autorun-discuss-input input{background:rgba(0,0,0,.02);border-color:rgba(0,0,0,.08);color:var(--t1)}
+[data-theme="light"] .autorun-timeline::before{background:rgba(0,0,0,.06)}
+[data-theme="light"] .autorun-stage.pending .autorun-stage-dot{background:rgba(0,0,0,.04);color:var(--t2)}
+[data-theme="light"] .autorun-stage-status{color:var(--t2)}
+[data-theme="light"] .autorun-progress-bar{background:rgba(0,0,0,.05)}
+[data-theme="light"] .autorun-advanced summary{color:var(--t2)}
+[data-theme="light"] .autorun-setup-card label{color:var(--t2)}
+@media(max-width:600px){.autorun-alts{grid-template-columns:1fr}.autorun-content{padding:16px}}
+
 .ssc-sub{font-size:.7rem;color:var(--t2);margin-top:2px}
 .stat-bar-chart{margin:16px 0}
 .sb-row{display:flex;align-items:center;gap:10px;margin-bottom:8px}
@@ -2179,6 +2309,14 @@ body.light .shimmer::after{background:linear-gradient(90deg,transparent 0%,rgba(
     <div class="res-add-row"><input id="resNoteInput" placeholder="Appunto veloce..." /><button class="res-add-btn" onclick="addResNote()">+</button></div>
     <div id="resNoteList"></div>
   </div>
+</div>
+<button class="autorun-fab" id="autorunFab" onclick="openAutorun()" title="Autorun AI">⚡</button>
+<div class="autorun-overlay" id="autorunOverlay" style="display:none">
+  <div class="autorun-header">
+    <span>⚡ Autorun AI</span>
+    <button class="autorun-close" onclick="closeAutorun()">✕</button>
+  </div>
+  <div class="autorun-content" id="autorunContent"></div>
 </div>
 <button class="help-fab" onclick="toggleHelp()">&#10067;</button>
 <button class="mic-global-fab" id="micGlobalFab" onclick="toggleGlobalMic()" title="Microfono globale">🎤</button>
@@ -5911,6 +6049,555 @@ function pickTourneyWinner(idx,side){
   renderTourneyPair(idx+1);
 }
 
+// ===== AUTORUN AI =====
+let autorunState={active:false,phase:'setup',cancelled:false,settings:{topic:'',goal:'attrazione',tone:[],hookLength:'medio',constraints:'',gameCount:5,temperature:0.85},pipeline:[],result:{winningHook:'',alternatives:[],script:{type:'',blocks:[]}},chatHistory:[],id:null};
+
+const AUTORUN_SEQUENCES={
+  attrazione:['slot','collision','devil','emotion','battle'],
+  educazione:['slot','flip','collision','anatomy','battle'],
+  conversione:['slot','devil','hotornot','ctaclash','battle'],
+  intrattenimento:['slot','collision','emotion','hookduel','remix']
+};
+const AUTORUN_LABELS={slot:'Genera combinazione creativa',collision:'Collisione di mondi',devil:'Contrarian — ribalta tutto',emotion:'Carica emotiva',battle:'Sfida competitiva',flip:'Ribaltone concettuale',hotornot:'Giudizio rapido hook',ctaclash:'Scontro Call-to-Action',hookduel:'Duello tra stili AI',anatomy:'Analisi strutturale',remix:'Remix con vincolo'};
+const AUTORUN_ICONS={slot:'🎰',collision:'💥',devil:'😈',emotion:'🎯',battle:'⚔️',flip:'🔄',hotornot:'🔥',ctaclash:'📢',hookduel:'🥊',anatomy:'🔬',remix:'🔄'};
+
+function getAutorunGameSequence(goal,count){
+  const base=AUTORUN_SEQUENCES[goal]||AUTORUN_SEQUENCES.attrazione;
+  if(count>=base.length)return[...base];
+  // Always keep first (slot) and last (battle), cut from middle
+  const mid=base.slice(1,-1);
+  const keep=mid.slice(0,count-2);
+  return[base[0],...keep,base[base.length-1]];
+}
+
+function openAutorun(){
+  if(!isAI()){showToast('⚠️ Connetti l\'AI prima di usare Autorun!');return;}
+  autorunState={active:true,phase:'setup',cancelled:false,settings:{topic:'',goal:'attrazione',tone:[],hookLength:'medio',constraints:'',gameCount:5,temperature:0.85},pipeline:[],result:{winningHook:'',alternatives:[],script:{type:'',blocks:[]}},chatHistory:[],id:Date.now().toString(36)};
+  // Pre-fill from context
+  const ctx=JSON.parse(localStorage.getItem(hlKey('ctx'))||'{}');
+  if(ctx.what)autorunState.settings.topic=ctx.what;
+  const v=JSON.parse(localStorage.getItem(hlKey('voice'))||'{}');
+  if(v.tone&&v.tone.length)autorunState.settings.tone=[...v.tone];
+  document.getElementById('autorunOverlay').style.display='flex';
+  renderAutorunSetup();
+}
+
+function closeAutorun(){
+  if(autorunState.phase==='pipeline'&&!autorunState.cancelled){
+    if(!confirm('Pipeline in corso. Vuoi davvero uscire?'))return;
+    autorunState.cancelled=true;
+  }
+  autorunState.active=false;
+  document.getElementById('autorunOverlay').style.display='none';
+}
+
+function renderAutorunSetup(){
+  const s=autorunState.settings;
+  const goals=[{k:'attrazione',icon:'🔥',label:'Attrazione'},{k:'educazione',icon:'📚',label:'Educazione'},{k:'conversione',icon:'💰',label:'Conversione'},{k:'intrattenimento',icon:'🎭',label:'Intrattenimento'}];
+  const lengths=[{k:'corto',label:'Corto'},{k:'medio',label:'Medio'},{k:'narrativo',label:'Narrativo'}];
+  const toneOpts=['Aggressivo','Empatico','Ironico','Provocatorio','Educativo','Motivazionale','Storytelling','Minimalista'];
+
+  document.getElementById('autorunContent').innerHTML=`
+    <div class="autorun-setup">
+      <div class="autorun-setup-card" style="animation-delay:.05s">
+        <h3><span>🎯</span> Cosa vuoi creare?</h3>
+        <label>TOPIC / ARGOMENTO</label>
+        <input type="text" id="arTopic" value="${s.topic.replace(/"/g,'&quot;')}" placeholder="Es: Come iniziare a vendere su Amazon..." />
+        <label style="margin-top:14px">OBIETTIVO</label>
+        <div class="autorun-chips" id="arGoalChips">
+          ${goals.map(g=>`<div class="autorun-chip${s.goal===g.k?' active':''}" onclick="arSelectGoal('${g.k}')">${g.icon} ${g.label}</div>`).join('')}
+        </div>
+      </div>
+      <div class="autorun-setup-card" style="animation-delay:.15s">
+        <h3><span>🎨</span> Stile & Tono</h3>
+        <label>TONO (seleziona fino a 3)</label>
+        <div class="autorun-chips" id="arToneChips">
+          ${toneOpts.map(t=>`<div class="autorun-chip${s.tone.includes(t)?' active':''}" onclick="arToggleTone('${t}')">${t}</div>`).join('')}
+        </div>
+        <label style="margin-top:14px">LUNGHEZZA HOOK</label>
+        <div class="autorun-chips" id="arLenChips">
+          ${lengths.map(l=>`<div class="autorun-chip${s.hookLength===l.k?' active':''}" onclick="arSelectLen('${l.k}')">${l.label}</div>`).join('')}
+        </div>
+      </div>
+      <div class="autorun-setup-card" style="animation-delay:.25s">
+        <details class="autorun-advanced">
+          <summary>⚙️ Impostazioni Avanzate</summary>
+          <label style="margin-top:12px">VINCOLI SPECIALI</label>
+          <textarea id="arConstraints" rows="2" placeholder="Es: Non usare domande, solo affermazioni...">${s.constraints}</textarea>
+          <div class="autorun-slider-row">
+            <label>Giochi</label>
+            <input type="range" min="3" max="7" value="${s.gameCount}" id="arGameCount" oninput="document.getElementById('arGCVal').textContent=this.value" />
+            <div class="ar-val" id="arGCVal">${s.gameCount}</div>
+          </div>
+          <div class="autorun-slider-row">
+            <label>Creatività</label>
+            <input type="range" min="0" max="2" value="${s.temperature>=0.95?2:s.temperature>=0.8?1:0}" id="arTemp" oninput="document.getElementById('arTVal').textContent=['Sicuro','Bilanciato','Folle'][this.value]" />
+            <div class="ar-val" id="arTVal">${s.temperature>=0.95?'Folle':s.temperature>=0.8?'Bilanciato':'Sicuro'}</div>
+          </div>
+        </details>
+      </div>
+      <button class="autorun-launch-btn" onclick="launchAutorun()">⚡ Lancia Autorun</button>
+    </div>`;
+}
+
+function arSelectGoal(g){
+  autorunState.settings.goal=g;
+  document.querySelectorAll('#arGoalChips .autorun-chip').forEach(c=>{c.classList.toggle('active',c.textContent.trim().toLowerCase().includes(g));});
+  // Re-render chips properly
+  const goals=[{k:'attrazione',icon:'🔥',label:'Attrazione'},{k:'educazione',icon:'📚',label:'Educazione'},{k:'conversione',icon:'💰',label:'Conversione'},{k:'intrattenimento',icon:'🎭',label:'Intrattenimento'}];
+  document.getElementById('arGoalChips').innerHTML=goals.map(gi=>`<div class="autorun-chip${autorunState.settings.goal===gi.k?' active':''}" onclick="arSelectGoal('${gi.k}')">${gi.icon} ${gi.label}</div>`).join('');
+}
+function arToggleTone(t){
+  const arr=autorunState.settings.tone;
+  const idx=arr.indexOf(t);
+  if(idx>=0)arr.splice(idx,1);
+  else if(arr.length<3)arr.push(t);
+  else{showToast('Max 3 toni!');return;}
+  document.querySelectorAll('#arToneChips .autorun-chip').forEach(c=>{c.classList.toggle('active',arr.includes(c.textContent.trim()));});
+}
+function arSelectLen(l){
+  autorunState.settings.hookLength=l;
+  document.querySelectorAll('#arLenChips .autorun-chip').forEach(c=>{
+    const lk=c.textContent.trim().toLowerCase();
+    c.classList.toggle('active',lk===l);
+  });
+}
+
+async function launchAutorun(){
+  // Read settings from DOM
+  const s=autorunState.settings;
+  s.topic=document.getElementById('arTopic').value.trim();
+  s.constraints=(document.getElementById('arConstraints')||{}).value||'';
+  const gcEl=document.getElementById('arGameCount');
+  if(gcEl)s.gameCount=parseInt(gcEl.value)||5;
+  const tmpEl=document.getElementById('arTemp');
+  if(tmpEl)s.temperature=[0.7,0.85,1.0][parseInt(tmpEl.value)||1];
+
+  if(!s.topic){showToast('Inserisci un topic!');return;}
+
+  autorunState.phase='pipeline';
+  autorunState.cancelled=false;
+
+  // Build pipeline
+  const games=getAutorunGameSequence(s.goal,s.gameCount);
+  autorunState.pipeline=games.map(g=>({game:g,label:AUTORUN_LABELS[g]||g,icon:AUTORUN_ICONS[g]||'🎮',status:'pending',output:''}));
+
+  renderAutorunPipeline();
+  await runAutorunPipeline();
+}
+
+function renderAutorunPipeline(){
+  const p=autorunState.pipeline;
+  const done=p.filter(s=>s.status==='done').length;
+  document.getElementById('autorunContent').innerHTML=`
+    <div class="autorun-pipeline">
+      <div class="autorun-progress">
+        <div class="autorun-progress-label">
+          <span>⚡ Pipeline Creativa</span>
+          <span id="arProgressText">${done}/${p.length+1}</span>
+        </div>
+        <div class="autorun-progress-bar">
+          <div class="autorun-progress-fill" id="arProgressFill" style="width:${(done/(p.length+1))*100}%"></div>
+        </div>
+      </div>
+      <div class="autorun-timeline" id="arTimeline">
+        ${p.map((s,i)=>`
+          <div class="autorun-stage ${s.status}" id="arStage${i}">
+            <div class="autorun-stage-dot">${s.status==='done'?'✓':s.status==='running'?'↻':(i+1)}</div>
+            <div class="autorun-stage-card">
+              <div class="autorun-stage-header">
+                <span class="autorun-stage-icon">${s.icon}</span>
+                <span class="autorun-stage-name">${GAME_NAMES[s.game]||s.game}</span>
+              </div>
+              <div class="autorun-stage-status" id="arStatus${i}">${s.status==='done'?'Completato':s.status==='running'?s.label:'In attesa...'}</div>
+              <div class="autorun-stage-output" id="arOutput${i}">${s.output||''}</div>
+            </div>
+          </div>
+        `).join('')}
+        <div class="autorun-stage pending" id="arStageSynth">
+          <div class="autorun-stage-dot">✨</div>
+          <div class="autorun-stage-card">
+            <div class="autorun-stage-header">
+              <span class="autorun-stage-icon">🧬</span>
+              <span class="autorun-stage-name">Sintesi Finale</span>
+            </div>
+            <div class="autorun-stage-status" id="arStatusSynth">In attesa...</div>
+            <div class="autorun-stage-output" id="arOutputSynth"></div>
+          </div>
+        </div>
+      </div>
+      <button class="autorun-cancel-btn" onclick="autorunState.cancelled=true;this.textContent='Annullamento...'">✕ Annulla Pipeline</button>
+    </div>`;
+}
+
+function updateStageUI(idx,status,output){
+  const el=document.getElementById('arStage'+idx);
+  if(!el)return;
+  el.className='autorun-stage '+status;
+  const dot=el.querySelector('.autorun-stage-dot');
+  if(dot)dot.textContent=status==='done'?'✓':status==='running'?'↻':status==='error'?'✗':(idx+1);
+  const st=document.getElementById('arStatus'+idx);
+  if(st)st.textContent=status==='done'?'Completato':status==='running'?autorunState.pipeline[idx].label:status==='error'?'Errore':'In attesa...';
+  const out=document.getElementById('arOutput'+idx);
+  if(out&&output){out.textContent=output.length>120?output.substring(0,120)+'...':output;out.style.display='block';}
+  // Update progress
+  const done=autorunState.pipeline.filter(s=>s.status==='done').length;
+  const total=autorunState.pipeline.length+1;
+  const fill=document.getElementById('arProgressFill');
+  if(fill)fill.style.width=(done/total*100)+'%';
+  const txt=document.getElementById('arProgressText');
+  if(txt)txt.textContent=done+'/'+total;
+  // Scroll to current stage
+  if(status==='running')el.scrollIntoView({behavior:'smooth',block:'center'});
+}
+
+async function runAutorunPipeline(){
+  const s=autorunState.settings;
+  let tema=s.topic;
+  let bestHook='';
+
+  for(let i=0;i<autorunState.pipeline.length;i++){
+    if(autorunState.cancelled)break;
+    const stage=autorunState.pipeline[i];
+    updateStageUI(i,'running');
+
+    try{
+      const output=await runAutorunStage(stage.game,tema,bestHook,s);
+      stage.output=output||'(nessun output)';
+      stage.status='done';
+      // Extract useful data for next stages
+      if(stage.game==='slot'&&output){
+        const parts=output.split('|');
+        if(parts.length>=3){tema=parts[0].trim();bestHook=parts[2].trim();}
+        else bestHook=output;
+      }else if(output){
+        bestHook=output;
+      }
+      updateStageUI(i,'done',stage.output);
+    }catch(e){
+      stage.status='error';stage.output='Errore: '+e.message;
+      updateStageUI(i,'error',stage.output);
+    }
+    // Rate limit delay
+    if(i<autorunState.pipeline.length-1&&!autorunState.cancelled)await new Promise(r=>setTimeout(r,600));
+  }
+
+  if(autorunState.cancelled){
+    showToast('Pipeline annullata');
+    return;
+  }
+
+  // Synthesis stage
+  const synthEl=document.getElementById('arStageSynth');
+  if(synthEl){synthEl.className='autorun-stage running';synthEl.querySelector('.autorun-stage-dot').textContent='↻';}
+  const synthSt=document.getElementById('arStatusSynth');
+  if(synthSt)synthSt.textContent='Sintetizzo il risultato finale...';
+
+  try{
+    await autorunSynthesize();
+    if(synthEl){synthEl.className='autorun-stage done';synthEl.querySelector('.autorun-stage-dot').textContent='✓';}
+    if(synthSt)synthSt.textContent='Completato';
+    // Update progress to 100%
+    const fill=document.getElementById('arProgressFill');
+    if(fill)fill.style.width='100%';
+    const txt=document.getElementById('arProgressText');
+    const total=autorunState.pipeline.length+1;
+    if(txt)txt.textContent=total+'/'+total;
+    // Wait a moment then show results
+    await new Promise(r=>setTimeout(r,800));
+    autorunState.phase='result';
+    renderAutorunResult();
+  }catch(e){
+    if(synthEl){synthEl.className='autorun-stage error';}
+    if(synthSt)synthSt.textContent='Errore nella sintesi';
+    showToast('Errore nella sintesi: '+e.message);
+  }
+}
+
+async function runAutorunStage(game,tema,prevHook,settings){
+  const temp=settings.temperature||0.85;
+  switch(game){
+    case 'slot':{
+      const r=await aiGenerateSlotCombo();
+      if(r)return r.tema+'|'+r.angolo+'|'+r.hook;
+      return null;
+    }
+    case 'collision':{
+      const mondoB=DB.mondoB[Math.floor(Math.random()*DB.mondoB.length)];
+      return aiCollisionHook(tema,mondoB);
+    }
+    case 'devil':return aiDevilContrarian(prevHook||tema);
+    case 'emotion':{
+      const emo=DB.emotions[Math.floor(Math.random()*DB.emotions.length)];
+      return aiEmotionResult(emo,tema);
+    }
+    case 'battle':return aiBattleHook(tema);
+    case 'flip':{
+      const r=await aiFlipPair();
+      return r?r.front+' → '+r.back:null;
+    }
+    case 'hotornot':{
+      const hooks=await aiHotOrNotHooks(3);
+      return hooks.join('\n');
+    }
+    case 'hookduel':{
+      const styles=Object.keys(FIGHT_STYLES);
+      const sA=styles[Math.floor(Math.random()*styles.length)];
+      let sB=styles[Math.floor(Math.random()*styles.length)];
+      while(sB===sA)sB=styles[Math.floor(Math.random()*styles.length)];
+      const sysA=FIGHT_STYLES[sA].sys+' '+getCtxPrompt();
+      const sysB=FIGHT_STYLES[sB].sys+' '+getCtxPrompt();
+      const [a,b]=await Promise.all([
+        aiCall(sysA,`Scrivi un hook virale su: "${tema}". Max 2 frasi. Solo l'hook.`,120,temp),
+        aiCall(sysB,`Scrivi un hook virale su: "${tema}". Max 2 frasi. Solo l'hook.`,120,temp)
+      ]);
+      return`[${FIGHT_STYLES[sA].label}]: ${a||'—'}\n[${FIGHT_STYLES[sB].label}]: ${b||'—'}`;
+    }
+    case 'ctaclash':{
+      const [urgency,value]=await Promise.all([
+        aiCall('Sei un copywriter italiano esperto di urgenza e scarsità. '+getCtxPrompt(),`Scrivi un CTA urgente per: "${tema}". Max 1-2 frasi. Solo il CTA.`,80,temp),
+        aiCall('Sei un copywriter italiano esperto di value proposition. '+getCtxPrompt(),`Scrivi un CTA basato sul valore per: "${tema}". Max 1-2 frasi. Solo il CTA.`,80,temp)
+      ]);
+      return`[Urgenza]: ${urgency||'—'}\n[Valore]: ${value||'—'}`;
+    }
+    case 'anatomy':
+      return aiCall('Sei un analista di contenuti virali italiano esperto. '+getCtxPrompt(),`Analizza la struttura di questo hook:\n"${prevHook}"\n\nIdentifica: 1) Leva psicologica 2) Pattern strutturale 3) Perché funziona 4) Come migliorarlo. Sii conciso, 4 punti.`,200,0.5);
+    case 'remix':
+      const constraints=['con metà delle parole','in forma di domanda','con un numero specifico','con una metafora','in prima persona'];
+      const c=constraints[Math.floor(Math.random()*constraints.length)];
+      return aiCall('Sei un copywriter italiano esperto di remix creativi. '+getCtxPrompt(),`Riscrivi questo hook ${c}:\n"${prevHook}"\nScrivi SOLO il nuovo hook.`,120,temp);
+    default:return aiCall('Sei un copywriter italiano esperto. '+getCtxPrompt(),`Genera un hook virale su: "${tema}". Max 2 frasi.`,120,temp);
+  }
+}
+
+async function autorunSynthesize(){
+  const s=autorunState.settings;
+  const pipeOutputs=autorunState.pipeline.filter(p=>p.status==='done').map(p=>`${AUTORUN_ICONS[p.game]} ${GAME_NAMES[p.game]}: ${p.output}`).join('\n\n');
+  const scriptType=s.goal==='conversione'?'vendita':s.goal==='intrattenimento'?'attrazione':s.goal;
+  const st=SCRIPT_TYPES[scriptType]||SCRIPT_TYPES.attrazione;
+  const blockKeys=st.blocks.map(b=>b.key+'|'+b.label).join(', ');
+
+  const sys=`Sei un DIRETTORE CREATIVO SENIOR italiano. ${getCtxPrompt()}
+Hai appena simulato una sessione creativa intensa con vari esercizi. Devi sintetizzare tutto in un risultato finale straordinario.
+
+REGOLE:
+- Il HOOK finale deve essere il migliore possibile, sintetizzando le intuizioni di TUTTI gli esercizi
+- Le 3 ALTERNATIVE devono usare leve psicologiche DIVERSE (curiosità vs paura vs desiderio etc.)
+- Lo SCRIPT deve seguire la struttura ${st.name} con i blocchi: ${blockKeys}
+- Lunghezza hook: ${s.hookLength==='corto'?'max 1 frase potente':s.hookLength==='narrativo'?'2-3 frasi narrative':'1-2 frasi punchy'}
+${s.tone.length?'- Tono: '+s.tone.join(', '):''}
+${s.constraints?'- Vincoli: '+s.constraints:''}
+
+FORMATO RISPOSTA (usa esattamente queste etichette, una per riga):
+HOOK|{hook vincente}
+ALT1|{alternativa 1}
+ALT2|{alternativa 2}
+ALT3|{alternativa 3}
+${st.blocks.map(b=>'SCRIPT_'+b.key.toUpperCase()+'|{testo per '+b.label+'}').join('\n')}`;
+
+  const prompt=`RISULTATI DELLA SESSIONE CREATIVA:\n\n${pipeOutputs}\n\nTOPIC: ${s.topic}\nOBIETTIVO: ${s.goal}\n\nProduci il risultato finale con il formato richiesto.`;
+
+  const r=await aiCall(sys,prompt,800,s.temperature||0.85);
+  if(!r)throw new Error('Nessuna risposta dall\'AI');
+
+  // Parse response
+  const lines=r.split('\n').filter(l=>l.includes('|'));
+  const parsed={};
+  lines.forEach(l=>{const [key,...rest]=l.split('|');parsed[key.trim().toUpperCase()]=rest.join('|').trim();});
+
+  autorunState.result.winningHook=parsed.HOOK||r.substring(0,200);
+  autorunState.result.alternatives=[parsed.ALT1||'',parsed.ALT2||'',parsed.ALT3||''].filter(Boolean);
+
+  // Build script blocks
+  autorunState.result.script.type=scriptType;
+  autorunState.result.script.blocks=st.blocks.map(b=>{
+    const key='SCRIPT_'+b.key.toUpperCase();
+    return{key:b.key,label:b.label,text:parsed[key]||''};
+  });
+
+  // If parsing failed, try to extract from raw text
+  if(!parsed.HOOK){
+    autorunState.result.winningHook=r.split('\n')[0]||r.substring(0,200);
+    autorunState.result.alternatives=[];
+    autorunState.result.script.blocks=[];
+  }
+}
+
+function renderAutorunResult(){
+  const res=autorunState.result;
+  const hasScript=res.script.blocks.some(b=>b.text);
+
+  document.getElementById('autorunContent').innerHTML=`
+    <div class="autorun-result">
+      <div class="autorun-result-hero">
+        <h3>⚡ IL VERDETTO</h3>
+        <div class="autorun-result-hook" id="arWinningHook">${res.winningHook}</div>
+        <div class="autorun-result-actions">
+          <button class="ar-btn-save" onclick="autorunSaveHook()">💾 Salva nel Mazzo</button>
+          <button class="ar-btn-copy" onclick="autorunCopyHook()">📋 Copia</button>
+          <button class="ar-btn-discuss" onclick="document.getElementById('arDiscuss').style.display='block';document.getElementById('arDiscussInput').focus()">💬 Discuti</button>
+        </div>
+      </div>
+      ${res.alternatives.length?`
+        <div style="margin-bottom:6px;font-size:.7rem;font-weight:600;color:rgba(255,255,255,.4);text-transform:uppercase;letter-spacing:1px">Alternative — click per sostituire</div>
+        <div class="autorun-alts">
+          ${res.alternatives.map((a,i)=>`<div class="autorun-alt-card" onclick="autorunSwapHook(${i})"><div class="alt-label">Variante ${i+1}</div>${a}</div>`).join('')}
+        </div>
+      `:''}
+      ${hasScript?`
+        <div class="autorun-script-section">
+          <h3>📝 Script Completo (${SCRIPT_TYPES[res.script.type]?.name||res.script.type})</h3>
+          ${res.script.blocks.filter(b=>b.text).map((b,i)=>`
+            <div class="autorun-script-block">
+              <div class="asb-label">${b.label}</div>
+              <div class="asb-text">${b.text}</div>
+              <span class="asb-save" onclick="autorunSaveBlock(${i})">💾 Salva blocco</span>
+            </div>
+          `).join('')}
+          <div style="text-align:center;margin-top:12px">
+            <button class="ar-btn-save" onclick="autorunSaveScript()" style="padding:10px 20px;font-size:.78rem">💾 Salva Script nel Mazzo</button>
+          </div>
+        </div>
+      `:''}
+      <div class="autorun-discuss" id="arDiscuss" style="display:none">
+        <h3>💬 Discuti con l'AI</h3>
+        <div class="autorun-discuss-messages" id="arDiscussMsgs"></div>
+        <div class="autorun-discuss-input">
+          <input type="text" id="arDiscussInput" placeholder="Chiedi modifiche, variazioni..." onkeydown="if(event.key==='Enter')sendAutorunChat()" />
+          <button onclick="sendAutorunChat()">Invia</button>
+        </div>
+      </div>
+      <div style="text-align:center;margin-top:24px">
+        <button class="autorun-cancel-btn" onclick="closeAutorun()" style="background:rgba(255,255,255,.06);border-color:rgba(255,255,255,.1);color:rgba(255,255,255,.5)">← Chiudi Autorun</button>
+      </div>
+    </div>`;
+
+  // Record session
+  addXP(50);
+  recordSession('autorun',0,1,{goal:autorunState.settings.goal,gamesSimulated:autorunState.pipeline.length});
+  if(res.winningHook)recordHook(res.winningHook,'autorun',0);
+  showToast('⚡ Autorun completato! +50 XP');
+
+  // Save to autorun history
+  try{
+    const hist=JSON.parse(localStorage.getItem(hlKey('autorun_history'))||'[]');
+    hist.unshift({id:autorunState.id,date:Date.now(),topic:autorunState.settings.topic,goal:autorunState.settings.goal,hook:res.winningHook,pipeline:autorunState.pipeline.map(p=>({game:p.game,output:p.output}))});
+    if(hist.length>20)hist.length=20;
+    localStorage.setItem(hlKey('autorun_history'),JSON.stringify(hist));
+  }catch(e){}
+}
+
+function autorunSaveHook(){
+  const hook=autorunState.result.winningHook;
+  if(!hook){showToast('Nessun hook da salvare!');return;}
+  saveItem('Autorun AI',hook);
+  // Add autorun metadata
+  if(savedItems[0]&&savedItems[0].text===hook){
+    savedItems[0].autorunMeta={sessionId:autorunState.id,goal:autorunState.settings.goal,gamesSimulated:autorunState.pipeline.length};
+    localStorage.setItem(hlKey('saved'),JSON.stringify(savedItems));
+  }
+  showToast('⚡ Hook salvato nel Mazzo!');
+}
+
+function autorunSaveScript(){
+  const res=autorunState.result;
+  const fullText=res.script.blocks.filter(b=>b.text).map(b=>'['+b.label+']\n'+b.text).join('\n\n');
+  if(!fullText.trim()){showToast('Script vuoto!');return;}
+  saveItem('Autorun Script',fullText);
+  showToast('📝 Script salvato nel Mazzo!');
+}
+
+function autorunSaveBlock(idx){
+  const b=autorunState.result.script.blocks[idx];
+  if(!b||!b.text){showToast('Blocco vuoto!');return;}
+  saveItem('Autorun AI — '+b.label,b.text);
+  showToast('💾 '+b.label+' salvato!');
+}
+
+function autorunCopyHook(){
+  const hook=autorunState.result.winningHook;
+  if(!hook)return;
+  navigator.clipboard.writeText(hook).then(()=>showToast('📋 Copiato!')).catch(()=>{});
+}
+
+function autorunSwapHook(altIdx){
+  const alts=autorunState.result.alternatives;
+  if(!alts[altIdx])return;
+  const old=autorunState.result.winningHook;
+  autorunState.result.winningHook=alts[altIdx];
+  alts[altIdx]=old;
+  // Update UI
+  document.getElementById('arWinningHook').textContent=autorunState.result.winningHook;
+  document.querySelectorAll('.autorun-alt-card').forEach((c,i)=>{
+    if(alts[i]){const txt=c.querySelector('.alt-label');c.textContent='';if(txt)c.appendChild(txt);const lbl=document.createElement('div');lbl.className='alt-label';lbl.textContent='Variante '+(i+1);c.innerHTML='';c.appendChild(lbl);c.appendChild(document.createTextNode(alts[i]));}
+  });
+  showToast('🔄 Hook sostituito!');
+}
+
+async function sendAutorunChat(){
+  const input=document.getElementById('arDiscussInput');
+  if(!input)return;
+  const text=input.value.trim();
+  if(!text)return;
+  input.value='';
+
+  const msgs=document.getElementById('arDiscussMsgs');
+  msgs.innerHTML+=`<div class="autorun-discuss-msg user">${text}</div>`;
+  autorunState.chatHistory.push({role:'user',content:text});
+
+  // Show typing
+  msgs.innerHTML+=`<div class="autorun-discuss-msg ai" id="arTyping" style="opacity:.5">Sto pensando...</div>`;
+  msgs.scrollTop=msgs.scrollHeight;
+
+  const pipelineSummary=autorunState.pipeline.filter(p=>p.status==='done').map(p=>`${GAME_NAMES[p.game]}: ${p.output.substring(0,80)}`).join(' | ');
+
+  const sys=`Sei il direttore creativo che ha generato questa sessione Autorun AI. ${getCtxPrompt()}
+
+HOOK GENERATO: ${autorunState.result.winningHook}
+SCRIPT: ${autorunState.result.script.blocks.map(b=>b.label+': '+b.text).join(' | ')}
+PROCESSO: ${pipelineSummary}
+
+L'utente vuole raffinare. Rispondi con modifiche concrete e brevi.
+Se proponi un nuovo hook, scrivi su una riga: NEWHOOK|{nuovo hook}
+Se proponi un blocco modificato, scrivi: NEWBLOCK|${autorunState.result.script.blocks.map(b=>b.key).join('/')}|{testo}`;
+
+  const chatPrompt=autorunState.chatHistory.map(m=>m.role+': '+m.content).join('\n');
+
+  try{
+    const r=await aiCall(sys,chatPrompt,300,0.7);
+    document.getElementById('arTyping')?.remove();
+
+    if(r){
+      // Parse for NEWHOOK/NEWBLOCK
+      let displayText=r;
+      const newHookMatch=r.match(/NEWHOOK\|(.+)/);
+      if(newHookMatch){
+        autorunState.result.winningHook=newHookMatch[1].trim();
+        const hookEl=document.getElementById('arWinningHook');
+        if(hookEl)hookEl.textContent=autorunState.result.winningHook;
+        displayText=r.replace(/NEWHOOK\|.+/,'').trim();
+        if(!displayText)displayText='✅ Hook aggiornato!';
+      }
+      const newBlockMatch=r.match(/NEWBLOCK\|(\w+)\|(.+)/);
+      if(newBlockMatch){
+        const bKey=newBlockMatch[1];
+        const bText=newBlockMatch[2].trim();
+        const block=autorunState.result.script.blocks.find(b=>b.key===bKey);
+        if(block){block.text=bText;}
+        displayText=r.replace(/NEWBLOCK\|.+/,'').trim();
+        if(!displayText)displayText='✅ Blocco "'+bKey+'" aggiornato!';
+      }
+
+      msgs.innerHTML+=`<div class="autorun-discuss-msg ai">${displayText}</div>`;
+      autorunState.chatHistory.push({role:'assistant',content:r});
+    }
+  }catch(e){
+    document.getElementById('arTyping')?.remove();
+    msgs.innerHTML+=`<div class="autorun-discuss-msg ai">Errore: ${e.message}</div>`;
+  }
+  msgs.scrollTop=msgs.scrollHeight;
+}
+
 // ===== ANALYTICS DASHBOARD =====
 const GAME_NAMES={slot:'La Slot',flip:'Ribaltamento',collision:'Collisione',devil:'Avvocato Diavolo',emotion:'Emozione x Tema',speed:'Speed Hook',bridge:'Il Ponte',chain:'Catena',freestyle:'Freestyle',hotornot:'Hot or Not',sketch:'Disegna Hook',battle:'Battaglia',anatomy:'Anatomia',remix:'Remix',formats:'Formati',hookduel:'Duello Hook',titleduel:'Titoli in Guerra',ctaclash:'CTA Clash',openingbattle:'Apertura Killer',objectionduel:'Muro Obiezioni',longvsshort:'Lungo vs Corto',angleduel:'Angolo Impossibile',tournament:'Il Torneo',personaggio:'Alter Ego',news:'News Hook',futuro:'Futuro',contrasto:'Contrasto',bomba:'Bomba Emotiva'};
 
@@ -8294,6 +8981,7 @@ function initKeyboard(){
     if(tag==='INPUT'||tag==='TEXTAREA'||tag==='SELECT')return;
     // ESC: close tour first, then game/drawers
     if(e.key==='Escape'){
+      if(autorunState&&autorunState.active){closeAutorun();return;}
       if(window._tourActive&&window._tour){window._tour.end();return;}
       if(document.getElementById('savedDrawer').classList.contains('open')){toggleSaved();return;}
       if(document.getElementById('coachDrawer').classList.contains('open')){toggleCoach();return;}
@@ -8579,6 +9267,7 @@ function renderSidebar(){
   <!-- Azioni rapide -->
   <div class="side-card">
     <div class="side-title">⚡ Azioni Rapide</div>
+    <button class="side-btn" onclick="openAutorun()" style="background:linear-gradient(135deg,rgba(0,180,216,.1),rgba(168,85,247,.1));border:1px solid rgba(0,180,216,.2)">⚡ Autorun AI</button>
     <button class="side-btn" onclick="generateQuickWin('ai')">🤖 Genera Hook con AI</button>
     <button class="side-btn" onclick="openFucinaStandalone()">🔥 Apri La Fucina</button>
     <button class="side-btn" onclick="openHub()">🧩 Creative Hub</button>

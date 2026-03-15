@@ -1872,6 +1872,14 @@ body.light .shimmer::after{background:linear-gradient(90deg,transparent 0%,rgba(
 .help-header button{background:rgba(255,255,255,.06);border:none;color:var(--t2);font-size:1rem;cursor:pointer;width:30px;height:30px;border-radius:50%;display:flex;align-items:center;justify-content:center;transition:var(--tr)}
 .help-header button:hover{background:rgba(255,255,255,.12);color:var(--t1)}
 .help-sections{padding:12px 16px}
+.support-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:10000}
+.support-overlay.open{display:block}
+.support-drawer{position:fixed;top:0;right:-380px;width:360px;max-width:92vw;height:100vh;background:linear-gradient(180deg,#0f0f18 0%,#141420 100%);border-left:1px solid rgba(6,182,212,.15);z-index:10001;transition:right .35s;display:flex;flex-direction:column}
+.support-drawer.open{right:0}
+.support-msg{padding:10px 14px;border-radius:12px;margin:4px 0;font-size:.76rem;line-height:1.55;max-width:85%;word-wrap:break-word}
+.support-msg.user{background:var(--a1);color:#fff;align-self:flex-end;margin-left:auto;border-bottom-right-radius:4px}
+.support-msg.ai{background:rgba(6,182,212,.1);border:1px solid rgba(6,182,212,.15);align-self:flex-start;border-bottom-left-radius:4px}
+.support-msg.admin{background:rgba(251,191,36,.1);border:1px solid rgba(251,191,36,.2);align-self:flex-start;border-bottom-left-radius:4px}
 .help-item{margin-bottom:8px;border:1px solid rgba(255,255,255,.06);border-radius:var(--r);overflow:hidden;background:rgba(255,255,255,.02);transition:var(--tr)}
 .help-item:hover{border-color:rgba(255,107,53,.15)}
 .help-item summary{padding:12px 14px;font-size:.8rem;font-weight:700;color:var(--t1);cursor:pointer;list-style:none;display:flex;justify-content:space-between;align-items:center;gap:10px;transition:var(--tr)}
@@ -2690,10 +2698,30 @@ body.light .shimmer::after{background:linear-gradient(90deg,transparent 0%,rgba(
     <details class="help-item"><summary><span class="hi-icon">🎙</span><span class="hi-text">Dettatura e Audio</span></summary><div class="help-body">Il bottone <b>🎤 microfono</b> permette di dettare in tutti i giochi e nella Fucina. Il bottone <b>🔊 altoparlante</b> legge i suggerimenti AI. Usa Chrome per la migliore compatibilità.</div></details>
     <details class="help-item"><summary><span class="hi-icon">👥</span><span class="hi-text">Team e Profili</span></summary><div class="help-body">Ogni membro del team ha il suo <b>spazio separato</b>: mazzo, profilo, statistiche e script. Gli <b>Admin</b> (Loris e Mirko) vedono tutto. Cambia profilo dal bottone in alto a destra.</div></details>
   </div>
-  <button class="help-review-btn" onclick="localStorage.removeItem('hl_onboarded');toggleHelp();setTimeout(showOnboarding,300);">🎓 Rivedi Tutorial Interattivo</button>
-  <button class="help-review-btn" onclick="toggleHelp();setTimeout(startDemoMode,300);" style="margin-top:6px;background:rgba(139,92,246,.12);border-color:rgba(139,92,246,.3);color:#8b5cf6">🎬 Demo Mode — Tour Automatico</button>
+  <button class="help-review-btn" onclick="toggleHelp();setTimeout(replayPostTutorial,300);">🎓 Rivedi Tutorial Post</button>
+  <button class="help-review-btn" onclick="toggleHelp();setTimeout(replayStoryTutorial,300);" style="margin-top:6px;background:rgba(168,85,247,.08);border-color:rgba(168,85,247,.25);color:#a855f7">📱 Rivedi Tutorial Storie</button>
+
   <button class="help-review-btn" onclick="toggleHelp();setTimeout(openNotificationsPanel,300);" style="margin-top:6px;background:rgba(236,72,153,.08);border-color:rgba(236,72,153,.25);color:#ec4899">🔔 Notifiche Team</button>
   <button class="help-review-btn" onclick="toggleHelp();setTimeout(openHistoryPanel,300);" style="margin-top:6px;background:rgba(34,197,94,.08);border-color:rgba(34,197,94,.25);color:#22c55e">📜 Cronologia Lavori</button>
+  <button class="help-review-btn" onclick="toggleHelp();setTimeout(openSupportChat,300);" style="margin-top:6px;background:rgba(6,182,212,.08);border-color:rgba(6,182,212,.25);color:#06b6d4">🆘 Assistenza & Supporto</button>
+</div>
+<div class="support-overlay" id="supportOverlay" onclick="toggleSupport()"></div>
+<div class="support-drawer" id="supportDrawer">
+  <div style="padding:16px;border-bottom:1px solid rgba(6,182,212,.15)">
+    <div style="display:flex;justify-content:space-between;align-items:center">
+      <h3 style="margin:0;font-size:1rem;color:#06b6d4">🆘 Assistenza</h3>
+      <button onclick="toggleSupport()" style="background:rgba(255,255,255,.06);border:none;color:var(--t2);cursor:pointer;font-size:1.1rem;width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center">&times;</button>
+    </div>
+    <p style="font-size:.63rem;color:var(--t2);margin:4px 0 0">L'AI risponde subito. Se serve, parla con un umano.</p>
+  </div>
+  <div id="supportMessages" style="flex:1;overflow-y:auto;padding:12px;display:flex;flex-direction:column;gap:6px"></div>
+  <div id="supportEscalateBar" style="display:none;padding:8px 12px;background:rgba(251,191,36,.06);border-top:1px solid rgba(251,191,36,.15);text-align:center">
+    <button onclick="escalateToHuman()" style="padding:6px 16px;border-radius:8px;background:rgba(251,191,36,.15);border:1px solid rgba(251,191,36,.3);color:#fbbf24;cursor:pointer;font-size:.72rem;font-weight:600">👤 Parla con un operatore</button>
+  </div>
+  <div style="padding:12px;border-top:1px solid rgba(255,255,255,.06);display:flex;gap:8px">
+    <input type="text" id="supportInput" placeholder="Scrivi il tuo problema..." style="flex:1;padding:10px;border-radius:10px;background:var(--input-bg,rgba(255,255,255,.06));border:1px solid var(--input-border,rgba(255,255,255,.1));color:var(--t1);font-size:.78rem" onkeydown="if(event.key==='Enter')sendSupportMsg()"/>
+    <button onclick="sendSupportMsg()" style="padding:8px 14px;border-radius:10px;background:var(--a1);border:none;color:#fff;cursor:pointer;font-weight:700;font-size:.78rem">Invia</button>
+  </div>
 </div>
 <div class="toast" id="toast"></div>
 <div class="smart-tip" id="smartTip"><button class="smart-tip-close" onclick="dismissSmartTip()">&times;</button><div class="smart-tip-inner"><div class="smart-tip-icon" id="smartTipIcon"></div><div class="smart-tip-body"><div class="smart-tip-text" id="smartTipText"></div><div id="smartTipAction"></div></div></div></div>
@@ -4948,7 +4976,7 @@ function initProfileCollapse(){if(profileCollapsed){const card=document.getEleme
 let _scrollCollapseInit=false;
 window.addEventListener('scroll',()=>{
   if(_scrollCollapseInit)return;
-  if(window._tourActive||window._demoActive)return;
+  if(window._tourActive)return;
   if(window.scrollY>120&&!profileCollapsed){
     _scrollCollapseInit=true;
     toggleProfileCard();
@@ -11244,7 +11272,7 @@ class GuidedTour{
     const pre=step.beforeShow?step.beforeShow():null;
     const proceed=()=>{
       const el=document.querySelector(step.selector);
-      if(!el||(!el.offsetParent&&el.style.display==='none')){if(i<this.steps.length-1){this.goToStep(i+1);}else{this.end();}return;}
+      if(!el||(el.offsetParent===null&&!el.closest('svg')&&getComputedStyle(el).display==='none')){if(i<this.steps.length-1){this.goToStep(i+1);}else{this.end();}return;}
       el.scrollIntoView({behavior:'smooth',block:'center'});
       setTimeout(()=>{
         // Re-scroll in case first scroll was interrupted
@@ -11255,7 +11283,7 @@ class GuidedTour{
         if(step.interactive)this._setupInteraction(step,el);
         else this.clickZone.style.display='none';
         // Re-position after tooltip renders to get accurate height
-        setTimeout(()=>{this.tooltip.classList.add('visible');this._positionTooltip(el,step.placement);},100);
+        setTimeout(()=>{this.tooltip.classList.add('visible');this._positionTooltip(el,step.placement);},200);
       },500);
     };
     this.tooltip.classList.remove('visible');
@@ -11335,8 +11363,8 @@ class GuidedTour{
 
 // Role-specific extra tour steps
 const ADMIN_TOUR_EXTRA=[
-  {selector:'[onclick*="openAdminDashboard"]',title:'📊 Dashboard Admin',body:'Come Admin hai accesso alla dashboard analytics: vedi tutti gli utenti, gestisci ruoli, esporta dati. Solo tu puoi accederci!',placement:'left'},
-  {selector:'[onclick*="showTeamSelector"]',title:'👥 Gestione Team',body:'Qui gestisci i team. Puoi assegnare ruoli Manager o Team ai membri, e monitorare l\'attività di tutti.',placement:'left'},
+  {selector:'[onclick*="openAdminDashboard"]',title:'📊 Dashboard Admin',body:'Come Admin hai accesso alla dashboard analytics: vedi tutti gli utenti, gestisci ruoli, esporta dati. Solo tu puoi accederci!',placement:'left',beforeShow:function(){var el=document.querySelector('[onclick*="openAdminDashboard"]');if(el)el.style.display='inline-block';}},
+  {selector:'[onclick*="showTeamSelector"]',title:'👥 Gestione Team',body:'Qui gestisci i team. Puoi assegnare ruoli Manager o Team ai membri, e monitorare l\'attività di tutti.',placement:'left',beforeShow:function(){var el=document.querySelector('[onclick*="showTeamSelector"]');if(el)el.style.display='inline-flex';}},
   {selector:'[onclick*="openConnectionsPanel"]',title:'🔌 Connessioni AI',body:'Configura le integrazioni: webhook per Make/Zapier/n8n, Google Drive, ClickUp. Tutto il tuo ecosistema connesso.',placement:'left'}
 ];
 const MANAGER_TOUR_EXTRA=[
@@ -11347,7 +11375,7 @@ const MANAGER_TOUR_EXTRA=[
 function getOnboardingSteps(){
   const role=_supaProfile?.role||'team';
   let steps=[...TOUR_STEPS];
-  if(role==='admin'||isAdminEmail(_currentUser?.email)){
+  if(role==='admin'||isAdminEmail(supaUser?.email)){
     steps=steps.concat(ADMIN_TOUR_EXTRA);
   }else if(role==='manager'){
     steps=steps.concat(MANAGER_TOUR_EXTRA);
@@ -11365,6 +11393,17 @@ function showOnboarding(){
   const steps=getOnboardingSteps();
   window._tour=new GuidedTour(steps);
   window._tour.start();
+}
+
+function replayPostTutorial(){
+  localStorage.removeItem('hl_onboarded');
+  if(window._tourActive&&window._tour){window._tour.end();}
+  if(currentMode!=='post')switchMode('post');
+  setTimeout(()=>{
+    const steps=getOnboardingSteps();
+    window._tour=new GuidedTour(steps);
+    window._tour.start();
+  },300);
 }
 
 // ===== STORY TOUR =====
@@ -11850,141 +11889,7 @@ function saveWorkshopResult(type,arg){
   saveItem('workshop',`[${WORKSHOP_PROMPTS[type]?.label||type}] ${arg}\n\n${text}`);
 }
 
-// ===== DEMO MODE =====
-let _demoActive=false,_demoStep=0;
-const _demoSteps=[
-  {
-    title:'👋 Benvenuto in HOOKA!',
-    text:'Ti mostro come funziona questa app in 60 secondi. HOOKA è il tuo laboratorio creativo per hook, storie e contenuti social.',
-    target:null,action:null
-  },
-  {
-    title:'🎮 I Giochi Creativi',
-    text:'Qui trovi giochi AI che ti aiutano a generare hook potenti. Prova il Flash Hook per un hook istantaneo!',
-    target:'.game-area',
-    action:()=>{document.querySelector('.game-area')?.scrollIntoView({behavior:'smooth',block:'center'});}
-  },
-  {
-    title:'🃏 Il Tuo Mazzo',
-    text:'Ogni hook che generi puoi salvarlo qui. Il mazzo è la tua collezione personale di idee vincenti.',
-    target:'.saved-count',
-    action:()=>{showToast('💾 Hook di esempio salvato!');}
-  },
-  {
-    title:'🏠 Lo Hub Creativo',
-    text:'L\'Hub è il tuo centro di comando: profilo, statistiche, mondo creativo e raccolta di tutti i tuoi contenuti.',
-    target:'.creative-hub',
-    action:()=>{
-      document.querySelector('.creative-hub')?.scrollIntoView({behavior:'smooth',block:'center'});
-    }
-  },
-  {
-    title:'🔥 La Fucina',
-    text:'Nella Fucina scrivi script completi con l\'aiuto dell\'AI. Blocchi modulari, tono di voce, struttura narrativa.',
-    target:'.fucina-standalone',
-    action:()=>{
-      document.querySelector('.fucina-standalone')?.scrollIntoView({behavior:'smooth',block:'center'});
-    }
-  },
-  {
-    title:'📱 Le Stories',
-    text:'Il planner Stories ti aiuta a pianificare 7 giorni di storie Instagram con strategia e coerenza.',
-    target:null,
-    action:()=>{
-      document.querySelector('.mode-tab[data-mode="stories"]')?.classList.add('demo-highlight');
-    }
-  },
-  {
-    title:'🎓 Il Workshop',
-    text:'Con il Workshop Mode generi materiali per corsi e lezioni: slide, esercizi, dispense — tutto AI-assistito.',
-    target:null,
-    action:()=>{
-      document.querySelector('.mode-tab[data-mode="stories"]')?.classList.remove('demo-highlight');
-      document.querySelector('.mode-tab[data-mode="workshop"]')?.classList.add('demo-highlight');
-    }
-  },
-  {
-    title:'🎯 Ora tocca a te!',
-    text:'Esplora, gioca, crea. Più usi HOOKA, più l\'AI impara il tuo stile. Buon divertimento!',
-    target:null,
-    action:()=>{
-      document.querySelectorAll('.demo-highlight').forEach(e=>e.classList.remove('demo-highlight'));
-    }
-  }
-];
-
-function startDemoMode(){
-  if(_demoActive)return;
-  _demoActive=true;_demoStep=0;
-  // Make sure we're on post mode
-  if(currentMode!=='post')switchMode('post');
-  window.scrollTo({top:0,behavior:'smooth'});
-  setTimeout(()=>renderDemoStep(),400);
-}
-
-function renderDemoStep(){
-  if(!_demoActive||_demoStep>=_demoSteps.length){stopDemoMode();return;}
-  const step=_demoSteps[_demoStep];
-  // Remove previous
-  document.getElementById('demoOverlay')?.remove();
-  // Execute action
-  if(step.action)step.action();
-  // Find target element for spotlight
-  let targetRect=null;
-  if(step.target){
-    const el=document.querySelector(step.target);
-    if(el){
-      targetRect=el.getBoundingClientRect();
-      el.scrollIntoView({behavior:'smooth',block:'center'});
-    }
-  }
-  // Build overlay
-  const ov=document.createElement('div');ov.id='demoOverlay';
-  ov.style.cssText='position:fixed;inset:0;z-index:100000;display:flex;align-items:center;justify-content:center;transition:opacity .3s';
-  // Background with optional spotlight hole
-  let bgStyle='position:absolute;inset:0;background:rgba(0,0,0,.75);';
-  if(targetRect){
-    const cx=targetRect.left+targetRect.width/2,cy=targetRect.top+targetRect.height/2;
-    const r=Math.max(targetRect.width,targetRect.height)/2+20;
-    bgStyle+=`mask:radial-gradient(circle ${r}px at ${cx}px ${cy}px,transparent 100%,black 100%);-webkit-mask:radial-gradient(circle ${r}px at ${cx}px ${cy}px,transparent 100%,black 100%);`;
-  }
-  const progress=Math.round(((_demoStep+1)/_demoSteps.length)*100);
-  ov.innerHTML=`
-    <div style="${bgStyle}"></div>
-    <div style="position:relative;z-index:1;background:var(--card,#1a1a2e);border:1px solid rgba(255,107,53,.3);border-radius:16px;padding:28px 32px;max-width:400px;width:90%;text-align:center;box-shadow:0 20px 60px rgba(0,0,0,.5);animation:demoCardIn .35s ease">
-      <div style="font-size:1.8rem;margin-bottom:10px">${step.title.split(' ')[0]}</div>
-      <h3 style="margin:0 0 10px;font-size:1rem;color:var(--t1)">${step.title}</h3>
-      <p style="font-size:.8rem;color:var(--t2);line-height:1.6;margin:0 0 20px">${step.text}</p>
-      <div style="background:rgba(255,255,255,.06);border-radius:4px;height:4px;margin-bottom:16px;overflow:hidden">
-        <div style="width:${progress}%;height:100%;background:var(--a1);border-radius:4px;transition:width .3s"></div>
-      </div>
-      <div style="display:flex;gap:8px;justify-content:center">
-        <button onclick="stopDemoMode()" style="padding:8px 16px;border-radius:8px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);color:var(--t2);cursor:pointer;font-size:.75rem">Salta Demo</button>
-        <button onclick="nextDemoStep()" style="padding:8px 20px;border-radius:8px;background:var(--a1);border:none;color:#fff;cursor:pointer;font-weight:700;font-size:.8rem">${_demoStep<_demoSteps.length-1?'Avanti →':'Fine! 🎉'}</button>
-      </div>
-      <div style="font-size:.6rem;color:var(--t3,#666);margin-top:10px">${_demoStep+1} / ${_demoSteps.length}</div>
-    </div>`;
-  document.body.appendChild(ov);
-  // Add animation keyframe if not exists
-  if(!document.getElementById('demoAnimStyle')){
-    const st=document.createElement('style');st.id='demoAnimStyle';
-    st.textContent=`@keyframes demoCardIn{from{opacity:0;transform:translateY(20px) scale(.95)}to{opacity:1;transform:translateY(0) scale(1)}}.demo-highlight{animation:demoPulse 1s ease infinite!important}@keyframes demoPulse{0%,100%{box-shadow:0 0 0 0 rgba(255,107,53,.4)}50%{box-shadow:0 0 0 8px rgba(255,107,53,0)}}`;
-    document.head.appendChild(st);
-  }
-}
-
-function nextDemoStep(){
-  _demoStep++;
-  if(_demoStep>=_demoSteps.length){stopDemoMode();return;}
-  renderDemoStep();
-}
-
-function stopDemoMode(){
-  _demoActive=false;_demoStep=0;
-  document.getElementById('demoOverlay')?.remove();
-  document.querySelectorAll('.demo-highlight').forEach(e=>e.classList.remove('demo-highlight'));
-  showToast('🎯 Demo completata!');
-}
+// ===== DEMO MODE REMOVED (V11.2) =====
 
 // ===== MICRO-VIDEO AI (Slideshow) =====
 function openMicroVideoCreator(){
@@ -14668,14 +14573,16 @@ async function openAdminDashboard(){
                 <th style="padding:10px 8px;text-align:center;color:var(--a1);font-weight:700;border-bottom:1px solid rgba(255,255,255,.1)">Streak</th>
                 <th style="padding:10px 8px;text-align:center;color:var(--a1);font-weight:700;border-bottom:1px solid rgba(255,255,255,.1)">Ruolo</th>
                 <th style="padding:10px 8px;text-align:center;color:var(--a1);font-weight:700;border-bottom:1px solid rgba(255,255,255,.1)">Ultimo</th>
+                <th style="padding:10px 8px;text-align:center;color:var(--a1);font-weight:700;border-bottom:1px solid rgba(255,255,255,.1)">Azioni</th>
               </tr>
             </thead>
             <tbody>
               ${users.map((u,i)=>{
                 const isAdmin=ADMIN_EMAILS.includes(u.email?.toLowerCase());
-                const roleLabel=isAdmin?'👑 Admin':u.role==='manager'?'📋 Manager':'👤 Team';
+                const roleLabel=isAdmin?'👑 Admin':u.role==='manager'?'📋 Manager':u.role==='blocked'?'🚫 Bloccato':'👤 Team';
                 const lastAct=u.updated_at?new Date(u.updated_at).toLocaleDateString('it-IT',{day:'2-digit',month:'short'}):'—';
                 const rowBg=i===0?'rgba(251,191,36,.06)':i%2===0?'rgba(255,255,255,.02)':'transparent';
+                const uName=(u.username||u.display_name||u.email||'Anonimo').replace(/'/g,"\\'");
                 return `<tr style="background:${rowBg}">
                   <td style="padding:8px;border-bottom:1px solid rgba(255,255,255,.04);color:var(--t2)">${i+1}</td>
                   <td style="padding:8px;border-bottom:1px solid rgba(255,255,255,.04);font-weight:600">${i===0?'🏆 ':''}${u.username||'Anonimo'}</td>
@@ -14687,11 +14594,15 @@ async function openAdminDashboard(){
                   <td style="padding:8px;border-bottom:1px solid rgba(255,255,255,.04);text-align:center">${u.streak||0}🔥</td>
                   <td style="padding:8px;border-bottom:1px solid rgba(255,255,255,.04);text-align:center">
                     ${isAdmin?'<span style="color:#fbbf24;font-weight:700">👑 Admin</span>':`<select onchange="adminSetRole('${u.id}',this.value)" style="background:var(--card);border:1px solid rgba(255,255,255,.1);color:var(--t1);padding:3px 6px;border-radius:6px;font-size:.65rem;cursor:pointer">
-                      <option value="team"${u.role!=='manager'?' selected':''}>👤 Team</option>
+                      <option value="team"${!u.role||u.role==='team'?' selected':''}>👤 Team</option>
                       <option value="manager"${u.role==='manager'?' selected':''}>📋 Manager</option>
+                      <option value="blocked"${u.role==='blocked'?' selected':''}>🚫 Bloccato</option>
                     </select>`}
                   </td>
                   <td style="padding:8px;border-bottom:1px solid rgba(255,255,255,.04);text-align:center;font-size:.6rem;color:var(--t2)">${lastAct}</td>
+                  <td style="padding:8px;border-bottom:1px solid rgba(255,255,255,.04);text-align:center;white-space:nowrap">
+                    <button onclick="adminViewWorkspace('${u.id}','${uName}')" style="padding:3px 8px;border-radius:6px;background:rgba(6,182,212,.12);border:1px solid rgba(6,182,212,.3);color:#06b6d4;cursor:pointer;font-size:.6rem;margin-right:3px" title="Entra Workspace">👁️</button>${!isAdmin?`<button onclick="adminRemoveUser('${u.id}','${u.email}')" style="padding:3px 8px;border-radius:6px;background:rgba(239,68,68,.12);border:1px solid rgba(239,68,68,.3);color:#ef4444;cursor:pointer;font-size:.6rem" title="Rimuovi Utente">🗑️</button>`:''}
+                  </td>
                 </tr>`;
               }).join('')}
             </tbody>
@@ -14723,12 +14634,20 @@ async function openAdminDashboard(){
         </div>
       </div>
 
+      <!-- Support Tickets -->
+      <div style="margin-bottom:20px">
+        <h3 style="font-size:.85rem;color:var(--t1);margin-bottom:10px">🆘 Ticket Supporto</h3>
+        <div id="adminSupportQueue"><p style="color:var(--t2);font-size:.72rem">Caricamento...</p></div>
+      </div>
+
       <!-- RLS Notice -->
       <div style="padding:12px;background:rgba(251,191,36,.06);border:1px solid rgba(251,191,36,.15);border-radius:10px;margin-bottom:20px">
         <p style="font-size:.65rem;color:#fbbf24;margin:0"><b>⚠️ Nota RLS:</b> Se la tabella non mostra tutti gli utenti, esegui questo SQL su Supabase → SQL Editor:</p>
         <code style="display:block;background:rgba(0,0,0,.3);padding:8px;border-radius:6px;font-size:.6rem;color:var(--t2);margin-top:6px;word-break:break-all">CREATE POLICY "Admin can read all profiles" ON profiles FOR SELECT USING (auth.jwt() ->> 'email' = 'evoonconsulting@gmail.com');</code>
       </div>
     `;
+    // Load support tickets
+    loadAdminSupportQueue();
   }catch(err){
     ov.querySelector('div').innerHTML=`<h3 style="color:#ef4444">Errore</h3><p style="color:var(--t2);font-size:.75rem">${err.message}</p><button onclick="document.getElementById('adminDashOverlay')?.remove()" style="margin-top:12px;padding:8px 16px;border-radius:8px;background:none;border:1px solid rgba(255,255,255,.1);color:var(--t2);cursor:pointer">Chiudi</button>`;
   }
@@ -14739,8 +14658,140 @@ async function adminSetRole(userId,role){
   try{
     const{error}=await supabaseClient.from('profiles').update({role:role}).eq('id',userId);
     if(error)throw error;
-    showToast(`Ruolo aggiornato a ${role==='manager'?'📋 Manager':'👤 Team'}`);
+    const labels={team:'👤 Team',manager:'📋 Manager',blocked:'🚫 Bloccato'};
+    showToast('Ruolo aggiornato a '+(labels[role]||role));
   }catch(e){showToast('Errore: '+e.message);}
+}
+
+async function adminRemoveUser(userId,userEmail){
+  if(!supabaseClient||!isAdminEmail(supaUser?.email))return;
+  if(ADMIN_EMAILS.includes(userEmail?.toLowerCase())){showToast('Non puoi rimuovere un admin');return;}
+  if(!confirm('Sei sicuro di voler rimuovere '+userEmail+'? Tutti i dati saranno eliminati permanentemente.')){return;}
+  try{
+    await supabaseClient.from('user_data').delete().eq('user_id',userId);
+    await supabaseClient.from('leaderboard').delete().eq('user_id',userId);
+    await supabaseClient.from('profiles').delete().eq('id',userId);
+    showToast('Utente rimosso con successo');
+    adminRefreshDash();
+  }catch(e){showToast('Errore rimozione: '+e.message);}
+}
+
+async function adminViewWorkspace(userId,displayName){
+  if(!supabaseClient||!isAdminEmail(supaUser?.email))return;
+  const existing=document.getElementById('adminWorkspaceOverlay');if(existing)existing.remove();
+  const ws=document.createElement('div');ws.id='adminWorkspaceOverlay';
+  ws.style.cssText='position:fixed;inset:0;z-index:100000;background:rgba(0,0,0,.95);overflow-y:auto;padding:20px';
+  ws.innerHTML='<div style="max-width:900px;margin:0 auto"><h2 style="color:#06b6d4;text-align:center">Caricamento workspace...</h2></div>';
+  document.body.appendChild(ws);
+  try{
+    const{data:allData}=await supabaseClient.from('user_data').select('*').eq('user_id',userId);
+    const dataMap={};(allData||[]).forEach(row=>{dataMap[row.data_type]=row.data;});
+    window._adminWsData={dataMap,userId,displayName};
+    const tabs=[
+      {id:'ws-scripts',label:'📝 Script',icon:'📝'},
+      {id:'ws-stories',label:'📱 Stories',icon:'📱'},
+      {id:'ws-voice',label:'🎤 Voice',icon:'🎤'},
+      {id:'ws-chat',label:'💬 Chat',icon:'💬'},
+      {id:'ws-notes',label:'📒 Note',icon:'📒'},
+      {id:'ws-calendar',label:'📅 Calendario',icon:'📅'},
+      {id:'ws-mondo',label:'🌍 Mondo',icon:'🌍'},
+      {id:'ws-history',label:'📜 Cronologia',icon:'📜'},
+      {id:'ws-stats',label:'📊 Stats',icon:'📊'}
+    ];
+    ws.innerHTML=`<div style="max-width:900px;margin:0 auto">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px">
+        <h2 style="color:#06b6d4;margin:0">👁️ Workspace: ${displayName}</h2>
+        <button onclick="document.getElementById('adminWorkspaceOverlay')?.remove()" style="background:none;border:1px solid rgba(255,255,255,.15);color:var(--t2);padding:6px 14px;border-radius:8px;cursor:pointer;font-size:.75rem">✕ Chiudi</button>
+      </div>
+      <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:16px" id="wsTabs">
+        ${tabs.map((t,i)=>`<button class="ws-tab" data-tab="${t.id}" onclick="switchWsTab('${t.id}')" style="padding:6px 12px;border-radius:8px;background:${i===0?'rgba(6,182,212,.2)':'rgba(255,255,255,.04)'};border:1px solid ${i===0?'rgba(6,182,212,.4)':'rgba(255,255,255,.08)'};color:${i===0?'#06b6d4':'var(--t2)'};cursor:pointer;font-size:.68rem;font-weight:600;transition:all .2s">${t.label}</button>`).join('')}
+      </div>
+      <div id="wsContent" style="background:var(--card,#1a1a2e);border-radius:12px;padding:16px;border:1px solid rgba(255,255,255,.08);min-height:300px"></div>
+    </div>`;
+    switchWsTab('ws-scripts');
+  }catch(e){
+    ws.innerHTML='<div style="max-width:900px;margin:0 auto"><h3 style="color:#ef4444">Errore</h3><p style="color:var(--t2)">'+e.message+'</p><button onclick="document.getElementById(\'adminWorkspaceOverlay\')?.remove()" style="margin-top:12px;padding:8px 16px;border-radius:8px;background:none;border:1px solid rgba(255,255,255,.1);color:var(--t2);cursor:pointer">Chiudi</button></div>';
+  }
+}
+
+function switchWsTab(tabId){
+  document.querySelectorAll('#wsTabs .ws-tab').forEach(t=>{
+    const active=t.dataset.tab===tabId;
+    t.style.background=active?'rgba(6,182,212,.2)':'rgba(255,255,255,.04)';
+    t.style.borderColor=active?'rgba(6,182,212,.4)':'rgba(255,255,255,.08)';
+    t.style.color=active?'#06b6d4':'var(--t2)';
+  });
+  const content=document.getElementById('wsContent');
+  const d=window._adminWsData;
+  if(!d||!content)return;
+  const dm=d.dataMap;
+  const cardStyle='background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.06);border-radius:10px;padding:12px;margin-bottom:8px';
+  const emptyMsg=(msg)=>'<p style="color:var(--t2);font-size:.75rem;text-align:center;padding:30px 0">'+msg+'</p>';
+  switch(tabId){
+    case 'ws-scripts':{
+      const scripts=dm.scripts;
+      if(!scripts||!scripts.length){content.innerHTML=emptyMsg('Nessuno script trovato');return;}
+      const arr=Array.isArray(scripts)?scripts:(scripts.items||scripts.list||[scripts]);
+      content.innerHTML=arr.map((s,i)=>{
+        const title=s.title||s.name||('Script #'+(i+1));
+        const blocks=s.blocks||s.content||[];
+        const preview=typeof blocks==='string'?blocks.substring(0,300):Array.isArray(blocks)?blocks.map(b=>b.text||b.content||'').join(' ').substring(0,300):JSON.stringify(s).substring(0,300);
+        return '<div style="'+cardStyle+'"><h4 style="margin:0 0 6px;font-size:.82rem;color:var(--a1)">'+title+'</h4><p style="font-size:.7rem;color:var(--t2);margin:0;line-height:1.5;white-space:pre-wrap">'+preview+'...</p></div>';
+      }).join('');
+      break;}
+    case 'ws-stories':{
+      const sp=dm.story_planner;
+      if(!sp){content.innerHTML=emptyMsg('Nessun planner storie trovato');return;}
+      const days=sp.days||sp.planner||sp;
+      if(Array.isArray(days)){
+        content.innerHTML=days.map((day,di)=>{
+          const stories=day.stories||day.items||[];
+          return '<div style="'+cardStyle+'"><h4 style="margin:0 0 6px;font-size:.82rem;color:#a855f7">Giorno '+(di+1)+': '+(day.theme||day.tema||'')+'</h4>'+
+            (Array.isArray(stories)?stories.map((s,si)=>'<div style="font-size:.68rem;color:var(--t2);padding:4px 8px;background:rgba(255,255,255,.02);border-radius:6px;margin-top:4px"><b>'+(s.type||s.tipo||'Story '+(si+1))+':</b> '+(s.text||s.copy||s.content||'(vuoto)').substring(0,150)+'</div>').join(''):'<p style="font-size:.68rem;color:var(--t2)">Nessuna storia</p>')+
+          '</div>';
+        }).join('');
+      }else{content.innerHTML='<pre style="font-size:.65rem;color:var(--t2);white-space:pre-wrap;word-break:break-all">'+JSON.stringify(days,null,2).substring(0,2000)+'</pre>';}
+      break;}
+    case 'ws-voice':{
+      const v=dm.voice;
+      if(!v||!Object.keys(v).length){content.innerHTML=emptyMsg('Nessun Voice DNA trovato');return;}
+      content.innerHTML=Object.entries(v).map(([k,val])=>'<div style="'+cardStyle+'"><b style="font-size:.72rem;color:#06b6d4;text-transform:capitalize">'+k.replace(/_/g,' ')+':</b><p style="font-size:.7rem;color:var(--t2);margin:4px 0 0;white-space:pre-wrap">'+(typeof val==='string'?val:JSON.stringify(val,null,1))+'</p></div>').join('');
+      break;}
+    case 'ws-chat':{
+      const chat=dm.chat_history;
+      if(!chat||!chat.length){content.innerHTML=emptyMsg('Nessuna chat trovata');return;}
+      const msgs=Array.isArray(chat)?chat:chat.messages||[];
+      content.innerHTML='<div style="max-height:400px;overflow-y:auto">'+msgs.slice(-50).map(m=>'<div style="padding:8px 12px;border-radius:10px;margin-bottom:4px;font-size:.7rem;max-width:80%;'+(m.role==='user'?'margin-left:auto;background:rgba(255,107,53,.1);text-align:right':'background:rgba(6,182,212,.08)')+'">'+((m.content||m.text||'').substring(0,300))+'</div>').join('')+'</div>';
+      break;}
+    case 'ws-notes':{
+      const notes=dm.notes;
+      if(!notes||(!Array.isArray(notes)&&!Object.keys(notes).length)){content.innerHTML=emptyMsg('Nessuna nota trovata');return;}
+      const arr=Array.isArray(notes)?notes:notes.items||[notes];
+      content.innerHTML=arr.map((n,i)=>'<div style="'+cardStyle+'"><p style="font-size:.7rem;color:var(--t2);margin:0;white-space:pre-wrap">'+(typeof n==='string'?n:(n.text||n.content||JSON.stringify(n))).substring(0,400)+'</p></div>').join('');
+      break;}
+    case 'ws-calendar':{
+      const cal=dm.calendar;
+      if(!cal){content.innerHTML=emptyMsg('Nessun calendario trovato');return;}
+      content.innerHTML='<pre style="font-size:.65rem;color:var(--t2);white-space:pre-wrap;word-break:break-all">'+JSON.stringify(cal,null,2).substring(0,3000)+'</pre>';
+      break;}
+    case 'ws-mondo':{
+      const mondo=dm.mondo;
+      if(!mondo||!Object.keys(mondo).length){content.innerHTML=emptyMsg('Nessun dato Mondo trovato');return;}
+      content.innerHTML=Object.entries(mondo).map(([k,val])=>'<div style="'+cardStyle+'"><b style="font-size:.72rem;color:#22c55e;text-transform:capitalize">'+k.replace(/_/g,' ')+':</b><p style="font-size:.7rem;color:var(--t2);margin:4px 0 0;white-space:pre-wrap">'+(typeof val==='string'?val:JSON.stringify(val,null,1).substring(0,500))+'</p></div>').join('');
+      break;}
+    case 'ws-history':{
+      const hist=dm.history;
+      if(!hist||!hist.length){content.innerHTML=emptyMsg('Nessuna cronologia trovata');return;}
+      const arr=Array.isArray(hist)?hist:hist.entries||[];
+      content.innerHTML=arr.slice(-30).reverse().map(h=>'<div style="'+cardStyle+'"><div style="display:flex;justify-content:space-between;align-items:center"><span style="font-size:.7rem;font-weight:600">'+(h.module||'')+' — '+(h.action||'')+'</span><span style="font-size:.6rem;color:var(--t2)">'+new Date(h.timestamp||h.id).toLocaleString('it-IT')+'</span></div><p style="font-size:.65rem;color:var(--t2);margin:4px 0 0">'+JSON.stringify(h.data||{}).substring(0,200)+'</p></div>').join('');
+      break;}
+    case 'ws-stats':{
+      const stats=dm.stats_full;
+      if(!stats||!Object.keys(stats).length){content.innerHTML=emptyMsg('Nessuna statistica trovata');return;}
+      content.innerHTML='<pre style="font-size:.65rem;color:var(--t2);white-space:pre-wrap;word-break:break-all">'+JSON.stringify(stats,null,2).substring(0,3000)+'</pre>';
+      break;}
+    default:content.innerHTML=emptyMsg('Sezione non disponibile');
+  }
 }
 
 function adminExportAllUsers(){
@@ -14763,6 +14814,212 @@ function adminExportAllUsers(){
 function adminRefreshDash(){
   document.getElementById('adminDashOverlay')?.remove();
   openAdminDashboard();
+}
+
+// ===== SUPPORT / ASSISTANCE (V11.2) =====
+let _supportTickets=[];
+let _currentTicketId=null;
+let _supportPollInterval=null;
+
+function toggleSupport(){
+  const d=document.getElementById('supportDrawer');
+  const o=document.getElementById('supportOverlay');
+  if(!d)return;
+  const opening=!d.classList.contains('open');
+  d.classList.toggle('open');o?.classList.toggle('open');
+  if(opening){
+    loadSupportTickets().then(()=>{renderSupportMessages();});
+    _supportPollInterval=setInterval(async()=>{await loadSupportTickets();renderSupportMessages();},30000);
+  }else{
+    if(_supportPollInterval){clearInterval(_supportPollInterval);_supportPollInterval=null;}
+  }
+}
+
+function openSupportChat(){
+  const d=document.getElementById('supportDrawer');
+  const o=document.getElementById('supportOverlay');
+  if(!d.classList.contains('open')){d.classList.add('open');o?.classList.add('open');}
+  if(_supportPollInterval)clearInterval(_supportPollInterval);
+  _supportPollInterval=setInterval(async()=>{await loadSupportTickets();renderSupportMessages();},30000);
+  loadSupportTickets().then(()=>{
+    const open=_supportTickets.find(t=>t.status!=='resolved');
+    if(open){_currentTicketId=open.id;}
+    else{createNewTicket();}
+    renderSupportMessages();
+  });
+}
+
+async function loadSupportTickets(){
+  if(!supabaseClient||!supaUser)return;
+  try{
+    const{data}=await supabaseClient.from('user_data').select('data').eq('user_id',supaUser.id).eq('data_type','support_tickets').single();
+    _supportTickets=(data?.data?.tickets)||[];
+  }catch(e){_supportTickets=[];}
+}
+
+function createNewTicket(){
+  const ticket={
+    id:'ticket_'+Date.now(),
+    status:'open',
+    created_at:new Date().toISOString(),
+    updated_at:new Date().toISOString(),
+    messages:[{role:'ai',content:'Ciao! Sono l\'assistente HOOKA. Come posso aiutarti? Descrivimi il problema e cerchero\' di risolverlo subito.',timestamp:new Date().toISOString()}],
+    summary:'',
+    user_email:supaUser?.email||'',
+    user_name:_supaProfile?.username||_supaProfile?.display_name||supaUser?.email||'Utente'
+  };
+  _supportTickets.push(ticket);
+  _currentTicketId=ticket.id;
+  saveSupportTickets();
+}
+
+async function saveSupportTickets(){
+  if(!supabaseClient||!supaUser)return;
+  try{
+    await supabaseClient.from('user_data').upsert({
+      user_id:supaUser.id,
+      data_type:'support_tickets',
+      data:{tickets:_supportTickets},
+      updated_at:new Date().toISOString()
+    },{onConflict:'user_id,data_type'});
+  }catch(e){console.warn('[HOOKA] Support save error:',e);}
+}
+
+function renderSupportMessages(){
+  const container=document.getElementById('supportMessages');
+  const ticket=_supportTickets.find(t=>t.id===_currentTicketId);
+  if(!ticket||!container)return;
+  container.innerHTML=ticket.messages.map(m=>{
+    const roleLabel=m.role==='admin'?'👑 Operatore':m.role==='ai'?'🤖 AI':'';
+    const time=new Date(m.timestamp).toLocaleTimeString('it-IT',{hour:'2-digit',minute:'2-digit'});
+    return '<div class="support-msg '+m.role+'">'+(roleLabel?'<div style="font-size:.58rem;font-weight:700;margin-bottom:2px;opacity:.7">'+roleLabel+'</div>':'')+'<div>'+m.content+'</div><div style="font-size:.55rem;opacity:.5;margin-top:3px;text-align:right">'+time+'</div></div>';
+  }).join('');
+  container.scrollTop=container.scrollHeight;
+  const aiMsgs=ticket.messages.filter(m=>m.role==='ai').length;
+  const bar=document.getElementById('supportEscalateBar');
+  if(bar)bar.style.display=(aiMsgs>=2&&ticket.status==='open')?'block':'none';
+}
+
+async function sendSupportMsg(){
+  const input=document.getElementById('supportInput');
+  const text=input?.value?.trim();
+  if(!text)return;
+  input.value='';
+  const ticket=_supportTickets.find(t=>t.id===_currentTicketId);
+  if(!ticket)return;
+  ticket.messages.push({role:'user',content:text,timestamp:new Date().toISOString()});
+  ticket.updated_at=new Date().toISOString();
+  renderSupportMessages();
+  if(ticket.status==='waiting_human'){saveSupportTickets();return;}
+  // AI response
+  const systemPrompt='Sei l\'assistente di supporto di HOOKA, una web app per la creazione di hook e contenuti creativi per social media. Rispondi in italiano, in modo chiaro e conciso. Conosci queste funzionalita\': giochi creativi (Slot, Ribaltamento, Collisione, Speed Hook, etc.), Fucina per script, Stories planner, Hub creativo (profilo, Voice DNA, calendario, note), Chat AI, Coach AI, Mazzo (raccolta hook salvati), connessioni AI (OpenRouter, OpenAI, Anthropic), webhook (Make/Zapier/n8n), Google Drive, ClickUp, Workshop Mode (lezioni, esercizi, slide, dispense). Se non sai la risposta o il problema e\' tecnico/account, suggerisci di parlare con un operatore umano. Sii breve (max 3-4 frasi).';
+  try{
+    const response=await aiCall(systemPrompt,text,200,0.7);
+    if(response){
+      ticket.messages.push({role:'ai',content:response,timestamp:new Date().toISOString()});
+    }else{
+      ticket.messages.push({role:'ai',content:'Mi dispiace, non riesco a connettermi all\'AI. Puoi parlare con un operatore cliccando il bottone qui sotto.',timestamp:new Date().toISOString()});
+    }
+  }catch(e){
+    ticket.messages.push({role:'ai',content:'Errore di connessione. Prova a parlare con un operatore.',timestamp:new Date().toISOString()});
+  }
+  renderSupportMessages();
+  saveSupportTickets();
+}
+
+async function escalateToHuman(){
+  const ticket=_supportTickets.find(t=>t.id===_currentTicketId);
+  if(!ticket)return;
+  const allMsgs=ticket.messages.map(m=>'['+m.role+']: '+m.content).join('\n');
+  let summary='';
+  try{
+    summary=await aiCall('Riassumi questa conversazione di supporto in 2-3 frasi in italiano. Evidenzia il problema principale.',allMsgs,150,0.5)||('Richiesta di supporto da '+ticket.user_name);
+  }catch(e){summary='Richiesta di supporto da '+ticket.user_name;}
+  ticket.status='waiting_human';
+  ticket.summary=summary;
+  ticket.updated_at=new Date().toISOString();
+  ticket.messages.push({role:'ai',content:'Ho passato la tua richiesta a un operatore. Riceverai una risposta qui in chat appena possibile. Grazie per la pazienza!',timestamp:new Date().toISOString()});
+  saveSupportTickets();
+  renderSupportMessages();
+  sendSupportNotification(ticket);
+}
+
+async function sendSupportNotification(ticket){
+  const payload={
+    event:'support_escalation',
+    timestamp:new Date().toISOString(),
+    data:{ticket_id:ticket.id,user_email:ticket.user_email,user_name:ticket.user_name,summary:ticket.summary,messages:ticket.messages.slice(-5)}
+  };
+  // Try webhook
+  if(typeof sendWebhook==='function'){
+    try{await sendWebhook('support_escalation',payload.data);}catch(e){}
+  }
+  // Save to shared admin queue
+  try{
+    const{data:existing}=await supabaseClient.from('user_data').select('data').eq('user_id','support_queue').eq('data_type','support_tickets').maybeSingle();
+    const queue=(existing?.data?.queue)||[];
+    queue.push({ticket_id:ticket.id,user_id:supaUser.id,user_email:ticket.user_email,user_name:ticket.user_name,summary:ticket.summary,status:'waiting_human',created_at:ticket.created_at,updated_at:ticket.updated_at});
+    await supabaseClient.from('user_data').upsert({user_id:'support_queue',data_type:'support_tickets',data:{queue},updated_at:new Date().toISOString()},{onConflict:'user_id,data_type'});
+  }catch(e){console.warn('[HOOKA] Support queue error:',e);}
+  // Fallback: mailto
+  const webhookUrls=JSON.parse(localStorage.getItem('hl_webhookUrls')||'[]');
+  if(!webhookUrls.length){
+    window.open('mailto:evoonconsulting@gmail.com?subject='+encodeURIComponent('HOOKA Support: '+ticket.user_name)+'&body='+encodeURIComponent(ticket.summary+'\n\nUltimi messaggi:\n'+ticket.messages.slice(-3).map(m=>'['+m.role+']: '+m.content).join('\n')));
+  }
+  showToast('Richiesta inviata all\'operatore');
+}
+
+// Admin support queue functions
+async function loadAdminSupportQueue(){
+  const container=document.getElementById('adminSupportQueue');
+  if(!container)return;
+  try{
+    const{data}=await supabaseClient.from('user_data').select('data').eq('user_id','support_queue').eq('data_type','support_tickets').maybeSingle();
+    const queue=(data?.data?.queue)||[];
+    const pending=queue.filter(t=>t.status==='waiting_human');
+    if(!pending.length){
+      container.innerHTML='<p style="color:var(--t2);font-size:.72rem">Nessun ticket in attesa</p>';
+      return;
+    }
+    container.innerHTML=pending.map(t=>`
+      <div style="background:rgba(251,191,36,.06);border:1px solid rgba(251,191,36,.15);border-radius:10px;padding:12px;margin-bottom:8px">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">
+          <span style="font-weight:700;font-size:.78rem">${t.user_name} (${t.user_email})</span>
+          <span style="font-size:.6rem;color:var(--t2)">${new Date(t.updated_at).toLocaleDateString('it-IT')}</span>
+        </div>
+        <p style="font-size:.72rem;color:var(--t2);margin:0 0 8px">${t.summary||'Nessun riassunto'}</p>
+        <div style="display:flex;gap:6px">
+          <input type="text" id="reply_${t.ticket_id}" placeholder="Rispondi..." style="flex:1;padding:6px 10px;border-radius:8px;background:var(--input-bg,rgba(255,255,255,.06));border:1px solid var(--input-border,rgba(255,255,255,.1));color:var(--t1);font-size:.72rem"/>
+          <button onclick="adminReplyTicket('${t.user_id}','${t.ticket_id}')" style="padding:6px 12px;border-radius:8px;background:var(--a1);border:none;color:#fff;cursor:pointer;font-size:.72rem;font-weight:600">Invia</button>
+        </div>
+      </div>
+    `).join('');
+  }catch(e){container.innerHTML='<p style="color:#ef4444;font-size:.72rem">Errore: '+e.message+'</p>';}
+}
+
+async function adminReplyTicket(userId,ticketId){
+  const input=document.getElementById('reply_'+ticketId);
+  const text=input?.value?.trim();
+  if(!text){showToast('Scrivi una risposta');return;}
+  try{
+    // Load user's support tickets
+    const{data}=await supabaseClient.from('user_data').select('data').eq('user_id',userId).eq('data_type','support_tickets').single();
+    const tickets=(data?.data?.tickets)||[];
+    const ticket=tickets.find(t=>t.id===ticketId);
+    if(!ticket){showToast('Ticket non trovato');return;}
+    ticket.messages.push({role:'admin',content:text,timestamp:new Date().toISOString()});
+    ticket.status='resolved';
+    ticket.updated_at=new Date().toISOString();
+    await supabaseClient.from('user_data').upsert({user_id:userId,data_type:'support_tickets',data:{tickets},updated_at:new Date().toISOString()},{onConflict:'user_id,data_type'});
+    // Update queue
+    const{data:queueData}=await supabaseClient.from('user_data').select('data').eq('user_id','support_queue').eq('data_type','support_tickets').maybeSingle();
+    const queue=(queueData?.data?.queue)||[];
+    const qTicket=queue.find(t=>t.ticket_id===ticketId);
+    if(qTicket)qTicket.status='resolved';
+    await supabaseClient.from('user_data').upsert({user_id:'support_queue',data_type:'support_tickets',data:{queue},updated_at:new Date().toISOString()},{onConflict:'user_id,data_type'});
+    showToast('Risposta inviata!');
+    loadAdminSupportQueue();
+  }catch(e){showToast('Errore: '+e.message);}
 }
 
 // ===== CONNECTIONS PANEL =====

@@ -213,6 +213,7 @@ body::after{content:'';position:fixed;inset:0;background:radial-gradient(circle 
 .story-board{display:flex;gap:8px;padding:14px;overflow-x:auto;background:var(--card);border:1px solid rgba(255,255,255,.08);border-top:none;border-radius:0 0 var(--r) var(--r);min-height:300px}
 .story-day-col{min-width:160px;max-width:180px;flex-shrink:0;background:rgba(255,255,255,.03);border-radius:10px;padding:8px;border:1px solid rgba(255,255,255,.06);transition:var(--tr)}
 .story-day-col:hover{border-color:rgba(255,107,53,.2);background:rgba(255,255,255,.05)}
+.story-card[draggable="true"]{cursor:grab}.story-card[draggable="true"]:active{cursor:grabbing}
 .story-day-head{text-align:center;margin-bottom:8px;padding-bottom:6px;border-bottom:1px solid rgba(255,255,255,.06)}
 .story-day-num{font-size:.9rem;font-weight:900;color:var(--a1)}
 .story-day-tema{font-size:.62rem;color:var(--t2);line-height:1.3;margin-top:2px}
@@ -2012,6 +2013,35 @@ body.light .shimmer::after{background:linear-gradient(90deg,transparent 0%,rgba(
 </style>
 </head>
 <body>
+<!-- AUTH GATE: fullscreen login required before accessing app -->
+<div id="authGate" style="position:fixed;inset:0;z-index:999999;background:var(--bg);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;padding:20px">
+  <svg viewBox="0 0 44 44" width="64" height="64" style="margin-bottom:4px">
+    <path d="M8 8v28M8 22h12M20 8v28" stroke="url(#hookaGateGrad)" stroke-width="4" stroke-linecap="round" fill="none"/>
+    <path d="M32 8c0 0-8 0-8 8s8 8 8 8" stroke="url(#hookaGateGrad)" stroke-width="3.5" stroke-linecap="round" fill="none"/>
+    <circle cx="32" cy="26" r="2.5" fill="url(#hookaGateGrad)"/>
+    <defs><linearGradient id="hookaGateGrad" x1="0" y1="0" x2="44" y2="44"><stop offset="0%" stop-color="#ff6b35"/><stop offset="100%" stop-color="#e8930c"/></linearGradient></defs>
+  </svg>
+  <h1 style="font-size:clamp(2rem,6vw,3rem);font-weight:900;background:var(--gh);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin:0">HOOKA</h1>
+  <p style="color:var(--t2);font-size:.85rem;margin:0">La tua palestra creativa per hook che spaccano</p>
+  <div id="authGateForm" style="width:90%;max-width:380px;margin-top:12px">
+    <div id="authGateTabs" style="display:flex;gap:4px;margin-bottom:14px">
+      <button onclick="switchGateTab('login')" id="gateTabLogin" style="flex:1;padding:8px;border-radius:8px;background:var(--a1);color:#fff;border:none;cursor:pointer;font-weight:700;font-size:.8rem">Login</button>
+      <button onclick="switchGateTab('signup')" id="gateTabSignup" style="flex:1;padding:8px;border-radius:8px;background:rgba(255,255,255,.06);color:var(--t2);border:1px solid rgba(255,255,255,.1);cursor:pointer;font-weight:700;font-size:.8rem">Registrati</button>
+    </div>
+    <input type="email" id="gateEmail" placeholder="Email" style="width:100%;padding:11px 14px;margin-bottom:8px;border-radius:8px;background:var(--input-bg);border:1px solid var(--input-border);color:var(--t1);font-size:.85rem;box-sizing:border-box" />
+    <input type="password" id="gatePassword" placeholder="Password (min 6 caratteri)" style="width:100%;padding:11px 14px;margin-bottom:12px;border-radius:8px;background:var(--input-bg);border:1px solid var(--input-border);color:var(--t1);font-size:.85rem;box-sizing:border-box" />
+    <div id="gateError" style="display:none;padding:8px 12px;border-radius:8px;background:rgba(255,0,0,.12);color:#ff5555;font-size:.72rem;margin-bottom:10px"></div>
+    <button onclick="doGateAuth()" id="gateSubmitBtn" style="width:100%;padding:12px;border-radius:10px;background:var(--gf);color:#fff;border:none;cursor:pointer;font-weight:800;font-size:.9rem">🚀 Accedi</button>
+    <div style="display:flex;align-items:center;gap:10px;margin:14px 0"><div style="flex:1;height:1px;background:rgba(255,255,255,.1)"></div><span style="font-size:.7rem;color:var(--t2)">oppure</span><div style="flex:1;height:1px;background:rgba(255,255,255,.1)"></div></div>
+    <div style="display:flex;flex-direction:column;gap:6px">
+      <button onclick="doGoogleAuth()" style="padding:10px 16px;border-radius:10px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.15);color:var(--t1);cursor:pointer;font-size:.78rem;width:100%;display:flex;align-items:center;justify-content:center;gap:8px"><img src="https://www.google.com/favicon.ico" style="width:14px;height:14px" alt="G"/>Continua con Google</button>
+      <button onclick="doGithubAuth()" style="padding:10px 16px;border-radius:10px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.15);color:var(--t1);cursor:pointer;font-size:.78rem;width:100%;display:flex;align-items:center;justify-content:center;gap:8px"><svg width="14" height="14" viewBox="0 0 16 16" fill="currentColor"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/></svg>Continua con GitHub</button>
+      <button onclick="doDiscordAuth()" style="padding:10px 16px;border-radius:10px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.15);color:var(--t1);cursor:pointer;font-size:.78rem;width:100%;display:flex;align-items:center;justify-content:center;gap:8px"><svg width="14" height="14" viewBox="0 0 16 16" fill="#5865F2"><path d="M13.55 3.15A13.2 13.2 0 0010.2 2a9.8 9.8 0 00-.43.88 12.3 12.3 0 00-3.54 0A9.3 9.3 0 005.8 2a13.3 13.3 0 00-3.36 1.15A14.5 14.5 0 00.2 12.82a13.4 13.4 0 004.1 2.13 10 10 0 00.88-1.46 8.5 8.5 0 01-1.39-.68l.33-.27a9.5 9.5 0 008.16 0l.33.27c-.44.27-.9.5-1.39.68.25.52.54 1 .88 1.46a13.3 13.3 0 004.1-2.13 14.4 14.4 0 00-2.25-9.67zM5.35 10.9c-.82 0-1.5-.77-1.5-1.72s.66-1.72 1.5-1.72 1.51.78 1.5 1.72c0 .95-.66 1.72-1.5 1.72zm5.3 0c-.82 0-1.5-.77-1.5-1.72s.66-1.72 1.5-1.72 1.51.78 1.5 1.72c0 .95-.66 1.72-1.5 1.72z"/></svg>Continua con Discord</button>
+    </div>
+  </div>
+  <p style="font-size:.6rem;color:var(--t2);margin-top:16px;text-align:center">DSS Edition &bull; Powered by Supabase</p>
+</div>
+
 <div class="team-overlay" id="teamOverlay" style="display:none">
   <h2>Chi sei?</h2>
   <p class="team-sub">Seleziona il tuo profilo team</p>
@@ -2282,6 +2312,18 @@ body.light .shimmer::after{background:linear-gradient(90deg,transparent 0%,rgba(
     <button class="s-btn secondary" onclick="saveAiSettings()">&#128190; Salva</button>
   </div>
   <div id="aiTestResult" style="margin-top:8px;font-size:.8rem;color:var(--t2)"></div>
+  <div class="settings-section" style="margin-top:18px;padding-top:14px;border-top:1px solid rgba(255,255,255,.06)">
+    <div class="ss-label">🎨 OpenAI Images (DALL-E)</div>
+    <p style="font-size:.62rem;color:var(--t2);margin:-4px 0 8px">Per generare immagini AI in Sketch Hook 2.0. Richiede una OpenAI API key con accesso a DALL-E.</p>
+    <div class="settings-row">
+      <input type="password" id="dalleApiKey" placeholder="sk-... (OpenAI key per DALL-E)" value="" />
+    </div>
+    <div class="settings-row" style="gap:8px">
+      <button class="s-btn primary" onclick="testDalleConnection()" style="font-size:.72rem">🎨 Testa DALL-E</button>
+      <button class="s-btn secondary" onclick="saveDalleKey()" style="font-size:.72rem">💾 Salva</button>
+    </div>
+    <div id="dalleTestResult" style="margin-top:6px;font-size:.75rem;color:var(--t2)"></div>
+  </div>
   <div class="settings-section" style="margin-top:18px;padding-top:14px;border-top:1px solid rgba(255,255,255,.06)">
     <div class="ss-label">🏋️ Severità Coach Creativo</div>
     <div style="display:flex;gap:6px;margin:8px 0" id="coachSevChips">
@@ -2644,20 +2686,97 @@ body.light .shimmer::after{background:linear-gradient(90deg,transparent 0%,rgba(
 // ===== SUPABASE =====
 const SUPABASE_URL='https://esgkntelladrtopxlojq.supabase.co';
 const SUPABASE_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVzZ2tudGVsbGFkcnRvcHhsb2pxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzM1ODMyMzIsImV4cCI6MjA4OTE1OTIzMn0.7r8jGfZ5PGaV4sHd8ztr1ktaZWtaIz7fSTCKc1s7nHI';
+const ADMIN_EMAILS=['evoonconsulting@gmail.com'];
 let supabaseClient=null;
 let supaUser=null;
+function isAdminEmail(email){return ADMIN_EMAILS.includes((email||'').toLowerCase());}
+function getUserDisplayName(){
+  if(!supaUser)return 'Utente';
+  const meta=supaUser.user_metadata||{};
+  return meta.full_name||meta.name||meta.preferred_username||supaUser.email?.split('@')[0]||'Utente';
+}
+function hideAuthGate(){
+  const gate=document.getElementById('authGate');
+  if(gate){gate.style.opacity='0';gate.style.transition='opacity .4s';setTimeout(()=>{gate.style.display='none';},400);}
+}
+function showAuthGate(){
+  const gate=document.getElementById('authGate');
+  if(gate){gate.style.display='flex';gate.style.opacity='1';}
+}
+
+// Gate auth functions
+let _gateMode='login';
+function switchGateTab(mode){
+  _gateMode=mode;
+  const l=document.getElementById('gateTabLogin'),s=document.getElementById('gateTabSignup'),b=document.getElementById('gateSubmitBtn');
+  if(mode==='login'){
+    l.style.background='var(--a1)';l.style.color='#fff';l.style.border='none';
+    s.style.background='rgba(255,255,255,.06)';s.style.color='var(--t2)';s.style.border='1px solid rgba(255,255,255,.1)';
+    b.textContent='🚀 Accedi';
+  }else{
+    s.style.background='var(--a1)';s.style.color='#fff';s.style.border='none';
+    l.style.background='rgba(255,255,255,.06)';l.style.color='var(--t2)';l.style.border='1px solid rgba(255,255,255,.1)';
+    b.textContent='🚀 Registrati';
+  }
+  const err=document.getElementById('gateError');if(err)err.style.display='none';
+}
+async function doGateAuth(){
+  if(!supabaseClient){alert('Supabase non disponibile. Ricarica la pagina.');return;}
+  const email=document.getElementById('gateEmail')?.value?.trim();
+  const password=document.getElementById('gatePassword')?.value;
+  const errDiv=document.getElementById('gateError');
+  if(!email||!password){errDiv.textContent='Inserisci email e password';errDiv.style.display='block';return;}
+  if(password.length<6){errDiv.textContent='Password: minimo 6 caratteri';errDiv.style.display='block';return;}
+  const btn=document.getElementById('gateSubmitBtn');
+  btn.disabled=true;btn.textContent='⏳ Attendere...';
+  try{
+    let result;
+    if(_gateMode==='login'){result=await supabaseClient.auth.signInWithPassword({email,password});}
+    else{result=await supabaseClient.auth.signUp({email,password});}
+    if(result.error)throw result.error;
+    if(_gateMode==='signup'&&result.data?.user&&!result.data.session){
+      errDiv.style.display='block';errDiv.style.background='rgba(0,184,148,.12)';errDiv.style.color='#00b894';
+      errDiv.textContent='✅ Controlla la tua email per confermare!';
+      btn.disabled=false;btn.textContent='🚀 Registrati';return;
+    }
+    // Auth success handled by onAuthStateChange
+  }catch(e){
+    errDiv.textContent=e.message||'Errore di autenticazione';errDiv.style.display='block';
+    errDiv.style.background='rgba(255,0,0,.12)';errDiv.style.color='#ff5555';
+    btn.disabled=false;btn.textContent=_gateMode==='login'?'🚀 Accedi':'🚀 Registrati';
+  }
+}
+
 try{
   if(window.supabase&&window.supabase.createClient){
     supabaseClient=window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
     console.log('[HOOKA] Supabase SDK loaded');
     // Check existing session
     supabaseClient.auth.getSession().then(({data:{session}})=>{
-      if(session){supaUser=session.user;console.log('[HOOKA] Logged in:',supaUser.email);updateAuthUI();syncFromSupabase();}
+      if(session){
+        supaUser=session.user;
+        console.log('[HOOKA] Logged in:',supaUser.email);
+        hideAuthGate();
+        updateAuthUI();
+        syncFromSupabase();
+        // Show team selector if no team chosen yet
+        if(!localStorage.getItem('hl_lastTeam'))showTeamSelector();
+      }
     });
     // Listen for auth changes
     supabaseClient.auth.onAuthStateChange((event,session)=>{
-      if(event==='SIGNED_IN'&&session){supaUser=session.user;updateAuthUI();syncFromSupabase();}
-      else if(event==='SIGNED_OUT'){supaUser=null;updateAuthUI();}
+      if(event==='SIGNED_IN'&&session){
+        supaUser=session.user;
+        hideAuthGate();
+        updateAuthUI();
+        syncFromSupabase();
+        if(!localStorage.getItem('hl_lastTeam'))showTeamSelector();
+      }
+      else if(event==='SIGNED_OUT'){
+        supaUser=null;
+        updateAuthUI();
+        showAuthGate();
+      }
     });
   }
 }catch(e){console.warn('[HOOKA] Supabase init error:',e);}
@@ -2666,7 +2785,8 @@ function updateAuthUI(){
   const btn=document.getElementById('authBtn');
   if(!btn)return;
   if(supaUser){
-    btn.innerHTML=`<span style="font-size:.7rem">👤 ${supaUser.email?.split('@')[0]||'Utente'}</span>`;
+    const dn=getUserDisplayName();
+    btn.innerHTML=`<span style="font-size:.7rem">👤 ${dn}</span>`;
     btn.title='Account: '+supaUser.email;
     btn.onclick=()=>openAccountPanel();
   }else{
@@ -3042,8 +3162,7 @@ emotionCombos:[{emotion:"Paura",tema:"Nicchia",result:"E se la tua nicchia spari
 
 // ===== TEAM SYSTEM =====
 const TEAMS=[
-{id:'admin_loris',name:'Admin Loris',emoji:'👑',isAdmin:true},
-{id:'admin_mirko',name:'Admin Mirko',emoji:'👑',isAdmin:true},
+{id:'admin_loris',name:'Admin',emoji:'👑',isAdmin:true},
 {id:'manager',name:'Manager',emoji:'📋',role:'Manager'},
 {id:'team1',name:'Team 1',emoji:'🔥'},
 {id:'team2',name:'Team 2',emoji:'⚡'},
@@ -3055,26 +3174,47 @@ function hlKey(k){return currentTeamId?'hl_'+currentTeamId+'_'+k:'hl_'+k;}
 function showTeamSelector(){
 const overlay=document.getElementById('teamOverlay');
 const grid=document.getElementById('teamGrid');
-grid.innerHTML=TEAMS.map(t=>`<div class="team-card${t.isAdmin?' admin':''}" onclick="selectTeam('${t.id}')">
-<div class="tc-emoji">${t.emoji}</div>
-<div class="tc-name">${t.name}</div>
-<div class="tc-role">${t.isAdmin?'Amministratore':t.role||'Team Member'}</div>
-</div>`).join('');
+const userEmail=supaUser?.email||'';
+const canAdmin=isAdminEmail(userEmail);
+const displayName=getUserDisplayName();
+grid.innerHTML=TEAMS.map(t=>{
+  if(t.isAdmin&&!canAdmin){
+    return `<div class="team-card admin" style="opacity:.45;cursor:not-allowed;pointer-events:none">
+      <div class="tc-emoji">🔒</div>
+      <div class="tc-name">Admin</div>
+      <div class="tc-role" style="color:#ff5555">Solo amministratori</div>
+    </div>`;
+  }
+  const name=t.isAdmin?displayName+' (Admin)':t.role==='Manager'?displayName:t.name;
+  return `<div class="team-card${t.isAdmin?' admin':''}" onclick="selectTeam('${t.id}')">
+    <div class="tc-emoji">${t.emoji}</div>
+    <div class="tc-name">${name}</div>
+    <div class="tc-role">${t.isAdmin?'Amministratore':t.role||'Team Member'}</div>
+  </div>`;
+}).join('');
 overlay.style.display='flex';
 document.body.style.overflow='hidden';
 }
 
 function selectTeam(teamId){
+const team=TEAMS.find(t=>t.id===teamId);
+if(team&&team.isAdmin&&!isAdminEmail(supaUser?.email)){showToast('Accesso Admin non autorizzato');return;}
 currentTeamId=teamId;
 localStorage.setItem('hl_lastTeam',teamId);
 document.getElementById('teamOverlay').style.display='none';
 document.body.style.overflow='';
-const team=TEAMS.find(t=>t.id===teamId);
+const displayName=getUserDisplayName();
 const btn=document.getElementById('teamSwitchBtn');
 btn.style.display='flex';
 document.getElementById('teamCurrentIcon').textContent=team.emoji;
-document.getElementById('teamCurrentName').textContent=team.name;
+document.getElementById('teamCurrentName').textContent=team.isAdmin?displayName+' 👑':(team.role==='Manager'?displayName+' 📋':team.name);
 reloadAllData();
+// Save role to Supabase
+if(supabaseClient&&supaUser){
+  supabaseClient.from('profiles').upsert({id:supaUser.id,role:teamId,username:displayName},{onConflict:'id'}).then(()=>console.log('[HOOKA] Role saved to Supabase'));
+}
+// Onboarding for new users
+if(!localStorage.getItem('hl_onboarded')){setTimeout(()=>{if(typeof showOnboarding==='function')showOnboarding();},500);}
 }
 
 function reloadAllData(){
@@ -3115,7 +3255,7 @@ if(typeof renderBrainStatus==='function')renderBrainStatus();
 const na=document.getElementById('notesArea');if(na)na.value=notes;
 }
 
-function isTeamAdmin(){const t=TEAMS.find(t=>t.id===currentTeamId);return t&&t.isAdmin;}
+function isTeamAdmin(){const t=TEAMS.find(t=>t.id===currentTeamId);return t&&t.isAdmin&&isAdminEmail(supaUser?.email);}
 
 function migrateOldData(teamId){
 const mk='hl_migrated_'+teamId;
@@ -4145,6 +4285,56 @@ function initAiSettings(){
     updateModelDropdown(v);
   });
   updateApiStatus();
+  // Load DALL-E key
+  const dk=document.getElementById('dalleApiKey');
+  if(dk)dk.value=getDalleKey();
+}
+
+// ===== DALL-E IMAGE GENERATION =====
+function getDalleKey(){return localStorage.getItem('hl_dalle_key')||'';}
+function saveDalleKey(){
+  const key=document.getElementById('dalleApiKey')?.value?.trim()||'';
+  localStorage.setItem('hl_dalle_key',key);
+  showToast(key?'DALL-E key salvata!':'DALL-E key rimossa');
+}
+async function testDalleConnection(){
+  const key=getDalleKey()||document.getElementById('dalleApiKey')?.value?.trim();
+  const res=document.getElementById('dalleTestResult');
+  if(!key){res.innerHTML='<span style="color:#ff5555">Inserisci una API key OpenAI</span>';return;}
+  res.innerHTML='<span style="color:var(--a1)">⏳ Test in corso...</span>';
+  try{
+    const resp=await fetch('https://api.openai.com/v1/models',{headers:{'Authorization':'Bearer '+key}});
+    if(!resp.ok)throw new Error('API '+resp.status);
+    const data=await resp.json();
+    const hasDalle=data.data?.some(m=>m.id?.includes('dall-e'));
+    if(hasDalle){
+      res.innerHTML='<span style="color:#66bb6a">DALL-E disponibile! Generazione immagini attiva.</span>';
+      localStorage.setItem('hl_dalle_key',key);showToast('DALL-E connesso!');
+    }else{
+      res.innerHTML='<span style="color:#ffb74d">API key valida ma DALL-E non trovato. Potrebbe non essere abilitato sul tuo account.</span>';
+      localStorage.setItem('hl_dalle_key',key);
+    }
+  }catch(e){
+    res.innerHTML='<span style="color:#ff5555">Errore: '+e.message+'</span>';
+  }
+}
+async function generateDalleImage(prompt,size){
+  const key=getDalleKey();
+  if(!key)return null;
+  try{
+    const resp=await fetch('https://api.openai.com/v1/images/generations',{
+      method:'POST',
+      headers:{'Content-Type':'application/json','Authorization':'Bearer '+key},
+      body:JSON.stringify({model:'dall-e-3',prompt:prompt,n:1,size:size||'1024x1024',quality:'standard'})
+    });
+    if(!resp.ok){const err=await resp.json().catch(()=>({}));throw new Error(err.error?.message||'API '+resp.status);}
+    const data=await resp.json();
+    return data.data?.[0]?.url||null;
+  }catch(e){
+    console.error('[DALL-E] Error:',e);
+    showToast('DALL-E errore: '+e.message);
+    return null;
+  }
 }
 
 // ===== PROFILES =====
@@ -5368,17 +5558,21 @@ function initTheme(){
 // ===== INIT =====
 document.addEventListener('DOMContentLoaded',()=>{
   initTheme();
-  // Team system boot
+  // Auth gate: if no active session, gate stays visible (handled by Supabase getSession above)
+  // Team system boot — only if user already logged in and has a team
   const lastTeam=localStorage.getItem('hl_lastTeam');
   if(lastTeam){
     currentTeamId=lastTeam;
     migrateOldData(lastTeam);
     const team=TEAMS.find(t=>t.id===lastTeam);
-    if(team){const btn=document.getElementById('teamSwitchBtn');btn.style.display='flex';document.getElementById('teamCurrentIcon').textContent=team.emoji;document.getElementById('teamCurrentName').textContent=team.name;}
-  }else{
-    migrateOldData('admin_loris');
-    showTeamSelector();
+    if(team){
+      const btn=document.getElementById('teamSwitchBtn');btn.style.display='flex';
+      const dn=getUserDisplayName();
+      document.getElementById('teamCurrentIcon').textContent=team.emoji;
+      document.getElementById('teamCurrentName').textContent=team.isAdmin?dn+' 👑':(team.role==='Manager'?dn+' 📋':team.name);
+    }
   }
+  // Don't show team selector here — it's shown after auth gate clears
   document.getElementById('soundToggle').textContent=soundOn?'🔊':'🔇';
   initAiSettings();initChat();renderProfiles();
   const ctx=JSON.parse(localStorage.getItem(hlKey('ctx'))||'{}');
@@ -5501,6 +5695,12 @@ function openGame(g){
   closeBtn.innerHTML='✕';
   closeBtn.onclick=()=>closeGame();
   area.appendChild(closeBtn);
+  // Add game controls bar (restart + exit)
+  const ctrlBar=document.createElement('div');
+  ctrlBar.style.cssText='position:absolute;top:8px;right:40px;display:flex;gap:4px;z-index:5';
+  ctrlBar.innerHTML=`<button onclick="if(typeof fn['${g}']==='function'){clearTimers();fn['${g}']();}" title="Riavvia" style="padding:4px 8px;border-radius:6px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);color:var(--t2);cursor:pointer;font-size:.7rem">🔄</button>
+  <button onclick="closeGame()" title="Esci" style="padding:4px 8px;border-radius:6px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);color:var(--t2);cursor:pointer;font-size:.7rem">🚪</button>`;
+  area.appendChild(ctrlBar);
   // Inject game description + AI role badge after title
   if(info){
     const sub=area.querySelector('.game-subtitle');
@@ -6485,7 +6685,13 @@ function renderSketchScene(){
       <div class="sketch-progress-bar"><div class="sketch-progress-fill" style="width:${pct}%"></div></div>
     </div>
     <div class="sketch-scene">
-      <div class="sketch-scene-illustration"><canvas id="${cid}"></canvas></div>
+      <div class="sketch-scene-illustration">
+        <canvas id="${cid}"></canvas>
+        <div id="dalleImgWrap_${s.current}" style="display:none;margin-top:8px;text-align:center">
+          <img id="dalleImg_${s.current}" style="max-width:260px;border-radius:10px;border:2px solid var(--a1)" />
+        </div>
+        ${getDalleKey()?`<button onclick="sketchGenerateDalle(${s.current})" class="action-btn" style="margin-top:8px;font-size:.72rem;padding:6px 14px;background:linear-gradient(135deg,#8b5cf6,#6366f1);border:none;color:#fff;border-radius:8px;cursor:pointer" id="dalleBtn_${s.current}">🎨 Genera con DALL-E</button>`:'<div style="font-size:.6rem;color:var(--t2);margin-top:6px;text-align:center">Aggiungi OpenAI key nelle ⚙️ Impostazioni per DALL-E</div>'}
+      </div>
       <div class="sketch-scene-writing">
         ${sceneHint?`<div class="sketch-scene-hint">${sceneHint}</div>`:''}
         <textarea class="sketch-scene-textarea" id="skTextarea" placeholder="${s.mode==='inspire'?'Che hook ti ispira questa scena?':'Scrivi il tuo hook... l\'illustrazione si adatta!'}" oninput="sketchTextUpdate(this.value,'${cid}')">${existingText}</textarea>
@@ -6689,6 +6895,29 @@ function rateSketchStoryboard(r){
     <div class="game-actions">
       <button class="action-btn btn-sketch" onclick="renderSketchGame()">✏️ Nuovo Storyboard</button>
     </div>`;
+}
+
+// DALL-E integration for Sketch Hook
+async function sketchGenerateDalle(sceneIdx){
+  const text=(document.getElementById('skTextarea')?.value||'').trim();
+  const s=sketchState;
+  const sceneHint=s.mode==='inspire'&&s.scenePool[sceneIdx]?s.scenePool[sceneIdx].hint:'';
+  const prompt=`Create a clean, minimalist illustration for a social media storyboard scene. Style: hand-drawn sketch on white background, simple black lines with orange (#ff6b35) accent color. ${sceneHint?'Scene concept: '+sceneHint+'. ':''}${text?'Hook/text context: '+text.substring(0,200)+'. ':''} No text in the image. Clean, editorial illustration style suitable for marketing storyboards.`;
+  const btn=document.getElementById('dalleBtn_'+sceneIdx);
+  if(btn){btn.disabled=true;btn.textContent='⏳ Generando...';}
+  const url=await generateDalleImage(prompt,'1024x1024');
+  if(url){
+    const wrap=document.getElementById('dalleImgWrap_'+sceneIdx);
+    const img=document.getElementById('dalleImg_'+sceneIdx);
+    if(wrap&&img){wrap.style.display='block';img.src=url;img.alt='DALL-E generated scene';}
+    if(btn){btn.textContent='🎨 Rigenera';btn.disabled=false;}
+    // Save DALL-E URL to scene state
+    if(!s.scenes[sceneIdx])s.scenes[sceneIdx]={};
+    s.scenes[sceneIdx].dalleUrl=url;
+    showToast('Immagine generata!');
+  }else{
+    if(btn){btn.textContent='🎨 Genera con DALL-E';btn.disabled=false;}
+  }
 }
 
 // ===== GAME 12: BATTAGLIA ⚔️ =====
@@ -11291,13 +11520,13 @@ function renderStoriesMode(){
     let storiesHtml='';
     (d.stories||[]).forEach((s,si)=>{
       const icon=STORY_TYPE_ICONS[s.tipo]||'📸';
-      storiesHtml+=`<div class="story-card" data-strategy="${dayStrat}" onclick="openStoryEditor(${di},${si})">
+      storiesHtml+=`<div class="story-card" data-strategy="${dayStrat}" draggable="true" ondragstart="storyDragStart(event,${di},${si})" onclick="openStoryEditor(${di},${si})">
         <div class="sc-type">${icon} ${s.tipo}</div>
         <div class="sc-text">${(s.testo||'').substring(0,80)}</div>
         <span class="sc-del" onclick="event.stopPropagation();removeStoryFromDay(${di},${si})" title="Rimuovi">✕</span>
       </div>`;
     });
-    dayCols+=`<div class="story-day-col">
+    dayCols+=`<div class="story-day-col" data-dayidx="${di}" ondragover="storyDragOver(event)" ondragleave="storyDragLeave(event)" ondrop="storyDrop(event,${di})">
       <div class="story-day-head" onclick="editDayHeader(${di})" style="cursor:pointer" title="Click per modificare">
         <div class="story-day-num">G${dayNum} <span onclick="event.stopPropagation();removeDayFromSeq(${di})" style="font-size:.55rem;cursor:pointer;opacity:.5;margin-left:4px" title="Rimuovi giorno">🗑️</span></div>
         <div class="story-day-tema">${d.tema||'Nuovo giorno'}</div>
@@ -11603,6 +11832,48 @@ function removeDayFromSeq(dayIdx){
     refreshStoriesUI();
     showToast('🗑️ Giorno rimosso');
   },{danger:true,confirmText:'Rimuovi'});
+}
+
+// ===== DRAG & DROP STORY CARDS =====
+let _dragData=null;
+function storyDragStart(e,dayIdx,storyIdx){
+  _dragData={dayIdx,storyIdx};
+  e.dataTransfer.effectAllowed='move';
+  e.dataTransfer.setData('text/plain',JSON.stringify(_dragData));
+  e.target.style.opacity='.5';
+  setTimeout(()=>{if(e.target)e.target.style.opacity='.5';},0);
+}
+function storyDragOver(e){
+  e.preventDefault();
+  e.dataTransfer.dropEffect='move';
+  const col=e.currentTarget;
+  col.style.borderColor='var(--a1)';
+  col.style.background='rgba(255,107,53,.06)';
+}
+function storyDragLeave(e){
+  const col=e.currentTarget;
+  col.style.borderColor='';
+  col.style.background='';
+}
+function storyDrop(e,targetDayIdx){
+  e.preventDefault();
+  const col=e.currentTarget;
+  col.style.borderColor='';col.style.background='';
+  if(!_dragData)return;
+  const{dayIdx:srcDay,storyIdx:srcStory}=_dragData;
+  if(srcDay===targetDayIdx){_dragData=null;return;}
+  const seq=getActiveSequence();
+  const srcDayObj=seq.days[srcDay];
+  const targetDayObj=seq.days[targetDayIdx];
+  if(!srcDayObj||!targetDayObj||!srcDayObj.stories||!srcDayObj.stories[srcStory]){_dragData=null;return;}
+  // Move story from source to target
+  const[story]=srcDayObj.stories.splice(srcStory,1);
+  if(!targetDayObj.stories)targetDayObj.stories=[];
+  targetDayObj.stories.push(story);
+  saveStoryPlanner();
+  refreshStoriesUI();
+  showToast('📋 Storia spostata!');
+  _dragData=null;
 }
 
 function editDayHeader(dayIdx){
@@ -12942,6 +13213,160 @@ function confirmFontiPicker(src,overlay){
   showToast(`✅ ${selected.length} elementi selezionati da ${src==='mazzo'?'Mazzo':'Hub'}`);
 }
 
+// ===== CLICKUP INTEGRATION =====
+function openClickUpSettings(){
+  const existing=document.getElementById('clickupModal');if(existing)existing.remove();
+  const token=localStorage.getItem('hl_clickup_token')||'';
+  const ov=document.createElement('div');ov.id='clickupModal';
+  ov.style.cssText='position:fixed;inset:0;z-index:9999;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,.75)';
+  ov.innerHTML=`<div style="background:var(--card);border-radius:16px;padding:24px;width:90%;max-width:420px;border:1px solid rgba(255,255,255,.1)">
+    <h3 style="text-align:center;margin-bottom:12px">📋 ClickUp Integration</h3>
+    <p style="font-size:.72rem;color:var(--t2);margin-bottom:14px">Connetti ClickUp per inviare script come task e importare contenuti. Vai su ClickUp → Settings → Apps → API Token per ottenere il tuo token.</p>
+    <input type="password" id="clickupTokenInput" value="${token}" placeholder="pk_... (ClickUp API Token)" style="width:100%;padding:10px 14px;border-radius:8px;background:var(--input-bg);border:1px solid var(--input-border);color:var(--t1);font-size:.82rem;box-sizing:border-box;margin-bottom:10px"/>
+    <div style="display:flex;gap:8px">
+      <button onclick="saveClickUpToken()" style="flex:1;padding:10px;border-radius:8px;background:var(--gf);color:#fff;border:none;cursor:pointer;font-weight:700;font-size:.82rem">💾 Salva</button>
+      <button onclick="testClickUp()" style="flex:1;padding:10px;border-radius:8px;background:rgba(255,255,255,.08);color:var(--t1);border:1px solid rgba(255,255,255,.1);cursor:pointer;font-weight:700;font-size:.82rem">🧪 Testa</button>
+    </div>
+    <div id="clickupTestResult" style="margin-top:10px;font-size:.75rem;color:var(--t2)"></div>
+    ${token?`<div style="margin-top:14px;padding-top:12px;border-top:1px solid rgba(255,255,255,.06)">
+      <button onclick="clickupSendScript()" style="width:100%;padding:10px;border-radius:8px;background:rgba(126,87,255,.12);border:1px solid rgba(126,87,255,.2);color:#7e57ff;cursor:pointer;font-weight:700;font-size:.82rem">📤 Invia ultimo script a ClickUp</button>
+    </div>`:''}
+    <button onclick="document.getElementById('clickupModal')?.remove()" style="margin-top:10px;width:100%;padding:8px;border-radius:8px;background:none;border:1px solid rgba(255,255,255,.1);color:var(--t2);cursor:pointer;font-size:.72rem">✕ Chiudi</button>
+  </div>`;
+  document.body.appendChild(ov);
+  ov.addEventListener('click',e=>{if(e.target===ov)ov.remove();});
+}
+function saveClickUpToken(){
+  const token=document.getElementById('clickupTokenInput')?.value?.trim();
+  if(token){localStorage.setItem('hl_clickup_token',token);showToast('ClickUp token salvato!');renderSidebar();}
+  else{localStorage.removeItem('hl_clickup_token');showToast('ClickUp disconnesso');renderSidebar();}
+}
+async function testClickUp(){
+  const token=document.getElementById('clickupTokenInput')?.value?.trim()||localStorage.getItem('hl_clickup_token');
+  const res=document.getElementById('clickupTestResult');
+  if(!token){res.innerHTML='<span style="color:#ff5555">Inserisci un API token</span>';return;}
+  res.innerHTML='⏳ Test...';
+  try{
+    const resp=await fetch('https://api.clickup.com/api/v2/user',{headers:{'Authorization':token}});
+    if(!resp.ok)throw new Error('API '+resp.status);
+    const data=await resp.json();
+    res.innerHTML=`<span style="color:#66bb6a">Connesso come ${data.user?.username||data.user?.email||'utente'}!</span>`;
+    localStorage.setItem('hl_clickup_token',token);
+    renderSidebar();
+  }catch(e){res.innerHTML='<span style="color:#ff5555">Errore: '+e.message+'</span>';}
+}
+async function clickupSendScript(){
+  const token=localStorage.getItem('hl_clickup_token');
+  if(!token){showToast('Configura ClickUp prima');return;}
+  if(!fucinaScripts||!fucinaScripts.length){showToast('Nessuno script in Fucina');return;}
+  const script=fucinaScripts[0];
+  const content=script.blocks?.map((b,i)=>`Blocco ${i+1}: ${b.text||''}`).join('\n\n')||script.text||'Script da HOOKA';
+  try{
+    // Get teams first
+    const teamsResp=await fetch('https://api.clickup.com/api/v2/team',{headers:{'Authorization':token}});
+    const teamsData=await teamsResp.json();
+    if(!teamsData.teams?.length)throw new Error('Nessun workspace ClickUp trovato');
+    // Get first space's first list
+    const teamId=teamsData.teams[0].id;
+    const spacesResp=await fetch(`https://api.clickup.com/api/v2/team/${teamId}/space`,{headers:{'Authorization':token}});
+    const spacesData=await spacesResp.json();
+    if(!spacesData.spaces?.length)throw new Error('Nessuno space trovato');
+    const spaceId=spacesData.spaces[0].id;
+    const listsResp=await fetch(`https://api.clickup.com/api/v2/space/${spaceId}/list`,{headers:{'Authorization':token}});
+    const listsData=await listsResp.json();
+    if(!listsData.lists?.length)throw new Error('Nessuna lista trovata');
+    const listId=listsData.lists[0].id;
+    // Create task
+    const taskResp=await fetch(`https://api.clickup.com/api/v2/list/${listId}/task`,{
+      method:'POST',headers:{'Authorization':token,'Content-Type':'application/json'},
+      body:JSON.stringify({name:`📝 Script HOOKA: ${script.name||script.tipo||'Script'}`,description:content,status:'to do'})
+    });
+    if(!taskResp.ok)throw new Error('Errore creazione task');
+    showToast('✅ Script inviato a ClickUp!');
+  }catch(e){showToast('ClickUp errore: '+e.message);}
+}
+
+// ===== GOOGLE DRIVE INTEGRATION =====
+function openGDriveSettings(){
+  const existing=document.getElementById('gdriveModal');if(existing)existing.remove();
+  const connected=localStorage.getItem('hl_gdrive_connected');
+  const ov=document.createElement('div');ov.id='gdriveModal';
+  ov.style.cssText='position:fixed;inset:0;z-index:9999;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,.75)';
+  ov.innerHTML=`<div style="background:var(--card);border-radius:16px;padding:24px;width:90%;max-width:420px;border:1px solid rgba(255,255,255,.1)">
+    <h3 style="text-align:center;margin-bottom:12px">📁 Google Drive</h3>
+    ${supaUser?.app_metadata?.provider==='google'?`
+      <p style="font-size:.72rem;color:var(--t2);margin-bottom:14px">Sei loggato con Google. Puoi esportare i tuoi script e hook direttamente su Drive come file di testo.</p>
+      <button onclick="gdriveSaveExport()" style="width:100%;padding:12px;border-radius:10px;background:linear-gradient(135deg,#4285f4,#34a853);color:#fff;border:none;cursor:pointer;font-weight:700;font-size:.85rem;margin-bottom:8px">📤 Esporta Mazzo + Script su Drive</button>
+      <button onclick="gdriveImportDoc()" style="width:100%;padding:10px;border-radius:8px;background:rgba(66,133,244,.1);border:1px solid rgba(66,133,244,.2);color:#4285f4;cursor:pointer;font-weight:700;font-size:.82rem;margin-bottom:8px">📥 Importa da file locale</button>
+      <div id="gdriveResult" style="font-size:.72rem;color:var(--t2);margin-top:8px"></div>
+    `:`
+      <p style="font-size:.72rem;color:var(--t2);margin-bottom:14px">Per usare Google Drive, fai il login con Google (non con email/GitHub/Discord). L'integrazione usa il tuo account Google per accedere a Drive.</p>
+      <button onclick="document.getElementById('gdriveModal')?.remove();doGoogleAuth()" style="width:100%;padding:12px;border-radius:10px;background:linear-gradient(135deg,#4285f4,#34a853);color:#fff;border:none;cursor:pointer;font-weight:700;font-size:.85rem">🔑 Login con Google</button>
+    `}
+    <button onclick="document.getElementById('gdriveModal')?.remove()" style="margin-top:10px;width:100%;padding:8px;border-radius:8px;background:none;border:1px solid rgba(255,255,255,.1);color:var(--t2);cursor:pointer;font-size:.72rem">✕ Chiudi</button>
+  </div>`;
+  document.body.appendChild(ov);
+  ov.addEventListener('click',e=>{if(e.target===ov)ov.remove();});
+}
+function gdriveSaveExport(){
+  // Export all data as JSON and trigger download (since direct Drive API needs extra OAuth scopes)
+  const data={
+    mazzo:savedItems||[],
+    scripts:fucinaScripts||[],
+    profiles:profiles||[],
+    voice:voice||{},
+    mondo:mondo||{},
+    stats:stats||{},
+    exportDate:new Date().toISOString(),
+    app:'HOOKA',version:'10.1'
+  };
+  const blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json'});
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement('a');a.href=url;a.download=`HOOKA_Export_${new Date().toISOString().slice(0,10)}.json`;
+  document.body.appendChild(a);a.click();document.body.removeChild(a);URL.revokeObjectURL(url);
+  localStorage.setItem('hl_gdrive_connected','1');
+  showToast('📁 Dati esportati! Caricali manualmente su Google Drive.');
+  renderSidebar();
+  const res=document.getElementById('gdriveResult');
+  if(res)res.innerHTML='<span style="color:#66bb6a">File scaricato! Caricalo su Google Drive per backup cloud.</span>';
+}
+function gdriveImportDoc(){
+  const inp=document.createElement('input');inp.type='file';inp.accept='.json,.txt,.md';
+  inp.onchange=async(e)=>{
+    const file=e.target.files[0];if(!file)return;
+    const text=await file.text();
+    try{
+      const data=JSON.parse(text);
+      if(data.mazzo&&Array.isArray(data.mazzo)){
+        let imported=0;
+        data.mazzo.forEach(item=>{
+          if(!savedItems.some(s=>s.text===item.text)){savedItems.unshift(item);imported++;}
+        });
+        if(imported>0){localStorage.setItem(hlKey('saved'),JSON.stringify(savedItems));updateSavedCount();}
+        showToast(`✅ Importati ${imported} hook dal file!`);
+      }
+      if(data.scripts&&Array.isArray(data.scripts)){
+        let imported=0;
+        data.scripts.forEach(s=>{
+          if(!fucinaScripts.some(f=>(f.name||'')===(s.name||''))){fucinaScripts.push(s);imported++;}
+        });
+        if(imported>0)localStorage.setItem(hlKey('scripts'),JSON.stringify(fucinaScripts));
+        showToast(`✅ Importati ${imported} script!`);
+      }
+      document.getElementById('gdriveModal')?.remove();
+    }catch(err){
+      // Plain text — save as resource
+      if(text.trim()){
+        resources.texts.push({title:file.name,content:text.substring(0,2000),date:new Date().toISOString()});
+        localStorage.setItem(hlKey('resources'),JSON.stringify(resources));
+        showToast('✅ File importato come risorsa testo!');
+        document.getElementById('gdriveModal')?.remove();
+      }else{showToast('File vuoto o non valido');}
+    }
+  };
+  inp.click();
+}
+
 // ===== SIDEBAR LAYOUT =====
 function initLayout(){
   const container=document.querySelector('.container');
@@ -13132,20 +13557,20 @@ function renderSidebar(){
       <span class="side-conn-name">🥊 AI Secondaria${secConn?' — '+secProvLabel:''}</span>
       <span class="side-conn-label">${secConn?secModelLabel:'Configura per AI Fight'}</span>
     </div>
-    <div class="side-conn" style="opacity:.5">
-      <span class="side-conn-dot soon"></span>
+    <div class="side-conn" onclick="openClickUpSettings()" style="cursor:pointer${localStorage.getItem('hl_clickup_token')?'':';opacity:.7'}">
+      <span class="side-conn-dot ${localStorage.getItem('hl_clickup_token')?'on':'off'}"></span>
       <span class="side-conn-name">📋 ClickUp</span>
-      <span class="side-conn-label">Coming Soon</span>
+      <span class="side-conn-label">${localStorage.getItem('hl_clickup_token')?'Connesso':'Configura'}</span>
     </div>
-    <div class="side-conn" style="opacity:.5">
-      <span class="side-conn-dot soon"></span>
+    <div class="side-conn" onclick="openGDriveSettings()" style="cursor:pointer${localStorage.getItem('hl_gdrive_connected')?'':';opacity:.7'}">
+      <span class="side-conn-dot ${localStorage.getItem('hl_gdrive_connected')?'on':'off'}"></span>
       <span class="side-conn-name">📁 Google Drive</span>
-      <span class="side-conn-label">Coming Soon</span>
+      <span class="side-conn-label">${localStorage.getItem('hl_gdrive_connected')?'Connesso':'Configura'}</span>
     </div>
-    <div class="side-conn" style="opacity:.5">
-      <span class="side-conn-dot soon"></span>
-      <span class="side-conn-name">💬 Discord</span>
-      <span class="side-conn-label">Coming Soon</span>
+    <div class="side-conn" onclick="toggleAiDrawer()" style="cursor:pointer${getDalleKey()?'':';opacity:.7'}">
+      <span class="side-conn-dot ${getDalleKey()?'on':'off'}"></span>
+      <span class="side-conn-name">🎨 DALL-E</span>
+      <span class="side-conn-label">${getDalleKey()?'Attivo':'Configura nelle ⚙️'}</span>
     </div>
   </div>
 

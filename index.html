@@ -249,8 +249,18 @@ body::after{content:'';position:fixed;inset:0;background:radial-gradient(circle 
 [data-theme="light"] .section-header{background:var(--card);box-shadow:0 1px 4px rgba(0,0,0,.06)}
 [data-theme="light"] .section-header .sh-count{background:rgba(0,0,0,.04)}
 
-.game-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:10px;margin-bottom:10px}
-.game-card{background:var(--card);border:2px solid rgba(255,255,255,.04);border-radius:var(--r);padding:18px 10px 14px;text-align:center;cursor:pointer;transition:all .35s;position:relative;overflow:hidden;animation:cardBreath 5s ease-in-out infinite;animation-delay:calc(var(--i,0) * .3s)}
+.grid-nav{position:relative;display:flex;align-items:center;gap:0;margin-bottom:10px}
+.grid-arrow{position:absolute;top:50%;transform:translateY(-50%);z-index:3;width:32px;height:32px;border-radius:50%;border:1px solid rgba(255,255,255,.1);background:var(--card);color:var(--t1);font-size:1.1rem;cursor:pointer;display:flex;align-items:center;justify-content:center;box-shadow:0 2px 8px rgba(0,0,0,.2);transition:all .2s;opacity:.8}
+.grid-arrow:hover{opacity:1;background:var(--card2);box-shadow:0 4px 16px rgba(0,0,0,.3)}
+.grid-arrow.left{left:-6px}
+.grid-arrow.right{right:-6px}
+[data-theme="light"] .grid-arrow{background:#fff;border-color:rgba(0,0,0,.1);box-shadow:0 2px 8px rgba(0,0,0,.08)}
+[data-theme="light"] .grid-arrow:hover{background:#f8f8f8;box-shadow:0 4px 12px rgba(0,0,0,.12)}
+.game-grid{display:flex;gap:10px;overflow-x:auto;scroll-snap-type:x mandatory;-webkit-overflow-scrolling:touch;padding:4px 2px 8px;scrollbar-width:thin;scrollbar-color:rgba(255,107,53,.2) transparent;flex:1;scroll-behavior:smooth}
+.game-grid::-webkit-scrollbar{height:4px}
+.game-grid::-webkit-scrollbar-track{background:transparent}
+.game-grid::-webkit-scrollbar-thumb{background:rgba(255,107,53,.2);border-radius:4px}
+.game-card{background:var(--card);border:2px solid rgba(255,255,255,.04);border-radius:var(--r);padding:18px 12px 14px;text-align:center;cursor:pointer;transition:all .35s;position:relative;overflow:hidden;animation:cardBreath 5s ease-in-out infinite;animation-delay:calc(var(--i,0) * .3s);min-width:145px;max-width:145px;flex-shrink:0;scroll-snap-align:start}
 @keyframes cardBreath{0%,100%{border-color:transparent}50%{border-color:rgba(255,107,53,.08)}}
 .game-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;border-radius:var(--r) var(--r) 0 0}
 .game-card:nth-child(1)::before{background:var(--gh)}.game-card:nth-child(2)::before{background:var(--gc)}
@@ -271,10 +281,14 @@ body::after{content:'';position:fixed;inset:0;background:radial-gradient(circle 
 .game-card:hover .icon svg{filter:drop-shadow(0 2px 8px rgba(255,107,53,.5));transform:scale(1.1);transition:all .3s}
 .game-card .name{font-size:.75rem;font-weight:700}
 .game-card .desc{font-size:.6rem;color:var(--t2);line-height:1.2;margin-top:2px}
-#grid2{grid-template-columns:repeat(6,1fr)}
+/* grid2 inherits flex from .game-grid */
 
 /* GAME AREA */
 .game-area{background:var(--card);border-radius:var(--r);padding:24px 20px;min-height:280px;box-shadow:0 8px 32px rgba(0,0,0,.4);display:none;animation:slideUp .4s;position:relative;overflow:hidden}
+.game-close-btn{position:absolute;top:12px;right:12px;background:rgba(255,255,255,.08);border:none;color:var(--t2);width:32px;height:32px;border-radius:50%;cursor:pointer;font-size:1.1rem;display:flex;align-items:center;justify-content:center;z-index:5;transition:all .2s;line-height:1}
+.game-close-btn:hover{background:rgba(255,77,77,.15);color:#ff4d4d}
+[data-theme="light"] .game-close-btn{background:rgba(0,0,0,.05)}
+[data-theme="light"] .game-close-btn:hover{background:rgba(255,77,77,.1)}
 .game-area.visible{display:block}
 @keyframes slideUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
 .back-btn{position:absolute;top:12px;left:12px;background:rgba(255,255,255,.08);border:none;color:var(--t2);padding:6px 12px;border-radius:var(--rs);cursor:pointer;font-size:.8rem;transition:var(--tr);z-index:5}
@@ -895,6 +909,18 @@ body::after{content:'';position:fixed;inset:0;background:radial-gradient(circle 
 .hub-action-btn:hover{background:rgba(0,184,148,.15);border-color:rgba(0,184,148,.4)}
 .hub-workspace{min-height:200px;border:2px dashed rgba(0,184,148,.15);border-radius:var(--r);padding:16px;position:relative;display:flex;flex-wrap:wrap;gap:10px;align-content:flex-start}
 .hub-workspace.empty::after{content:'Trascina hook dal mazzo, genera con AI, o aggiungi manualmente';position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);color:var(--t2);font-size:.85rem;text-align:center;pointer-events:none;max-width:80%}
+.hub-filter-bar{display:flex;gap:6px;flex-wrap:wrap;align-items:center;margin-bottom:10px;padding:8px 12px;background:rgba(0,184,148,.03);border-radius:var(--rs);border:1px solid rgba(0,184,148,.08)}
+.hub-filter-chip{padding:4px 12px;border-radius:20px;font-size:.7rem;font-weight:600;border:1px solid rgba(255,255,255,.1);background:rgba(255,255,255,.04);color:var(--t2);cursor:pointer;transition:all .2s}
+.hub-filter-chip.active{background:rgba(0,184,148,.15);border-color:#00b894;color:#00b894}
+.hub-filter-chip:hover{border-color:rgba(0,184,148,.3)}
+.hub-counter{font-size:.65rem;color:var(--t2);margin-left:auto;font-weight:600}
+.hub-inline-input{background:rgba(0,184,148,.04);border:2px dashed rgba(0,184,148,.25);border-radius:12px;padding:14px;margin-bottom:10px;width:100%;box-sizing:border-box;animation:slideUp .3s}
+.hub-inline-input textarea{width:100%;background:var(--bg);border:1px solid rgba(255,255,255,.1);border-radius:8px;color:var(--t1);padding:10px 12px;font-size:.85rem;resize:vertical;font-family:inherit;min-height:60px;box-sizing:border-box}
+.hub-inline-input textarea:focus{outline:none;border-color:rgba(0,184,148,.4);box-shadow:0 0 0 3px rgba(0,184,148,.08)}
+.hub-input-actions{display:flex;gap:6px;margin-top:8px;justify-content:flex-end}
+.hub-btn-confirm{background:linear-gradient(135deg,#00b894,#00a381);color:#fff;border:none;padding:8px 18px;border-radius:8px;font-weight:700;cursor:pointer;font-size:.8rem;transition:all .2s}
+.hub-btn-confirm:hover{transform:translateY(-1px);box-shadow:0 4px 12px rgba(0,184,148,.3)}
+.hub-btn-cancel{background:rgba(255,255,255,.08);color:var(--t2);border:none;padding:8px 14px;border-radius:8px;cursor:pointer;font-size:.8rem}
 .hub-card{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.1);border-radius:var(--rs);padding:12px;min-width:200px;max-width:340px;flex:1 1 280px;position:relative;transition:var(--tr);cursor:default}
 .hub-card:hover{border-color:rgba(0,184,148,.3);box-shadow:0 4px 15px rgba(0,184,148,.1)}
 .hub-card.selected{border-color:#00b894;box-shadow:0 0 0 2px rgba(0,184,148,.2)}
@@ -906,10 +932,35 @@ body::after{content:'';position:fixed;inset:0;background:radial-gradient(circle 
 .hub-card-source.ai{background:rgba(168,85,247,.1);color:#a855f7}
 .hub-card-source.trend{background:rgba(255,107,53,.1);color:#ff6b35}
 .hub-card-source.manual{background:rgba(0,184,148,.1);color:#00b894}
+.hub-card-source.game{background:rgba(9,132,227,.1);color:#0984e3}
 .hub-card-actions{position:absolute;top:6px;right:6px;display:flex;gap:4px;opacity:0;transition:opacity .2s}
 .hub-card:hover .hub-card-actions{opacity:1}
-.hub-card-actions button{width:24px;height:24px;border-radius:6px;border:none;background:rgba(255,255,255,.08);color:var(--t2);cursor:pointer;font-size:.7rem;display:flex;align-items:center;justify-content:center}
+.hub-card-actions button{width:26px;height:26px;border-radius:6px;border:none;background:rgba(255,255,255,.08);color:var(--t2);cursor:pointer;font-size:.7rem;display:flex;align-items:center;justify-content:center}
 .hub-card-actions button:hover{background:rgba(255,255,255,.15);color:var(--t1)}
+.hub-card-quick{display:flex;gap:4px;margin-top:6px;flex-wrap:wrap}
+.hub-card-quick button{padding:3px 8px;border-radius:6px;border:1px solid rgba(255,255,255,.06);background:rgba(255,255,255,.03);color:var(--t2);font-size:.6rem;cursor:pointer;transition:all .2s}
+.hub-card-quick button:hover{border-color:rgba(0,184,148,.3);color:var(--t1);background:rgba(0,184,148,.06)}
+.mazzo-modal-overlay{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.6);z-index:9999;display:flex;align-items:center;justify-content:center;animation:fadeIn .2s}
+.mazzo-modal{background:var(--card);border-radius:16px;max-width:520px;width:90%;max-height:75vh;display:flex;flex-direction:column;box-shadow:0 20px 60px rgba(0,0,0,.4);border:1px solid rgba(255,255,255,.08)}
+.mazzo-modal-header{padding:16px 20px;border-bottom:1px solid rgba(255,255,255,.06);display:flex;align-items:center;justify-content:space-between}
+.mazzo-modal-header h3{font-size:1rem;font-weight:800;color:var(--t1);margin:0}
+.mazzo-modal-body{overflow-y:auto;padding:12px 16px;flex:1}
+.mazzo-modal-item{display:flex;align-items:flex-start;gap:10px;padding:10px;border-radius:8px;border:1px solid rgba(255,255,255,.06);margin-bottom:6px;cursor:pointer;transition:all .2s}
+.mazzo-modal-item:hover{background:rgba(0,184,148,.04);border-color:rgba(0,184,148,.15)}
+.mazzo-modal-item.checked{background:rgba(0,184,148,.06);border-color:#00b894}
+.mazzo-modal-check{width:18px;height:18px;border-radius:5px;border:2px solid rgba(255,255,255,.15);flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:.7rem;margin-top:2px;transition:all .2s}
+.mazzo-modal-item.checked .mazzo-modal-check{background:#00b894;border-color:#00b894;color:#fff}
+.mazzo-modal-text{font-size:.8rem;color:var(--t1);line-height:1.4;flex:1}
+.mazzo-modal-type{font-size:.6rem;color:var(--t2);margin-top:3px}
+.mazzo-modal-footer{padding:12px 16px;border-top:1px solid rgba(255,255,255,.06);display:flex;justify-content:flex-end;gap:8px}
+[data-theme="light"] .mazzo-modal{background:var(--card);border-color:rgba(0,0,0,.1);box-shadow:0 20px 60px rgba(0,0,0,.15)}
+[data-theme="light"] .mazzo-modal-item{border-color:rgba(0,0,0,.08)}
+[data-theme="light"] .mazzo-modal-item:hover{background:rgba(0,184,148,.04)}
+[data-theme="light"] .mazzo-modal-check{border-color:rgba(0,0,0,.15)}
+[data-theme="light"] .hub-inline-input{background:rgba(0,184,148,.03);border-color:rgba(0,184,148,.2)}
+[data-theme="light"] .hub-inline-input textarea{background:#fff;border-color:rgba(0,0,0,.12)}
+[data-theme="light"] .hub-filter-bar{background:rgba(0,184,148,.02);border-color:rgba(0,184,148,.08)}
+[data-theme="light"] .hub-filter-chip{background:rgba(0,0,0,.03);border-color:rgba(0,0,0,.1);color:var(--t2)}
 .hub-compare{background:rgba(0,184,148,.03);border:1px solid rgba(0,184,148,.15);border-radius:var(--r);padding:14px;margin-top:12px}
 .hub-compare-title{font-size:.75rem;font-weight:700;color:#00b894;text-transform:uppercase;letter-spacing:1px;margin-bottom:8px}
 .hub-ai-panel{background:rgba(168,85,247,.03);border:1px solid rgba(168,85,247,.15);border-radius:var(--r);padding:14px;margin-top:12px}
@@ -921,11 +972,31 @@ body::after{content:'';position:fixed;inset:0;background:radial-gradient(circle 
 [data-theme="light"] .np-gen-hook{background:rgba(255,107,53,.03);border-color:rgba(255,107,53,.1)}
 [data-theme="light"] .np-gen-hook-actions button{background:rgba(0,0,0,.03);border-color:rgba(0,0,0,.08)}
 /* Analytics Dashboard */
-.analytics-section{background:var(--card);border-radius:var(--r);padding:20px;margin:12px 0;border-left:4px solid #0984e3}
-.analytics-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:10px;margin-bottom:16px}
-.stat-score-card{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:var(--rs);padding:14px;text-align:center}
-.ssc-val{font-size:1.5rem;font-weight:900;color:var(--a1)}
-.ssc-label{font-size:.6rem;text-transform:uppercase;letter-spacing:1px;color:var(--t2);margin-top:4px}
+.analytics-section{background:var(--card);border-radius:var(--r);padding:14px;margin:12px 0;border-left:4px solid #0984e3}
+.analytics-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;margin-bottom:12px}
+.stat-score-card{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:var(--rs);padding:10px;text-align:center}
+.ssc-val{font-size:1.2rem;font-weight:900;color:var(--a1)}
+.ssc-label{font-size:.55rem;text-transform:uppercase;letter-spacing:1px;color:var(--t2);margin-top:3px}
+.analytics-charts-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin:12px 0}
+.analytics-chart-box{background:rgba(255,255,255,.02);border:1px solid rgba(255,255,255,.06);border-radius:var(--rs);padding:14px}
+.analytics-chart-title{font-size:.7rem;font-weight:700;color:var(--t2);text-transform:uppercase;letter-spacing:1px;margin-bottom:10px}
+.sparkline-container{height:60px;display:flex;align-items:flex-end;gap:2px}
+.sparkline-bar{flex:1;background:linear-gradient(180deg,#0984e3,#74b9ff);border-radius:3px 3px 0 0;min-height:3px;transition:height .4s;position:relative}
+.sparkline-bar:hover{opacity:.8}
+.sparkline-bar::after{content:attr(data-val);position:absolute;top:-14px;left:50%;transform:translateX(-50%);font-size:.5rem;color:var(--t2);opacity:0;transition:opacity .2s}
+.sparkline-bar:hover::after{opacity:1}
+.skill-progress{margin-bottom:6px}
+.skill-progress-label{display:flex;justify-content:space-between;font-size:.7rem;color:var(--t1);margin-bottom:3px}
+.skill-progress-track{height:8px;background:rgba(255,255,255,.04);border-radius:4px;overflow:hidden}
+.skill-progress-fill{height:100%;border-radius:4px;transition:width .6s}
+.improve-tips{margin-top:12px;padding:14px;background:rgba(9,132,227,.03);border:1px solid rgba(9,132,227,.08);border-radius:var(--rs)}
+.improve-tip{display:flex;gap:8px;align-items:flex-start;padding:8px 0;border-bottom:1px solid rgba(255,255,255,.04);font-size:.8rem;color:var(--t1);line-height:1.5}
+.improve-tip:last-child{border:none}
+.improve-tip-icon{font-size:1rem;flex-shrink:0}
+[data-theme="light"] .analytics-chart-box{background:rgba(0,0,0,.01);border-color:rgba(0,0,0,.06)}
+[data-theme="light"] .sparkline-bar{background:linear-gradient(180deg,#0984e3,#74b9ff)}
+[data-theme="light"] .skill-progress-track{background:rgba(0,0,0,.04)}
+[data-theme="light"] .improve-tips{background:rgba(9,132,227,.02);border-color:rgba(9,132,227,.08)}
 .ssc-sub{font-size:.7rem;color:var(--t2);margin-top:2px}
 .stat-bar-chart{margin:16px 0}
 .sb-row{display:flex;align-items:center;gap:10px;margin-bottom:8px}
@@ -1435,7 +1506,7 @@ body.light .shimmer::after{background:linear-gradient(90deg,transparent 0%,rgba(
 .smart-tip-close{position:absolute;top:8px;right:10px;background:none;border:none;color:var(--t2);cursor:pointer;font-size:.9rem;padding:4px;line-height:1}
 
 @media(max-width:700px){
-  .game-grid,#grid2{grid-template-columns:repeat(3,1fr);gap:8px}
+  .game-card{min-width:120px;max-width:120px}
   .game-card{padding:10px 6px}.game-card .icon{font-size:1.3rem}.game-card .name{font-size:.7rem}.game-card .desc{display:none}
   .game-area{padding:16px 14px}.slot-container{flex-direction:column;align-items:center}.slot-reel{min-width:100%;max-width:100%}
   .flip-scene{width:250px;height:160px}.collision-arena,.emotion-container{flex-direction:column}
@@ -1834,16 +1905,6 @@ body.light .shimmer::after{background:linear-gradient(90deg,transparent 0%,rgba(
   </div>
 </div>
 
-<!-- ANALYTICS DASHBOARD -->
-<div class="section-header" style="border-color:#0984e3">
-  <div class="sh-icon">📊</div>
-  <div class="sh-text"><h3>Le Tue Stats</h3><p>Analisi performance, punti forti e aree di miglioramento</p></div>
-  <span class="sh-count"><button class="hub-action-btn" onclick="renderAnalytics()" style="font-size:.7rem;border-color:rgba(9,132,227,.3);background:rgba(9,132,227,.06)">🔄 Aggiorna</button></span>
-</div>
-<div class="analytics-section" id="analyticsSection">
-  <div id="analyticsContent"><div style="text-align:center;color:var(--t2);padding:20px;font-size:.85rem">Caricamento stats...</div></div>
-</div>
-
 <div class="leaderboard" id="leaderboardWrap">
   <div class="lb-card">
     <div class="lb-header">
@@ -1880,6 +1941,16 @@ body.light .shimmer::after{background:linear-gradient(90deg,transparent 0%,rgba(
   </div>
 </div>
 
+<!-- ANALYTICS DASHBOARD (bottom) -->
+<div class="section-header" style="border-color:#0984e3">
+  <div class="sh-icon">📊</div>
+  <div class="sh-text"><h3>Le Tue Stats</h3><p>Analisi performance, punti forti e aree di miglioramento</p></div>
+  <span class="sh-count"><button class="hub-action-btn" onclick="renderAnalytics()" style="font-size:.7rem;border-color:rgba(9,132,227,.3);background:rgba(9,132,227,.06)">🔄 Aggiorna</button></span>
+</div>
+<div class="analytics-section" id="analyticsSection">
+  <div id="analyticsContent"><div style="text-align:center;color:var(--t2);padding:20px;font-size:.85rem">Caricamento stats...</div></div>
+</div>
+
 <div class="smart-filters">
   <div class="sf-card">
     <div class="sf-row">
@@ -1909,6 +1980,7 @@ body.light .shimmer::after{background:linear-gradient(90deg,transparent 0%,rgba(
 <div class="container">
   <div class="section-label"><span>&#127922; Ispirazione</span></div>
   <div class="section-header sh-inspiration"><div class="sh-icon">🎰</div><div class="sh-text"><h3>Ispirazione</h3><p>10 giochi per scaldare la creatività</p></div><span class="sh-count">10 giochi</span></div>
+  <div class="grid-nav"><button class="grid-arrow left" onclick="scrollGrid('grid1',-1)">‹</button>
   <div class="game-grid" id="grid1">
     <div class="game-card" onclick="openGame('slot')"><span class="icon"><svg viewBox="0 0 32 32"><rect x="3" y="6" width="26" height="20" rx="4" fill="none" stroke="#ff6b35" stroke-width="2"/><rect x="7" y="10" width="6" height="12" rx="1.5" fill="#ff6b3533" stroke="#ff6b35" stroke-width="1"/><rect x="15" y="10" width="6" height="12" rx="1.5" fill="#e8930c33" stroke="#e8930c" stroke-width="1"/><rect x="23" y="10" width="3" height="12" rx="1.5" fill="#ffb08833" stroke="#ffb088" stroke-width="1"/><circle cx="10" cy="16" r="2" fill="#ff6b35"/><circle cx="18" cy="16" r="2" fill="#e8930c"/></svg></span><div class="name">La Slot</div><div class="desc">Combo casuali</div></div>
     <div class="game-card" onclick="openGame('flip')"><span class="icon"><svg viewBox="0 0 32 32"><path d="M8 10h16v14H8z" rx="2" fill="none" stroke="#e8930c" stroke-width="2"/><path d="M16 10v14" stroke="#e8930c" stroke-width="1.5" stroke-dasharray="2 2"/><path d="M10 17l3-3 3 3" fill="none" stroke="#ff6b35" stroke-width="2" stroke-linecap="round"/><path d="M22 17l-3 3-3-3" fill="none" stroke="#ffb088" stroke-width="2" stroke-linecap="round"/></svg></span><div class="name">Ribaltamento</div><div class="desc">Capovolgi tutto</div></div>
@@ -1920,10 +1992,11 @@ body.light .shimmer::after{background:linear-gradient(90deg,transparent 0%,rgba(
     <div class="game-card" onclick="openGame('mappa')"><span class="icon"><svg viewBox="0 0 32 32"><circle cx="10" cy="10" r="3" fill="#fdcb6e33" stroke="#fdcb6e" stroke-width="1.5"/><circle cx="24" cy="10" r="3" fill="#ff6b3533" stroke="#ff6b35" stroke-width="1.5"/><circle cx="16" cy="24" r="3" fill="#e8930c33" stroke="#e8930c" stroke-width="1.5"/><path d="M13 10h8M11.5 12.5l3 9M20.5 12.5l-3 9" stroke="#ffb088" stroke-width="1.5" stroke-linecap="round" stroke-dasharray="3 2"/></svg></span><div class="name">La Mappa</div><div class="desc">Connetti idee</div></div>
     <div class="game-card" onclick="openGame('moodring')"><span class="icon"><svg viewBox="0 0 32 32"><circle cx="16" cy="16" r="10" fill="none" stroke="url(#moodGrad)" stroke-width="2.5"/><defs><linearGradient id="moodGrad" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#ff6b35"/><stop offset="50%" stop-color="#a855f7"/><stop offset="100%" stop-color="#0984e3"/></linearGradient></defs><circle cx="16" cy="16" r="5" fill="url(#moodGrad)" opacity=".2"/><circle cx="16" cy="16" r="2" fill="url(#moodGrad)"/></svg></span><div class="name">Mood Ring</div><div class="desc">Mood ispirazionale</div></div>
     <div class="game-card" onclick="openGame('scanner')"><span class="icon"><svg viewBox="0 0 32 32"><circle cx="14" cy="14" r="7" fill="none" stroke="#e8930c" stroke-width="2"/><path d="M19 19l7 7" stroke="#e8930c" stroke-width="2.5" stroke-linecap="round"/><path d="M11 14h6M14 11v6" stroke="#e8930c" stroke-width="1.5" stroke-linecap="round" opacity=".6"/></svg></span><div class="name">Lo Scanner</div><div class="desc">Pattern finder</div></div>
-  </div>
+  </div><button class="grid-arrow right" onclick="scrollGrid('grid1',1)">›</button></div>
 
   <div class="section-label sec-challenge"><span>&#9889; Sfide Interattive</span></div>
   <div class="section-header sh-challenge"><div class="sh-icon">⚡</div><div class="sh-text"><h3>Sfide Interattive</h3><p>Scrivi sotto pressione e batti il timer</p></div><span class="sh-count">6 sfide</span></div>
+  <div class="grid-nav"><button class="grid-arrow left" onclick="scrollGrid('grid2',-1)">‹</button>
   <div class="game-grid" id="grid2">
     <div class="game-card" onclick="openGame('speed')"><span class="icon"><svg viewBox="0 0 32 32"><circle cx="16" cy="17" r="9" fill="none" stroke="#ffd93d" stroke-width="2"/><path d="M16 11v6l4 3" fill="none" stroke="#ffd93d" stroke-width="2" stroke-linecap="round"/><path d="M13 6h6" stroke="#ffd93d" stroke-width="2" stroke-linecap="round"/><path d="M16 6v3" stroke="#ffd93d" stroke-width="1.5"/></svg></span><div class="name">Speed Hook</div><div class="desc">60 sec, scrivi!</div></div>
     <div class="game-card" onclick="openGame('bridge')"><span class="icon"><svg viewBox="0 0 32 32"><rect x="3" y="14" width="8" height="8" rx="2" fill="#00b89422" stroke="#00b894" stroke-width="1.5"/><rect x="21" y="14" width="8" height="8" rx="2" fill="#0984e322" stroke="#0984e3" stroke-width="1.5"/><path d="M11 18q5-8 10 0" fill="none" stroke="#fdcb6e" stroke-width="2" stroke-linecap="round"/></svg></span><div class="name">Il Ponte</div><div class="desc">Collega 2 mondi</div></div>
@@ -1931,21 +2004,23 @@ body.light .shimmer::after{background:linear-gradient(90deg,transparent 0%,rgba(
     <div class="game-card" onclick="openGame('chain')"><span class="icon"><svg viewBox="0 0 32 32"><ellipse cx="11" cy="14" rx="5" ry="3.5" fill="none" stroke="#fdcb6e" stroke-width="2" transform="rotate(-30 11 14)"/><ellipse cx="21" cy="18" rx="5" ry="3.5" fill="none" stroke="#e8930c" stroke-width="2" transform="rotate(-30 21 18)"/><ellipse cx="16" cy="16" rx="4" ry="3" fill="none" stroke="#ff6b35" stroke-width="2" transform="rotate(-30 16 16)"/></svg></span><div class="name">La Catena</div><div class="desc">Word chain a tempo</div></div>
     <div class="game-card" onclick="openGame('freestyle')"><span class="icon"><svg viewBox="0 0 32 32"><path d="M8 24l3-12 10 8z" fill="#a855f722" stroke="#a855f7" stroke-width="2" stroke-linejoin="round"/><path d="M11 12l2-4" stroke="#a855f7" stroke-width="2" stroke-linecap="round"/><circle cx="13" cy="7" r="1.5" fill="#a855f7"/></svg></span><div class="name">Freestyle</div><div class="desc">Scrivi con vincoli</div></div>
     <div class="game-card" onclick="openGame('sketch')"><span class="icon"><svg viewBox="0 0 32 32"><path d="M22 6l4 4-14 14H8v-4z" fill="#e8930c22" stroke="#e8930c" stroke-width="2" stroke-linejoin="round"/><path d="M18 10l4 4" stroke="#e8930c" stroke-width="1.5"/><path d="M8 26h16" stroke="#e8930c" stroke-width="1.5" stroke-linecap="round" stroke-dasharray="2 3"/></svg></span><div class="name">Sketch Hook</div><div class="desc">Disegna + scrivi</div></div>
-  </div>
+  </div><button class="grid-arrow right" onclick="scrollGrid('grid2',1)">›</button></div>
 
   <div class="section-label sec-arena"><span>&#127942; Arena</span></div>
   <div class="section-header sh-arena"><div class="sh-icon">🏟️</div><div class="sh-text"><h3>Arena</h3><p>Sfide avanzate per chi vuole il livello pro</p></div><span class="sh-count">4 sfide</span></div>
   <div class="arena-progress" id="arenaProgress"></div>
+  <div class="grid-nav"><button class="grid-arrow left" onclick="scrollGrid('grid3',-1)">‹</button>
   <div class="game-grid" id="grid3">
     <div class="game-card" onclick="openGame('battle')"><span class="icon"><svg viewBox="0 0 32 32"><path d="M10 6l-4 12h7l-3 10 14-14h-8l4-8z" fill="#ff475722" stroke="#ff4757" stroke-width="2" stroke-linejoin="round"/></svg></span><div class="name">Battaglia</div><div class="desc">Tu vs l'app</div></div>
     <div class="game-card" onclick="openGame('anatomy')"><span class="icon"><svg viewBox="0 0 32 32"><circle cx="16" cy="13" r="5" fill="none" stroke="#0984e3" stroke-width="2"/><path d="M16 18v6M12 28h8" stroke="#0984e3" stroke-width="2" stroke-linecap="round"/><path d="M12 13h8M16 9v8" stroke="#0984e3" stroke-width="1" opacity=".5"/></svg></span><div class="name">Anatomia</div><div class="desc">Smonta gli hook</div></div>
     <div class="game-card" onclick="openGame('remix')"><span class="icon"><svg viewBox="0 0 32 32"><path d="M8 12h10a5 5 0 010 10H8" fill="none" stroke="#00b894" stroke-width="2"/><path d="M24 20H14a5 5 0 010-10h10" fill="none" stroke="#00b894" stroke-width="2"/><path d="M5 9l3 3-3 3M27 17l-3 3 3 3" fill="none" stroke="#00b894" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></span><div class="name">Remix</div><div class="desc">Evolvi i tuoi hook</div></div>
     <div class="game-card" onclick="openGame('formats')"><span class="icon"><svg viewBox="0 0 32 32"><rect x="10" y="4" width="12" height="24" rx="3" fill="none" stroke="#a855f7" stroke-width="2"/><path d="M14 6h4" stroke="#a855f7" stroke-width="1.5" stroke-linecap="round"/><rect x="12" y="10" width="8" height="10" rx="1" fill="#a855f722"/><circle cx="16" cy="25" r="1" fill="#a855f7"/></svg></span><div class="name">Formati</div><div class="desc">Story, Reel, Email</div></div>
-  </div>
+  </div><button class="grid-arrow right" onclick="scrollGrid('grid3',1)">›</button></div>
 
   <div class="section-label sec-fight"><span>🥊 AI Fight</span></div>
   <div class="section-header sh-fight"><div class="sh-icon">🥊</div><div class="sh-text"><h3>AI Fight</h3><p>Due AI si sfidano — tu scegli il vincitore</p></div><span class="sh-count">8 match</span></div>
   <div class="fight-progress-bar" id="fightProgress"></div>
+  <div class="grid-nav"><button class="grid-arrow left" onclick="scrollGrid('grid4',-1)">‹</button>
   <div class="game-grid" id="grid4">
     <div class="game-card" onclick="openGame('hookduel')"><span class="icon"><svg viewBox="0 0 32 32"><path d="M8 20a6 6 0 0112 0" fill="#ff6b3522" stroke="#ff6b35" stroke-width="2"/><path d="M12 20a6 6 0 0112 0" fill="#e8930c22" stroke="#e8930c" stroke-width="2"/><path d="M16 8v6M13 10l3 4 3-4" fill="none" stroke="#ff6b35" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></span><div class="name">Duello Hook</div><div class="desc">Stile vs stile</div></div>
     <div class="game-card" onclick="openGame('titleduel')"><span class="icon"><svg viewBox="0 0 32 32"><rect x="4" y="7" width="24" height="18" rx="2" fill="none" stroke="#636e72" stroke-width="2"/><path d="M8 12h16M8 16h12M8 20h8" stroke="#636e72" stroke-width="2" stroke-linecap="round"/><path d="M22 18l4 4M22 22l4-4" stroke="#ff4757" stroke-width="2" stroke-linecap="round"/></svg></span><div class="name">Titoli in Guerra</div><div class="desc">Riscrittura virale</div></div>
@@ -1955,7 +2030,7 @@ body.light .shimmer::after{background:linear-gradient(90deg,transparent 0%,rgba(
     <div class="game-card" onclick="openGame('longvsshort')"><span class="icon"><svg viewBox="0 0 32 32"><rect x="4" y="8" width="8" height="16" rx="2" fill="#fdcb6e33" stroke="#fdcb6e" stroke-width="2"/><rect x="16" y="12" width="12" height="8" rx="2" fill="#ff6b3533" stroke="#ff6b35" stroke-width="2"/><path d="M13 16h2" stroke="#e8930c" stroke-width="1.5" stroke-linecap="round" stroke-dasharray="1 2"/></svg></span><div class="name">Lungo vs Corto</div><div class="desc">Formato che spacca</div></div>
     <div class="game-card" onclick="openGame('angleduel')"><span class="icon"><svg viewBox="0 0 32 32"><path d="M6 26L16 6l10 20" fill="none" stroke="#a855f7" stroke-width="2" stroke-linejoin="round"/><path d="M16 6v20" stroke="#a855f766" stroke-width="1" stroke-dasharray="2 2"/><circle cx="16" cy="6" r="2" fill="#a855f7"/><circle cx="6" cy="26" r="2" fill="#fd79a8"/><circle cx="26" cy="26" r="2" fill="#00b894"/></svg></span><div class="name">Angolo Impossibile</div><div class="desc">Prospettive diverse</div></div>
     <div class="game-card" onclick="openGame('tournament')"><span class="icon"><svg viewBox="0 0 32 32"><path d="M11 8h10v3a5 5 0 01-10 0z" fill="#ffd93d33" stroke="#ffd93d" stroke-width="2"/><path d="M16 16v5" stroke="#ffd93d" stroke-width="2"/><path d="M12 21h8" stroke="#ffd93d" stroke-width="2" stroke-linecap="round"/><path d="M7 8l4 3M25 8l-4 3" stroke="#ffd93d" stroke-width="1.5" stroke-linecap="round"/><circle cx="16" cy="11" r="1" fill="#ffd93d"/></svg></span><div class="name">Il Torneo</div><div class="desc">Bracket eliminatorio</div></div>
-  </div>
+  </div><button class="grid-arrow right" onclick="scrollGrid('grid4',1)">›</button></div>
 
   <!-- STUDIO: Hub + Fucina -->
   <div class="section-header sh-studio" style="border-color:#00b894">
@@ -1972,15 +2047,15 @@ body.light .shimmer::after{background:linear-gradient(90deg,transparent 0%,rgba(
   <!-- CREATIVE HUB -->
   <div class="creative-hub" id="creativeHub">
     <div class="hub-header">
-      <div class="hub-title">🧩 Creative Hub</div>
+      <div class="hub-title">🧩 Creative Hub <span style="font-size:.65rem;font-weight:400;color:var(--t2);margin-left:6px">Centro R&D creativo</span></div>
       <div class="hub-actions">
         <button class="hub-action-btn" onclick="addHubCardManual()">✏️ Aggiungi</button>
         <button class="hub-action-btn" onclick="importFromMazzoToHub()">⭐ Dal Mazzo</button>
         <button class="hub-action-btn" onclick="hubAskAI()">🤖 Chiedi AI</button>
         <button class="hub-action-btn" onclick="hubCompareSelected()">⚖️ Confronta</button>
         <button class="hub-action-btn" onclick="hubSendToFucina()">🔥 → Fucina</button>
-        <button class="hub-action-btn" onclick="hubClearAll()">🗑️ Pulisci</button>
-        <button class="hub-action-btn" onclick="closeHub()" style="border-color:rgba(255,255,255,.1)">✕</button>
+        <button class="hub-action-btn" onclick="hubClearAll()" style="border-color:rgba(255,77,77,.15);background:rgba(255,77,77,.04)">🗑️</button>
+        <button class="hub-action-btn" onclick="closeHub()" style="border-color:rgba(255,255,255,.1);font-weight:800">✕</button>
       </div>
     </div>
     <div class="hub-workspace empty" id="hubWorkspace"></div>
@@ -4030,9 +4105,23 @@ function openGame(g){
   area.className='game-area visible';
   const info=GAME_INFO[g];
   if(info)area.classList.add('cat-'+info.cat);
+  // Move game area below the correct section grid
+  const gridMap={inspire:'grid1',challenge:'grid2',arena:'grid3',fight:'grid4'};
+  const catKey=info?info.cat:'inspire';
+  const targetGrid=document.getElementById(gridMap[catKey]||'grid1');
+  if(targetGrid){
+    const navParent=targetGrid.closest('.grid-nav')||targetGrid;
+    navParent.parentNode.insertBefore(area,navParent.nextSibling);
+  }
   area.innerHTML='';
   const fn={slot:renderSlot,flip:renderFlip,collision:renderCollision,devil:renderDevil,emotion:renderEmotion,radar:renderRadar,archivio:renderArchivio,mappa:renderMappa,moodring:renderMoodRing,scanner:renderScanner,speed:renderSpeed,bridge:renderBridge,hotornot:renderHotOrNot,chain:renderChain,freestyle:renderFreestyle,sketch:renderSketchGame,battle:renderBattle,anatomy:renderAnatomy,remix:renderRemix,formats:renderFormats,hookduel:renderHookDuel,titleduel:renderTitleDuel,ctaclash:renderCTAClash,openingbattle:renderOpeningBattle,objectionduel:renderObjectionDuel,longvsshort:renderLongVsShort,angleduel:renderAngleDuel,tournament:renderTournament};
   if(fn[g])fn[g]();
+  // Add close button (X)
+  const closeBtn=document.createElement('button');
+  closeBtn.className='game-close-btn';
+  closeBtn.innerHTML='✕';
+  closeBtn.onclick=()=>closeGame();
+  area.appendChild(closeBtn);
   // Inject game description + AI role badge after title
   if(info){
     const sub=area.querySelector('.game-subtitle');
@@ -4048,10 +4137,12 @@ function openGame(g){
       sub.replaceWith(desc);
     }
   }
-  area.scrollIntoView({behavior:'smooth',block:'start'});
-  lastGameGrid=info?info.cat:'inspire';
+  area.scrollIntoView({behavior:'smooth',block:'nearest'});
+  lastGameGrid=catKey;
 }
 let lastGameGrid='inspire';
+function scrollGrid(gridId,dir){const g=document.getElementById(gridId);if(g)g.scrollBy({left:dir*320,behavior:'smooth'});}
+document.addEventListener('keydown',e=>{if(e.key==='Escape'&&currentGame)closeGame();});
 function closeGame(){
   clearTimers();
   document.getElementById('gameArea').classList.remove('visible');
@@ -5869,6 +5960,35 @@ function renderAnalytics(){
     </div>`;
   }
 
+  // Charts grid — 2 columns
+  html+=`<div class="analytics-charts-grid">`;
+
+  // Sparkline — last 10 sessions score trend
+  const lastScores=sessions.slice(-10).map(s=>s.score||0);
+  if(lastScores.length>1){
+    const maxScore=Math.max(...lastScores,1);
+    html+=`<div class="analytics-chart-box"><div class="analytics-chart-title">📈 Trend Ultime Sessioni</div>
+      <div class="sparkline-container">${lastScores.map((s,i)=>{
+        const h=Math.max(5,Math.round((s/maxScore)*55));
+        return`<div class="sparkline-bar" style="height:${h}px" data-val="${s}" title="Sessione ${i+1}: ${s} pt"></div>`;
+      }).join('')}</div></div>`;
+  }
+
+  // Skill progress bars
+  const skillMap={speed:'Velocità',collision:'Creatività',devil:'Persuasione',flip:'Storytelling',emotion:'Empatia',battle:'Tecnica'};
+  const skillScores={};
+  Object.entries(skillMap).forEach(([g,label])=>{
+    const gs=gameStats[g];
+    skillScores[label]=gs?Math.min(100,Math.round((gs.totalScore/gs.count)*10)):0;
+  });
+  html+=`<div class="analytics-chart-box"><div class="analytics-chart-title">🎯 Competenze</div>
+    ${Object.entries(skillScores).map(([label,pct])=>{
+      const color=pct>=70?'#00b894':pct>=40?'#0984e3':'#ff6b35';
+      return`<div class="skill-progress"><div class="skill-progress-label"><span>${label}</span><span>${pct}%</span></div><div class="skill-progress-track"><div class="skill-progress-fill" style="width:${pct}%;background:${color}"></div></div></div>`;
+    }).join('')}</div>`;
+
+  html+=`</div>`; // close charts-grid
+
   // Game recommendations
   const unplayed=Object.keys(GAME_NAMES).filter(g=>!gameStats[g]).slice(0,3);
   html+=`<div style="font-size:.7rem;font-weight:700;color:var(--t2);text-transform:uppercase;letter-spacing:1px;margin:16px 0 8px">🎯 Raccomandazioni</div>
@@ -5878,8 +5998,19 @@ function renderAnalytics(){
     ${unplayed[0]?`<div class="rec-card" onclick="openGame('${unplayed[0]}')"><div class="rc-icon">🆕</div><div class="rc-name">${GAME_NAMES[unplayed[0]]}</div><div class="rc-why">Non ancora provato!</div></div>`:''}
   </div>`;
 
+  // Improvement tips
+  const tips=[];
+  if(weakest)tips.push({icon:'🎯',text:`Per migliorare in <strong>${weakest.name}</strong>, fai almeno 3 round questa settimana. Ogni round allena un aspetto diverso della tua scrittura.`});
+  if(improvement<0)tips.push({icon:'📉',text:`Il tuo progresso è in calo. Concentrati sulla qualità: prima di salvare un hook, rileggilo ad alta voce. Suona naturale?`});
+  tips.push({icon:'📁',text:`<strong>Potenzia l'AI:</strong> Carica un file .md con i tuoi 10 migliori post nel Brain. L'AI imparerà il tuo stile e darà suggerimenti più mirati.`});
+  tips.push({icon:'🏆',text:`<strong>Competitor analysis:</strong> Carica un file con i migliori hook del tuo settore. L'AI li userà come benchmark per valutare i tuoi.`});
+  if(sessions.length<10)tips.push({icon:'🔥',text:`Hai solo ${sessions.length} sessioni. Servono almeno 10 per insights precisi. Gioca un po' ogni giorno!`});
+  tips.push({icon:'📝',text:`<strong>Tone of Voice:</strong> Scrivi e carica il tuo documento ToV nel Brain. L'AI genererà hook coerenti con la tua identità.`});
+
+  html+=`<div class="improve-tips"><div class="analytics-chart-title">📚 Per Migliorare</div>${tips.map(t=>`<div class="improve-tip"><span class="improve-tip-icon">${t.icon}</span><div>${t.text}</div></div>`).join('')}</div>`;
+
   // AI Insights
-  html+=`<div id="analyticsAiInsights"><button class="hub-action-btn" onclick="generateAnalyticsInsights()" style="margin-top:12px;width:100%">🤖 Genera Insights AI</button></div>`;
+  html+=`<div id="analyticsAiInsights"><button class="hub-action-btn" onclick="generateAnalyticsInsights()" style="margin-top:12px;width:100%">🤖 Genera Insights AI Personalizzati</button></div>`;
 
   el.innerHTML=html;
 }
@@ -5932,21 +6063,64 @@ function closeHub(){
   const hub=document.getElementById('creativeHub');
   if(hub)hub.classList.remove('visible');
 }
+let hubFilter='all';
 function renderHub(){
   const ws=document.getElementById('hubWorkspace');
   if(!ws)return;
+  const filtered=hubFilter==='all'?hubItems:hubItems.filter(it=>it.source===hubFilter);
   ws.classList.toggle('empty',hubItems.length===0);
-  ws.innerHTML=hubItems.map((item,i)=>`<div class="hub-card${item.selected?' selected':''}" data-hub-idx="${i}" onclick="toggleHubSelect(${i})">
+  // Filter bar
+  const sources=['all','manual','mazzo','ai','game','trend'];
+  const sourceLabels={all:'Tutti',manual:'Manuali',mazzo:'Dal Mazzo',ai:'AI',game:'Giochi',trend:'Trend'};
+  const filterHTML=hubItems.length?`<div class="hub-filter-bar">
+    ${sources.map(s=>{
+      const count=s==='all'?hubItems.length:hubItems.filter(it=>it.source===s).length;
+      return count||s==='all'?`<span class="hub-filter-chip${hubFilter===s?' active':''}" onclick="hubFilter='${s}';renderHub()">${sourceLabels[s]} (${count})</span>`:'';
+    }).join('')}
+    <span class="hub-counter">${filtered.length} card</span>
+  </div>`:'';
+  // Cards
+  const cardsHTML=filtered.map((item,i)=>{
+    const realIdx=hubItems.indexOf(item);
+    const ago=timeAgo(item.ts);
+    return `<div class="hub-card${item.selected?' selected':''}" data-hub-idx="${realIdx}" onclick="toggleHubSelect(${realIdx})">
     <div class="hub-card-actions">
-      <button onclick="event.stopPropagation();editHubCard(${i})" title="Modifica">✏️</button>
-      <button onclick="event.stopPropagation();removeHubCard(${i})" title="Rimuovi">✕</button>
+      <button onclick="event.stopPropagation();editHubCard(${realIdx})" title="Modifica">✏️</button>
+      <button onclick="event.stopPropagation();removeHubCard(${realIdx})" title="Rimuovi">✕</button>
     </div>
     <div class="hub-card-text">${item.text.replace(/</g,'&lt;')}</div>
     <div class="hub-card-meta">
       <span class="hub-card-source ${item.source}">${item.source}</span>
-      <span>${new Date(item.ts).toLocaleDateString('it-IT',{day:'numeric',month:'short'})}</span>
+      <span>${ago}</span>
     </div>
-  </div>`).join('');
+    <div class="hub-card-quick">
+      <button onclick="event.stopPropagation();sendHookToFucina(hubItems[${realIdx}].text)">🔥 Fucina</button>
+      <button onclick="event.stopPropagation();hubAskAISingle(${realIdx})">🤖 AI</button>
+      <button onclick="event.stopPropagation();navigator.clipboard.writeText(hubItems[${realIdx}].text);showToast('Copiato!')">📋</button>
+    </div>
+  </div>`;
+  }).join('');
+  ws.innerHTML=filterHTML+cardsHTML;
+}
+function timeAgo(ts){
+  const diff=Date.now()-ts;
+  const mins=Math.floor(diff/60000);
+  if(mins<1)return 'ora';
+  if(mins<60)return mins+'m fa';
+  const hrs=Math.floor(mins/60);
+  if(hrs<24)return hrs+'h fa';
+  const days=Math.floor(hrs/24);
+  if(days<7)return days+'gg fa';
+  return new Date(ts).toLocaleDateString('it-IT',{day:'numeric',month:'short'});
+}
+function hubAskAISingle(idx){
+  const item=hubItems[idx];
+  if(!item)return;
+  hubItems.forEach(h=>h.selected=false);
+  item.selected=true;
+  saveHubItems();
+  hubAskAI();
+  renderHub();
 }
 
 function sendHookToHub(text,source){
@@ -5957,30 +6131,49 @@ function sendHookToHub(text,source){
 }
 
 function addHubCardManual(){
-  const text=prompt('Scrivi il tuo hook/idea:');
-  if(!text||!text.trim())return;
-  hubItems.push({text:text.trim(),source:'manual',ts:Date.now(),selected:false});
+  const ws=document.getElementById('hubWorkspace');
+  if(!ws)return;
+  const existing=ws.querySelector('.hub-inline-input');
+  if(existing){existing.remove();return;}
+  const inp=document.createElement('div');
+  inp.className='hub-inline-input';
+  inp.innerHTML=`<textarea placeholder="Scrivi il tuo hook, idea, concetto..." rows="3" id="hubNewText"></textarea>
+    <div class="hub-input-actions">
+      <button onclick="confirmHubAdd()" class="hub-btn-confirm">✓ Aggiungi</button>
+      <button onclick="this.closest('.hub-inline-input').remove()" class="hub-btn-cancel">✕ Annulla</button>
+    </div>`;
+  ws.prepend(inp);
+  setTimeout(()=>inp.querySelector('textarea').focus(),50);
+}
+function confirmHubAdd(){
+  const ta=document.getElementById('hubNewText');
+  if(!ta||!ta.value.trim())return;
+  hubItems.push({text:ta.value.trim(),source:'manual',ts:Date.now(),selected:false});
   saveHubItems();renderHub();sClick();
 }
 
 function importFromMazzoToHub(){
   if(!savedItems.length){showToast('Il mazzo è vuoto!');return;}
-  // Show a picker overlay
-  const ov=document.createElement('div');ov.className='lvup-overlay';ov.style.overflow='auto';ov.style.padding='40px 20px';
-  let html='<div style="max-width:500px;margin:0 auto;text-align:left"><h3 style="color:#ffd93d;margin-bottom:12px;text-align:center">⭐ Seleziona dal Mazzo</h3>';
-  savedItems.forEach((it,i)=>{
-    html+=`<div style="padding:10px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);border-radius:8px;margin-bottom:6px;cursor:pointer;font-size:.8rem;color:var(--t1);transition:all .2s" onclick="this.classList.toggle('selected');this.style.borderColor=this.classList.contains('selected')?'#00b894':'rgba(255,255,255,.1)';this.style.background=this.classList.contains('selected')?'rgba(0,184,148,.08)':'rgba(255,255,255,.05)'" data-mazzo-idx="${i}">${it.text.substring(0,120).replace(/</g,'&lt;')}<div style="font-size:.6rem;color:var(--t2);margin-top:4px">${it.type}</div></div>`;
-  });
-  html+=`<div style="text-align:center;margin-top:14px">
-    <button onclick="importMazzoSelection(this.closest('.lvup-overlay'))" style="padding:10px 24px;border-radius:12px;background:linear-gradient(135deg,#00b894,#00a381);color:#fff;font-weight:700;border:none;cursor:pointer;margin-right:8px">✓ Importa Selezionati</button>
-    <button onclick="this.closest('.lvup-overlay').remove()" style="padding:10px 24px;border-radius:12px;background:rgba(255,255,255,.1);color:#fff;font-weight:600;border:none;cursor:pointer">Annulla</button>
-  </div></div>`;
-  ov.innerHTML=html;
+  const ov=document.createElement('div');ov.className='mazzo-modal-overlay';
+  ov.onclick=e=>{if(e.target===ov)ov.remove();};
+  let items=savedItems.map((it,i)=>`<div class="mazzo-modal-item" data-mazzo-idx="${i}" onclick="this.classList.toggle('checked')">
+    <div class="mazzo-modal-check">✓</div>
+    <div><div class="mazzo-modal-text">${it.text.substring(0,150).replace(/</g,'&lt;')}</div>
+    <div class="mazzo-modal-type">${it.type||'hook'}</div></div>
+  </div>`).join('');
+  ov.innerHTML=`<div class="mazzo-modal">
+    <div class="mazzo-modal-header"><h3>⭐ Importa dal Mazzo</h3><span style="font-size:.75rem;color:var(--t2)">${savedItems.length} elementi</span></div>
+    <div class="mazzo-modal-body">${items}</div>
+    <div class="mazzo-modal-footer">
+      <button class="hub-btn-cancel" onclick="this.closest('.mazzo-modal-overlay').remove()">Annulla</button>
+      <button class="hub-btn-confirm" onclick="importMazzoSelection(this.closest('.mazzo-modal-overlay'))">✓ Importa Selezionati</button>
+    </div>
+  </div>`;
   document.body.appendChild(ov);
-  requestAnimationFrame(()=>ov.classList.add('active'));
 }
 function importMazzoSelection(overlay){
-  const selected=overlay.querySelectorAll('.selected');
+  const selected=overlay.querySelectorAll('.mazzo-modal-item.checked');
+  if(!selected.length){showToast('Seleziona almeno un elemento!');return;}
   selected.forEach(el=>{
     const idx=parseInt(el.dataset.mazzoIdx);
     const item=savedItems[idx];

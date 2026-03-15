@@ -128,7 +128,9 @@ body::after{content:'';position:fixed;inset:0;background:radial-gradient(circle 
 @keyframes ambientShift{0%{opacity:.7}50%{opacity:1}100%{opacity:.8}}
 @keyframes ambientPulse{0%,100%{opacity:0}50%{opacity:1}}
 
-.header{position:relative;z-index:10;text-align:center;padding:32px 24px 12px}
+.header{position:relative;z-index:10;text-align:center;padding:32px 24px 12px;background:linear-gradient(180deg,rgba(255,107,53,.06) 0%,rgba(232,147,12,.03) 40%,transparent 100%),url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 44 44'%3E%3Cpath d='M8 8v28M8 22h12M20 8v28' stroke='%23ff6b35' stroke-width='3' stroke-linecap='round' fill='none' opacity='.03'/%3E%3Cpath d='M32 8c0 0-8 0-8 8s8 8 8 8' stroke='%23ff6b35' stroke-width='2.5' stroke-linecap='round' fill='none' opacity='.03'/%3E%3Ccircle cx='32' cy='26' r='2' fill='%23ff6b35' opacity='.03'/%3E%3C/svg%3E") repeat;background-size:auto,80px 80px}
+[data-theme="light"] .header{background:linear-gradient(180deg,rgba(255,107,53,.08) 0%,rgba(232,147,12,.04) 40%,transparent 100%),url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 44 44'%3E%3Cpath d='M8 8v28M8 22h12M20 8v28' stroke='%23ff6b35' stroke-width='3' stroke-linecap='round' fill='none' opacity='.04'/%3E%3Cpath d='M32 8c0 0-8 0-8 8s8 8 8 8' stroke='%23ff6b35' stroke-width='2.5' stroke-linecap='round' fill='none' opacity='.04'/%3E%3Ccircle cx='32' cy='26' r='2' fill='%23ff6b35' opacity='.04'/%3E%3C/svg%3E") repeat;background-size:auto,80px 80px}
+.hero-gradient{height:60px;background:linear-gradient(180deg,rgba(255,107,53,.04) 0%,rgba(232,147,12,.02) 50%,transparent 100%);pointer-events:none;margin-top:-5px}
 .logo-wrap{display:flex;align-items:center;justify-content:center;gap:10px}
 .logo-icon{filter:drop-shadow(0 2px 8px rgba(255,107,53,.4));animation:logoFloat 4s ease-in-out infinite}
 @keyframes logoFloat{0%,100%{transform:translateY(0) rotate(0deg)}50%{transform:translateY(-4px) rotate(3deg)}}
@@ -972,7 +974,15 @@ body::after{content:'';position:fixed;inset:0;background:radial-gradient(circle 
 [data-theme="light"] .np-gen-hook{background:rgba(255,107,53,.03);border-color:rgba(255,107,53,.1)}
 [data-theme="light"] .np-gen-hook-actions button{background:rgba(0,0,0,.03);border-color:rgba(0,0,0,.08)}
 /* Analytics Dashboard */
-.analytics-section{background:var(--card);border-radius:var(--r);padding:14px;margin:12px 0;border-left:4px solid #0984e3}
+.analytics-section{background:var(--card);border-radius:var(--r);padding:14px;margin:12px 0;border-left:4px solid #0984e3;transition:max-height .4s ease,opacity .3s,padding .3s}
+.analytics-section.collapsed{max-height:0;padding:0 14px;overflow:hidden;opacity:0;margin:0;border:none}
+.analytics-toggle-icon{font-size:.9rem;color:var(--t2);transition:transform .3s}
+.analytics-section:not(.collapsed)+.analytics-toggle-icon,.sh-analytics.open .analytics-toggle-icon{transform:rotate(90deg)}
+.analytics-chart-box{cursor:pointer;transition:all .2s}
+.analytics-chart-box:hover{border-color:rgba(9,132,227,.3);box-shadow:0 2px 12px rgba(9,132,227,.08)}
+.chart-coach-ask{margin-top:8px;padding:10px;background:rgba(9,132,227,.04);border:1px dashed rgba(9,132,227,.15);border-radius:8px;text-align:center;animation:slideUp .3s}
+.chart-coach-ask button{padding:6px 16px;border-radius:8px;background:linear-gradient(135deg,#0984e3,#74b9ff);color:#fff;border:none;font-weight:700;font-size:.75rem;cursor:pointer}
+.chart-coach-result{margin-top:8px;padding:10px;background:rgba(9,132,227,.03);border:1px solid rgba(9,132,227,.1);border-radius:8px;font-size:.8rem;line-height:1.5;color:var(--t1)}
 .analytics-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;margin-bottom:12px}
 .stat-score-card{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:var(--rs);padding:10px;text-align:center}
 .ssc-val{font-size:1.2rem;font-weight:900;color:var(--a1)}
@@ -993,6 +1003,26 @@ body::after{content:'';position:fixed;inset:0;background:radial-gradient(circle 
 .improve-tip{display:flex;gap:8px;align-items:flex-start;padding:8px 0;border-bottom:1px solid rgba(255,255,255,.04);font-size:.8rem;color:var(--t1);line-height:1.5}
 .improve-tip:last-child{border:none}
 .improve-tip-icon{font-size:1rem;flex-shrink:0}
+.brain-panel{background:var(--card);border-radius:var(--r);padding:16px;margin:12px 0;border-left:4px solid #a855f7}
+.brain-panel-title{font-size:.85rem;font-weight:800;color:#a855f7;margin-bottom:12px;display:flex;align-items:center;gap:8px}
+.brain-stat-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:8px;margin-bottom:12px}
+.brain-stat{text-align:center;padding:8px;background:rgba(168,85,247,.04);border:1px solid rgba(168,85,247,.08);border-radius:8px}
+.brain-stat-val{font-size:1.1rem;font-weight:900;color:#a855f7}
+.brain-stat-label{font-size:.55rem;text-transform:uppercase;letter-spacing:1px;color:var(--t2);margin-top:2px}
+.brain-progress{height:10px;background:rgba(168,85,247,.08);border-radius:5px;overflow:hidden;margin:8px 0}
+.brain-progress-fill{height:100%;background:linear-gradient(90deg,#a855f7,#ec4899);border-radius:5px;transition:width .6s}
+.brain-actions{display:flex;gap:8px;flex-wrap:wrap}
+.brain-btn{padding:8px 16px;border-radius:8px;font-size:.75rem;font-weight:700;border:none;cursor:pointer;transition:all .2s}
+.brain-btn-download{background:linear-gradient(135deg,#a855f7,#7c3aed);color:#fff}
+.brain-btn-download:hover{box-shadow:0 4px 12px rgba(168,85,247,.3)}
+.brain-btn-upload{background:rgba(168,85,247,.08);border:1px solid rgba(168,85,247,.15);color:#a855f7}
+.coach-game-feedback{background:linear-gradient(135deg,rgba(9,132,227,.04),rgba(168,85,247,.04));border:1px solid rgba(9,132,227,.12);border-radius:var(--rs);padding:16px;margin-top:12px}
+.coach-game-feedback .cgf-header{display:flex;align-items:center;gap:8px;margin-bottom:10px;font-size:.75rem;font-weight:700;color:#0984e3;text-transform:uppercase;letter-spacing:1px}
+.coach-game-feedback .cgf-body{font-size:.85rem;line-height:1.7;color:var(--t1);white-space:pre-wrap}
+.coach-game-feedback .cgf-body strong{color:#0984e3}
+[data-theme="light"] .brain-panel{background:var(--card);box-shadow:0 2px 12px rgba(0,0,0,.06)}
+[data-theme="light"] .brain-stat{background:rgba(168,85,247,.03);border-color:rgba(168,85,247,.08)}
+[data-theme="light"] .coach-game-feedback{background:linear-gradient(135deg,rgba(9,132,227,.03),rgba(168,85,247,.03))}
 [data-theme="light"] .analytics-chart-box{background:rgba(0,0,0,.01);border-color:rgba(0,0,0,.06)}
 [data-theme="light"] .sparkline-bar{background:linear-gradient(180deg,#0984e3,#74b9ff)}
 [data-theme="light"] .skill-progress-track{background:rgba(0,0,0,.04)}
@@ -1642,6 +1672,7 @@ body.light .shimmer::after{background:linear-gradient(90deg,transparent 0%,rgba(
   <button class="sound-toggle" id="soundToggle" onclick="toggleSound()">🔊</button>
   <button class="theme-toggle-btn" id="themeToggle" onclick="toggleTheme()" title="Cambia tema">🌙 <span class="tt-label">Tema</span></button>
 </header>
+<div class="hero-gradient"></div>
 
 <div class="stats-bar">
   <div class="stats-bar-inner">
@@ -1941,16 +1972,6 @@ body.light .shimmer::after{background:linear-gradient(90deg,transparent 0%,rgba(
   </div>
 </div>
 
-<!-- ANALYTICS DASHBOARD (bottom) -->
-<div class="section-header" style="border-color:#0984e3">
-  <div class="sh-icon">📊</div>
-  <div class="sh-text"><h3>Le Tue Stats</h3><p>Analisi performance, punti forti e aree di miglioramento</p></div>
-  <span class="sh-count"><button class="hub-action-btn" onclick="renderAnalytics()" style="font-size:.7rem;border-color:rgba(9,132,227,.3);background:rgba(9,132,227,.06)">🔄 Aggiorna</button></span>
-</div>
-<div class="analytics-section" id="analyticsSection">
-  <div id="analyticsContent"><div style="text-align:center;color:var(--t2);padding:20px;font-size:.85rem">Caricamento stats...</div></div>
-</div>
-
 <div class="smart-filters">
   <div class="sf-card">
     <div class="sf-row">
@@ -2084,6 +2105,22 @@ body.light .shimmer::after{background:linear-gradient(90deg,transparent 0%,rgba(
       <div id="fucinaContent"></div>
     </div>
   </div>
+
+  <!-- ANALYTICS DASHBOARD (bottom of page) -->
+  <div class="section-header sh-analytics" style="border-color:#0984e3;cursor:pointer" onclick="toggleAnalytics()">
+    <div class="sh-icon">📊</div>
+    <div class="sh-text"><h3>Le Tue Stats</h3><p>Analisi performance, punti forti e aree di miglioramento</p></div>
+    <span class="sh-count" style="display:flex;gap:6px;align-items:center">
+      <button class="hub-action-btn" onclick="event.stopPropagation();renderAnalytics()" style="font-size:.7rem;border-color:rgba(9,132,227,.3);background:rgba(9,132,227,.06)">🔄 Aggiorna</button>
+      <span class="analytics-toggle-icon" id="analyticsToggleIcon">▸</span>
+    </span>
+  </div>
+  <div class="analytics-section collapsed" id="analyticsSection">
+    <div id="analyticsContent"><div style="text-align:center;color:var(--t2);padding:20px;font-size:.85rem">Clicca sull'header per vedere le statistiche</div></div>
+  </div>
+
+  <!-- BRAIN STATUS PANEL -->
+  <div class="brain-panel" id="brainPanel"></div>
 
 </div>
 
@@ -2251,7 +2288,7 @@ if(typeof renderLeaderboard==='function')renderLeaderboard();
 if(typeof renderChatHistory==='function'){renderChatHistory();updateChatStatus();}
 if(typeof renderArenaProgress==='function')renderArenaProgress();
 if(typeof renderFightProgress==='function'){fightStats=JSON.parse(localStorage.getItem(hlKey('fightStats'))||'{"rounds":0,"aWins":0,"bWins":0,"ties":0}');renderFightProgress();}
-if(typeof renderAnalytics==='function')renderAnalytics();
+if(typeof renderBrainStatus==='function')renderBrainStatus();
 const na=document.getElementById('notesArea');if(na)na.value=notes;
 }
 
@@ -2813,24 +2850,34 @@ async function aiCoachFeedback(gameType,data){
   const strongest=gameAvgs[0]?.game||'nessuno';
   const weakest=gameAvgs.length>1?gameAvgs[gameAvgs.length-1].game:'nessuno';
 
-  const sys=`Sei un MENTOR e COACH severo ma giusto. Il tuo lavoro è far CRESCERE l'utente, non accarezzarlo.
+  const sys=`Sei un COACH SPORTIVO PROFESSIONISTA per copywriter. Come un allenatore vero: severo, esigente, ma giusto.
 ${getCtxPrompt()}
 
-REGOLE FERREE:
-- NON dire "bravo", "ottimo lavoro", "complimenti" se il risultato è sotto 4 stelle/punti
-- Se il punteggio è BASSO, sii DIRETTO: "Questo è debole perché..." — spiega il PERCHÉ
-- Identifica UN punto debole SPECIFICO e dì COME migliorarlo con un esercizio concreto
-- Se il risultato È davvero eccellente (4.5+ ★), riconosci ma ALZA L'ASTICELLA: "Bene, ora prova a..."
-- Fai l'avvocato del diavolo: "Questo hook funzionerebbe DAVVERO? Il tuo pubblico lo cliccherebbe?"
-- Parla come un coach sportivo italiano: diretto, concreto, ZERO fuffa, 2-3 frasi
-- Non usare emoji. Non essere gentile per cortesia. Sii UTILE.`;
+IL TUO APPROCCIO:
+1. ANALISI — Guarda i DATI, non le intenzioni. I numeri parlano.
+2. DIAGNOSI — Identifica il problema SPECIFICO: perché questo hook è debole? Cosa manca?
+3. PRESCRIZIONE — Dai un ESERCIZIO concreto: "Fai X round di Y concentrandoti su Z"
+4. CONFRONTO — Compara con le sessioni passate: "Prima facevi X, ora Y"
+5. PIANO — Chiudi con cosa fare questa settimana per migliorare
 
-  const prompt=`Gioco: ${gameType}. Dati sessione: ${JSON.stringify(data)}.
+REGOLE FERREE:
+- VIETATO dire "bravo", "ottimo", "complimenti" se punteggio sotto 4 stelle
+- Se il punteggio è BASSO (< 3★): "Questo hook non funziona. Ecco perché..." — spiega il PERCHÉ tecnico
+- Se il punteggio è MEDIO (3-4★): "C'è del buono, ma manca X. Esercizio: fai 5 round di Y"
+- Se il punteggio è ALTO (4.5+★): "Questo funziona. Ora alza l'asticella: rifallo in 30 sec / con metà parole / cambiando angolo"
+- Fai l'avvocato del diavolo: "Il tuo pubblico cliccherebbe DAVVERO? Perché?"
+- ZERO fuffa, zero gentilezze inutili, zero emoji
+- Linguaggio: diretto, concreto, come un coach italiano
+- Formatta con punti chiari: ANALISI → ESERCIZIO → PROSSIMO OBIETTIVO`;
+
+  const prompt=`GIOCO: ${gameType}
+DATI SESSIONE: ${JSON.stringify(data)}
 CONTESTO STORICO: ${history.totalHooks} hook scritti, ${history.totalSessions} sessioni totali, media globale ${history.avgRating}/5, trend ${history.trend}.
 ULTIME 5 SESSIONI di ${gameType}: ${recentScores.length?'punteggi '+recentScores.join(', ')+' (media '+recentAvg.toFixed(1)+')':'prima volta in questo gioco'}.
-GIOCO PIÙ FORTE: ${strongest}. GIOCO PIÙ DEBOLE: ${weakest}.
-Dai feedback ONESTO e SPECIFICO.`;
-  return aiCall(sys,prompt,250,0.6);
+GIOCO PIÙ FORTE: ${GAME_NAMES[strongest]||strongest}. GIOCO PIÙ DEBOLE: ${GAME_NAMES[weakest]||weakest}.
+
+Dai il tuo feedback con: 1) ANALISI del risultato 2) ESERCIZIO specifico 3) OBIETTIVO per la prossima sessione.`;
+  return aiCall(sys,prompt,300,0.6);
 }
 async function aiRemixSuggestion(original,constraint){
   const sys=`Sei un copywriter italiano esperto di riformulazione creativa. ${getCtxPrompt()} L'utente ha scritto un hook e deve riscriverlo con un vincolo specifico.
@@ -3622,9 +3669,16 @@ function submitBlockFb(i){
   document.getElementById('blockFbDone'+i)?.classList.add('visible');
   document.querySelectorAll('#blockFb'+i+' .block-fb-vote,#blockFb'+i+' .block-fb-tag').forEach(el=>{el.style.pointerEvents='none';el.style.opacity='.5';});
   if(blockAiStatus[aiKey])blockAiStatus[aiKey].feedbackGiven=true;
-  showToast(st.vote==='up'?'Grazie! Continuo così.':'Capito, migliorerò.');
+  const fbCount=voice.blockFeedback.length;
+  const milestones=[10,25,50,100];
+  if(milestones.includes(fbCount)){
+    showToast(`🧠 L'AI ha assimilato ${fbCount} pattern! I suggerimenti saranno sempre più precisi.`);
+  } else {
+    showToast(st.vote==='up'?'✅ Feedback salvato — l\'AI impara il tuo stile!':'✅ Capito! L\'AI eviterà questo pattern nei prossimi suggerimenti.');
+  }
   addXP(5);
   if(typeof renderLearnStats==='function')renderLearnStats();
+  if(typeof renderBrainStatus==='function')renderBrainStatus();
   delete blockFbState[i];
   sClick();
 }
@@ -5967,7 +6021,7 @@ function renderAnalytics(){
   const lastScores=sessions.slice(-10).map(s=>s.score||0);
   if(lastScores.length>1){
     const maxScore=Math.max(...lastScores,1);
-    html+=`<div class="analytics-chart-box"><div class="analytics-chart-title">📈 Trend Ultime Sessioni</div>
+    html+=`<div class="analytics-chart-box" onclick="askCoachAboutChart('Trend Sessioni','Ultime 10 sessioni: ${lastScores.join(', ')} punti')"><div class="analytics-chart-title">📈 Trend Ultime Sessioni <span style="font-size:.55rem;color:var(--t2);font-weight:400">— click per coach</span></div>
       <div class="sparkline-container">${lastScores.map((s,i)=>{
         const h=Math.max(5,Math.round((s/maxScore)*55));
         return`<div class="sparkline-bar" style="height:${h}px" data-val="${s}" title="Sessione ${i+1}: ${s} pt"></div>`;
@@ -5981,7 +6035,8 @@ function renderAnalytics(){
     const gs=gameStats[g];
     skillScores[label]=gs?Math.min(100,Math.round((gs.totalScore/gs.count)*10)):0;
   });
-  html+=`<div class="analytics-chart-box"><div class="analytics-chart-title">🎯 Competenze</div>
+  const skillSummary=Object.entries(skillScores).map(([l,p])=>l+':'+p+'%').join(', ');
+  html+=`<div class="analytics-chart-box" onclick="askCoachAboutChart('Competenze','${skillSummary}')"><div class="analytics-chart-title">🎯 Competenze <span style="font-size:.55rem;color:var(--t2);font-weight:400">— click per coach</span></div>
     ${Object.entries(skillScores).map(([label,pct])=>{
       const color=pct>=70?'#00b894':pct>=40?'#0984e3':'#ff6b35';
       return`<div class="skill-progress"><div class="skill-progress-label"><span>${label}</span><span>${pct}%</span></div><div class="skill-progress-track"><div class="skill-progress-fill" style="width:${pct}%;background:${color}"></div></div></div>`;
@@ -6049,6 +6104,150 @@ REGOLE:
   }catch(e){
     el.innerHTML=`<div class="analytics-insights"><div class="ai-insight" style="color:#ff4757">Errore: ${e.message}</div></div>`;
   }
+}
+
+// ===== ANALYTICS TOGGLE + INTERACTIVE CHARTS =====
+function toggleAnalytics(){
+  const sec=document.getElementById('analyticsSection');
+  const icon=document.getElementById('analyticsToggleIcon');
+  if(!sec)return;
+  const wasCollapsed=sec.classList.contains('collapsed');
+  sec.classList.toggle('collapsed');
+  if(icon)icon.textContent=wasCollapsed?'▾':'▸';
+  if(wasCollapsed){
+    renderAnalytics();
+    setTimeout(()=>sec.scrollIntoView({behavior:'smooth',block:'nearest'}),100);
+  }
+}
+function askCoachAboutChart(chartType,chartData){
+  if(!isAI()){showToast('Connetti l\'AI per chiedere al Coach!');return;}
+  const box=event.target.closest('.analytics-chart-box');
+  if(!box)return;
+  let existing=box.querySelector('.chart-coach-result');
+  if(existing){existing.remove();return;}
+  const result=document.createElement('div');
+  result.className='chart-coach-result';
+  result.innerHTML='🤖 Il Coach sta analizzando<span class="qw-dots"></span>';
+  box.appendChild(result);
+  const ctx=getCtxPrompt();
+  const history=analyzePlayer();
+  callAI(`Sei un COACH sportivo di copywriting. Analizza questo dato specifico e dai UN consiglio CONCRETO e AZIONABILE.
+Dato: ${chartType} — ${chartData}
+Contesto: ${history.totalHooks} hook, ${history.totalSessions} sessioni, trend ${history.trend}.
+${ctx}
+REGOLE: 1 paragrafo, max 3 frasi. Dì esattamente COSA fare (quale gioco, quanti round, quale tecnica). Sii diretto.`,150,0.6).then(r=>{
+    result.innerHTML=`<strong>🤖 Coach:</strong> ${r?r.replace(/</g,'&lt;'):'Non riesco ad analizzare — gioca ancora qualche partita!'}`;
+  }).catch(()=>{result.innerHTML='Errore — riprova.';});
+}
+
+// ===== BRAIN STATUS PANEL =====
+function calcBrainKnowledge(){
+  const ctx=JSON.parse(localStorage.getItem(hlKey('ctx'))||'{}');
+  let pct=0;
+  if(ctx.who&&ctx.what&&ctx.aud)pct+=20; else if(ctx.who||ctx.what||ctx.aud)pct+=10;
+  if(voice.tone?.length)pct+=10;
+  if((voice.blockFeedback?.length||0)>=5)pct+=15; else if((voice.blockFeedback?.length||0)>=1)pct+=5;
+  if((voice.examples?.length||0)>=3)pct+=15; else if((voice.examples?.length||0)>=1)pct+=5;
+  if((voice.lessons?.length||0)>=5)pct+=10; else if((voice.lessons?.length||0)>=1)pct+=5;
+  if(typeof resources!=='undefined'&&resources.texts?.length)pct+=10;
+  const aud=voice.audience||{};
+  if((aud.fears?.length||0)+(aud.desires?.length||0)+(aud.objections?.length||0)>=3)pct+=10;
+  const topHooks=(gameHistory.hooks||[]).filter(h=>h.rating>=4);
+  if(topHooks.length>=10)pct+=10; else if(topHooks.length>=3)pct+=5;
+  return Math.min(100,pct);
+}
+function renderBrainStatus(){
+  const el=document.getElementById('brainPanel');
+  if(!el)return;
+  const fb=voice.blockFeedback?.length||0;
+  const lessons=voice.lessons?.length||0;
+  const examples=voice.examples?.length||0;
+  const res=typeof resources!=='undefined'?resources.texts?.length||0:0;
+  const pct=calcBrainKnowledge();
+  el.innerHTML=`<div class="brain-panel-title">🧠 Il Tuo Brain AI</div>
+    <div class="brain-stat-grid">
+      <div class="brain-stat"><div class="brain-stat-val">${fb}</div><div class="brain-stat-label">Feedback</div></div>
+      <div class="brain-stat"><div class="brain-stat-val">${lessons}</div><div class="brain-stat-label">Correzioni</div></div>
+      <div class="brain-stat"><div class="brain-stat-val">${examples}</div><div class="brain-stat-label">Esempi</div></div>
+      <div class="brain-stat"><div class="brain-stat-val">${res}</div><div class="brain-stat-label">File</div></div>
+    </div>
+    <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px">
+      <span style="font-size:.7rem;font-weight:700;color:var(--t2)">Conoscenza AI</span>
+      <span style="font-size:.7rem;font-weight:900;color:#a855f7">${pct}%</span>
+    </div>
+    <div class="brain-progress"><div class="brain-progress-fill" style="width:${pct}%"></div></div>
+    <div style="font-size:.65rem;color:var(--t2);margin-bottom:10px">${pct<30?'Compila il profilo e gioca per potenziare l\'AI':pct<60?'Buon inizio! Continua a dare feedback per risultati migliori':pct<80?'L\'AI ti conosce bene. Carica file .md per il massimo':'L\'AI è ben addestrata sul tuo stile!'}</div>
+    <div class="brain-actions">
+      <button class="brain-btn brain-btn-download" onclick="generateKnowledgeFile()">📥 Scarica Knowledge .md</button>
+      <button class="brain-btn brain-btn-upload" onclick="document.getElementById('brainUploadInput')?.click()">📤 Carica nel Brain</button>
+      <input type="file" id="brainUploadInput" accept=".md,.txt" style="display:none" onchange="uploadBrainFile(this)">
+    </div>`;
+}
+function generateKnowledgeFile(){
+  const ctx=JSON.parse(localStorage.getItem(hlKey('ctx'))||'{}');
+  const notes=localStorage.getItem(hlKey('notes'))||'';
+  const topHooks=(gameHistory.hooks||[]).filter(h=>h.rating>=4).sort((a,b)=>b.rating-a.rating).slice(0,20);
+  // Aggregate feedback patterns
+  const patterns={};
+  (voice.blockFeedback||[]).forEach(f=>{
+    const k=f.blockKey||'generic';
+    if(!patterns[k])patterns[k]={up:0,down:0,tags:{}};
+    patterns[k][f.vote]++;
+    (f.tags||[]).forEach(t=>{patterns[k].tags[t]=(patterns[k].tags[t]||0)+1;});
+  });
+  const tagLabels={troppo_generico:'troppo generico',tono_sbagliato:'tono sbagliato',troppo_lungo:'troppo lungo',non_specifico:'non specifico',poco_emotivo:'poco emotivo',troppo_formale:'troppo formale'};
+
+  let md=`# 🧠 HOOKA Brain — Knowledge Base\n> Generato il ${new Date().toLocaleDateString('it-IT',{day:'numeric',month:'long',year:'numeric'})} \n\n`;
+  md+=`## Profilo\n- **Nicchia:** ${ctx.who||'Non specificata'}\n- **Offerta:** ${ctx.what||'Non specificata'}\n- **Pubblico:** ${ctx.aud||'Non specificato'}\n\n`;
+  if(voice.tone?.length)md+=`## Tono di Voce\n${voice.tone.map(t=>'- '+t).join('\n')}\n\n`;
+  if(voice.lexUse?.length)md+=`## Parole da Usare\n${voice.lexUse.map(w=>'- '+w).join('\n')}\n\n`;
+  if(voice.lexAvoid?.length)md+=`## Parole da NON Usare\n${voice.lexAvoid.map(w=>'- '+w).join('\n')}\n\n`;
+  const aud=voice.audience||{};
+  if(aud.fears?.length||aud.desires?.length||aud.objections?.length){
+    md+=`## Pubblico Target\n`;
+    if(aud.fears?.length)md+=`### Paure\n${aud.fears.map(f=>'- '+f).join('\n')}\n`;
+    if(aud.desires?.length)md+=`### Desideri\n${aud.desires.map(d=>'- '+d).join('\n')}\n`;
+    if(aud.objections?.length)md+=`### Obiezioni\n${aud.objections.map(o=>'- '+o).join('\n')}\n`;
+    md+='\n';
+  }
+  if(topHooks.length){md+=`## Hook Vincenti (rating ≥ 4★)\n${topHooks.map(h=>'- [${h.rating}★] '+h.text.substring(0,120)).join('\n')}\n\n`;}
+  if(Object.keys(patterns).length){
+    md+=`## Pattern dal Feedback\n`;
+    for(const[block,data]of Object.entries(patterns)){
+      const topTags=Object.entries(data.tags).sort((a,b)=>b[1]-a[1]).slice(0,3).map(([t,c])=>(tagLabels[t]||t)+' ('+c+'x)');
+      md+=`- **${block}:** ${data.up} positivi, ${data.down} negativi${topTags.length?'. Problemi: '+topTags.join(', '):''}\n`;
+    }
+    md+='\n';
+  }
+  if(voice.lessons?.length){
+    md+=`## Correzioni Apprese\n`;
+    voice.lessons.slice(-20).forEach(l=>{md+=`- "${l.original.substring(0,60)}" → "${l.corrected.substring(0,60)}"\n`;});
+    md+='\n';
+  }
+  if(voice.examples?.length){md+=`## Stile — Esempi Vincenti\n${voice.examples.map(e=>'- '+e).join('\n')}\n\n`;}
+  if(notes.trim())md+=`## Note\n${notes.substring(0,500)}\n`;
+  // Download
+  const blob=new Blob([md],{type:'text/markdown'});
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement('a');a.href=url;a.download='HOOKA_Brain_'+new Date().toISOString().split('T')[0]+'.md';
+  a.click();URL.revokeObjectURL(url);
+  showToast('📥 Knowledge file scaricato!');
+}
+function uploadBrainFile(input){
+  const file=input.files?.[0];
+  if(!file)return;
+  const reader=new FileReader();
+  reader.onload=function(e){
+    const content=e.target.result;
+    if(typeof resources!=='undefined'){
+      resources.texts.push({name:file.name,content:content.substring(0,5000),ts:Date.now()});
+      if(typeof saveResources==='function')saveResources();
+    }
+    showToast('🧠 File caricato nel Brain! L\'AI lo userà per migliorare i suggerimenti.');
+    renderBrainStatus();
+  };
+  reader.readAsText(file);
+  input.value='';
 }
 
 // ===== CREATIVE HUB =====
@@ -7687,7 +7886,7 @@ Rispondi SOLO con il testo del blocco. Nient'altro.`;
 
 // === MAZZO FLOATING PANEL ===
 function openMazzoFloat(blockIdx){
-  mazzoFloatTarget=blockIdx;
+  if(blockIdx!==undefined) mazzoFloatTarget=blockIdx;
   mazzoFloatFilter='all';
   document.getElementById('mazzoFloat').classList.add('open');
   document.getElementById('mazzoFloatOverlay').classList.add('open');

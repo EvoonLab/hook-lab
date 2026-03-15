@@ -7,7 +7,19 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <link rel="manifest" href="manifest.json">
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 44 44'%3E%3Crect width='44' height='44' rx='10' fill='%230a0a0f'/%3E%3Cpath d='M8 8v28M8 22h12M20 8v28' stroke='url(%23hg)' stroke-width='4' stroke-linecap='round' fill='none'/%3E%3Cpath d='M32 8c0 0-8 0-8 8s8 8 8 8' stroke='url(%23hg)' stroke-width='3.5' stroke-linecap='round' fill='none'/%3E%3Ccircle cx='32' cy='26' r='2.5' fill='url(%23hg)'/%3E%3Cdefs%3E%3ClinearGradient id='hg' x1='0' y1='0' x2='44' y2='44'%3E%3Cstop offset='0%25' stop-color='%23ff6b35'/%3E%3Cstop offset='100%25' stop-color='%23e8930c'/%3E%3C/linearGradient%3E%3C/defs%3E%3C/svg%3E"/>
+<link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 180 180'%3E%3Crect width='180' height='180' rx='36' fill='%230a0a0f'/%3E%3Cpath d='M36 36v108M36 90h48M84 36v108' stroke='url(%23atg)' stroke-width='14' stroke-linecap='round' fill='none'/%3E%3Cpath d='M132 36c0 0-32 0-32 32s32 32 32 32' stroke='url(%23atg)' stroke-width='12' stroke-linecap='round' fill='none'/%3E%3Ccircle cx='132' cy='108' r='9' fill='url(%23atg)'/%3E%3Cdefs%3E%3ClinearGradient id='atg' x1='0' y1='0' x2='180' y2='180'%3E%3Cstop offset='0%25' stop-color='%23ff6b35'/%3E%3Cstop offset='100%25' stop-color='%23e8930c'/%3E%3C/linearGradient%3E%3C/defs%3E%3C/svg%3E"/>
 <title>HOOKA — Palestra Creativa DSS</title>
+<meta property="og:title" content="HOOKA — La Palestra Creativa per Hook che Spaccano"/>
+<meta property="og:description" content="Giochi AI, Script Studio, Story Planner e Workshop. Allena la tua creativita' con l'intelligenza artificiale."/>
+<meta property="og:image" content="https://evoonlab.github.io/hook-lab/og-image.svg"/>
+<meta property="og:url" content="https://evoonlab.github.io/hook-lab/"/>
+<meta property="og:type" content="website"/>
+<meta property="og:locale" content="it_IT"/>
+<meta name="twitter:card" content="summary_large_image"/>
+<meta name="twitter:title" content="HOOKA — La Palestra Creativa"/>
+<meta name="twitter:description" content="Giochi AI, Script Studio, Story Planner e Workshop per contenuti social."/>
+<meta name="twitter:image" content="https://evoonlab.github.io/hook-lab/og-image.svg"/>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
@@ -31,10 +43,12 @@
   --overlay-bg:rgba(0,0,0,.3);--shadow-color:rgba(0,0,0,.1);
   --bubble-user-color:#fff;--bubble-ai-bg:rgba(0,0,0,.04);--bubble-ai-border:rgba(0,0,0,.08);
 }
-body{font-family:'Segoe UI',system-ui,sans-serif;background:var(--bg);color:var(--t1);min-height:100vh;overflow-x:hidden;transition:background .4s,color .4s}
-body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellipse at 20% 20%,rgba(255,107,53,.06)0%,transparent 50%),radial-gradient(ellipse at 80% 80%,rgba(232,147,12,.04)0%,transparent 50%);pointer-events:none;z-index:0;animation:ambientShift 12s ease-in-out infinite alternate}
-body::after{content:'';position:fixed;inset:0;background:radial-gradient(circle at 50% 0%,rgba(255,107,53,.03)0%,transparent 40%);pointer-events:none;z-index:0;animation:ambientPulse 8s ease-in-out infinite}
-[data-theme="light"] body::before,[data-theme="light"] body::after{opacity:.15}
+body{font-family:'Segoe UI',system-ui,sans-serif;background:var(--bg);background-image:radial-gradient(circle at 1px 1px,rgba(255,107,53,.025) 1px,transparent 0);background-size:44px 44px;color:var(--t1);min-height:100vh;overflow-x:hidden;transition:background .4s,color .4s}
+body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellipse at 20% 20%,rgba(255,107,53,.1)0%,transparent 50%),radial-gradient(ellipse at 80% 80%,rgba(232,147,12,.07)0%,transparent 50%),radial-gradient(ellipse at 50% 50%,rgba(196,74,24,.04)0%,transparent 60%);pointer-events:none;z-index:0;animation:ambientShift 12s ease-in-out infinite alternate}
+body::after{content:'';position:fixed;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent 5%,rgba(255,107,53,.6) 30%,rgba(232,147,12,.8) 50%,rgba(255,107,53,.6) 70%,transparent 95%);pointer-events:none;z-index:10000}
+[data-theme="light"] body::before{opacity:.15}
+[data-theme="light"] body::after{background:linear-gradient(90deg,transparent 5%,rgba(255,107,53,.4) 30%,rgba(232,147,12,.5) 50%,rgba(255,107,53,.4) 70%,transparent 95%)}
+[data-theme="light"] body{background-image:radial-gradient(circle at 1px 1px,rgba(255,107,53,.03) 1px,transparent 0);background-size:44px 44px}
 /* Light theme overrides */
 [data-theme="light"] .game-card{background:var(--card);border-color:rgba(0,0,0,.08);box-shadow:0 2px 8px rgba(0,0,0,.06)}
 [data-theme="light"] .game-card:hover{border-color:var(--a1);box-shadow:0 4px 16px rgba(255,107,53,.12)}
@@ -147,7 +161,7 @@ body::after{content:'';position:fixed;inset:0;background:radial-gradient(circle 
 
 .header{position:relative;z-index:10;text-align:center;padding:32px 24px 12px;background:linear-gradient(180deg,rgba(255,107,53,.06) 0%,rgba(232,147,12,.03) 40%,transparent 100%),url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 44 44'%3E%3Cpath d='M8 8v28M8 22h12M20 8v28' stroke='%23ff6b35' stroke-width='3' stroke-linecap='round' fill='none' opacity='.03'/%3E%3Cpath d='M32 8c0 0-8 0-8 8s8 8 8 8' stroke='%23ff6b35' stroke-width='2.5' stroke-linecap='round' fill='none' opacity='.03'/%3E%3Ccircle cx='32' cy='26' r='2' fill='%23ff6b35' opacity='.03'/%3E%3C/svg%3E") repeat;background-size:auto,80px 80px}
 [data-theme="light"] .header{background:linear-gradient(180deg,rgba(255,107,53,.08) 0%,rgba(232,147,12,.04) 40%,transparent 100%),url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 44 44'%3E%3Cpath d='M8 8v28M8 22h12M20 8v28' stroke='%23ff6b35' stroke-width='3' stroke-linecap='round' fill='none' opacity='.04'/%3E%3Cpath d='M32 8c0 0-8 0-8 8s8 8 8 8' stroke='%23ff6b35' stroke-width='2.5' stroke-linecap='round' fill='none' opacity='.04'/%3E%3Ccircle cx='32' cy='26' r='2' fill='%23ff6b35' opacity='.04'/%3E%3C/svg%3E") repeat;background-size:auto,80px 80px}
-.hero-gradient{height:160px;background:linear-gradient(180deg,rgba(255,107,53,.05) 0%,rgba(232,147,12,.03) 30%,rgba(255,107,53,.01) 60%,transparent 100%);pointer-events:none;margin-top:-5px;position:relative}
+.hero-gradient{height:160px;background:linear-gradient(180deg,rgba(255,107,53,.08) 0%,rgba(232,147,12,.05) 30%,rgba(255,107,53,.02) 60%,transparent 100%);pointer-events:none;margin-top:-5px;position:relative}
 .hero-gradient::before{content:'';position:absolute;inset:0;background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 44 44'%3E%3Cpath d='M8 8v28M8 22h12M20 8v28' stroke='%23ff6b35' stroke-width='3' stroke-linecap='round' fill='none' opacity='.02'/%3E%3Cpath d='M32 8c0 0-8 0-8 8s8 8 8 8' stroke='%23ff6b35' stroke-width='2.5' stroke-linecap='round' fill='none' opacity='.02'/%3E%3Ccircle cx='32' cy='26' r='2' fill='%23ff6b35' opacity='.02'/%3E%3C/svg%3E") repeat;background-size:80px 80px;-webkit-mask:linear-gradient(180deg,rgba(0,0,0,.6) 0%,transparent 100%);mask:linear-gradient(180deg,rgba(0,0,0,.6) 0%,transparent 100%)}
 .logo-wrap{display:flex;align-items:center;justify-content:center;gap:10px}
 .logo-icon{filter:drop-shadow(0 2px 8px rgba(255,107,53,.4));animation:logoFloat 4s ease-in-out infinite}
@@ -11409,20 +11423,50 @@ function replayPostTutorial(){
 
 // ===== STORY TOUR =====
 const STORY_TOUR_STEPS=[
-  {selector:'.mode-tab[data-mode="stories"]',title:'📱 Modalità Storie',body:'Benvenuto nella sezione Stories! Qui crei sequenze di storie Instagram professionali con AI.',placement:'bottom'},
-  {selector:'.story-voice-panel',title:'🎤 Il Tuo Stile Storie',body:'Cattura il tuo linguaggio per le storie. Frasi ricorrenti, stile apertura/chiusura, temi caldi. L\'AI userà il TUO stile!',placement:'bottom'},
-  {selector:'.story-planner-board',title:'📋 Story Planner',body:'Il tuo calendario storie dinamico. Ogni colonna è un giorno, ogni card una storia. Puoi aggiungere, rimuovere, riordinare!',placement:'top'},
-  {selector:'.sc-toggle',title:'🔄 Cicli & Sequenze',body:'Alterna tra Promo Cycle, Out of Promo, o crea sequenze personalizzate con "+ Nuova".',placement:'bottom'},
-  {selector:'.sp-toolbar',title:'🛠️ Toolbar Planner',body:'Scarica la sequenza in .md, carica file, resetta al template originale, copia tutto negli appunti.',placement:'bottom'},
-  {selector:'.fucina-stories',title:'🔥 Fucina Storie',body:'Genera copy AI per ogni storia! L\'AI legge le storie prima e dopo per creare connessione narrativa nella sequenza.',placement:'top'},
-  {selector:'.sh-studio',title:'🧩 Studio Storie',body:'Accedi all\'Hub per analizzare i tuoi contenuti e alla Fucina per script completi.',placement:'top'},
-  {selector:'#storyGameArea',title:'🎮 Story Games',body:'Giochi creativi per le storie: Slot Machine (combinazioni), Oracle (3 sequenze AI), Sprint (60s di copy), Obiezione Flip!',placement:'top'}
+  // 1. Intro
+  {selector:'.mode-tab[data-mode="stories"]',title:'📱 Modalità Storie',body:'Benvenuto nella sezione Stories! Qui crei sequenze di storie Instagram professionali con AI. Ti mostro tutto!',placement:'bottom'},
+  // 2. Voice Panel overview
+  {selector:'.story-voice-panel',title:'🎤 Il Tuo Stile Storie',body:'Prima di tutto, insegna all\'AI il tuo stile! Frasi ricorrenti, aperture, chiusure, temi caldi. Più dettagli dai, meglio scrive per te.',placement:'bottom',beforeShow:function(){var vp=document.querySelector('.story-voice-panel');if(vp)vp.scrollIntoView({behavior:'smooth',block:'center'});}},
+  // 3. Frasi ricorrenti
+  {selector:'.sv-row:first-child',title:'💬 Frasi Ricorrenti',body:'Aggiungi le frasi che usi sempre nelle storie. Tipo "Raga vi devo dire una cosa" o "Swipe up!". L\'AI le integra nei copy generati.',placement:'bottom',beforeShow:function(){var body=document.getElementById('svBody');if(body&&!body.classList.contains('open')){var h=document.querySelector('.story-voice-header');if(h)h.click();}}},
+  // 4. Apertura e Chiusura
+  {selector:'.sv-row:nth-child(2)',title:'🎬 Apertura & Chiusura',body:'Come apri le storie? Come le chiudi? Scrivi il tuo stile qui. L\'AI replicherà il tuo modo naturale di parlare.',placement:'bottom',beforeShow:function(){var body=document.getElementById('svBody');if(body&&!body.classList.contains('open')){var h=document.querySelector('.story-voice-header');if(h)h.click();}}},
+  // 5. Temi Caldi & Strategie
+  {selector:'.sv-row:last-child',title:'🔥 Temi Caldi & Strategie',body:'Seleziona le strategie che usi: Urgenza, FOMO, Social Proof, Storytelling... L\'AI le applica automaticamente nelle sequenze.',placement:'top',beforeShow:function(){var body=document.getElementById('svBody');if(body&&!body.classList.contains('open')){var h=document.querySelector('.story-voice-header');if(h)h.click();}}},
+  // 6. Story Planner Board
+  {selector:'.story-planner',title:'📋 Story Planner',body:'Il tuo calendario storie! Ogni colonna è un giorno, ogni card una storia. Trascina per riordinare, clicca per modificare.',placement:'top'},
+  // 7. Cicli & Sequenze
+  {selector:'.story-cycle-toggle',title:'🔄 Cicli & Sequenze',body:'Alterna tra Promo Cycle (per lanci prodotto) e Out of Promo (contenuto organico). Oppure crea sequenze personalizzate con "+ Nuova".',placement:'bottom'},
+  // 8. Colonna giorno
+  {selector:'.story-day-col:first-child',title:'📅 Giorno 1',body:'Ogni giorno ha un tema e una strategia. Dentro trovi le story card: apertura, contenuto mid, chiusura. Clicca per editare!',placement:'right'},
+  // 9. Story card
+  {selector:'.story-card',title:'🃏 Story Card',body:'Ogni card mostra tipo (apertura/chiusura/mid) e anteprima del testo. Clicca la ✕ per eliminarla, oppure clicca sulla card per modificarla.',placement:'right'},
+  // 10. Aggiungere story
+  {selector:'.story-day-add',title:'➕ Aggiungi Story',body:'Clicca "+" per aggiungere una nuova storia al giorno. Puoi avere quante storie vuoi per ogni giorno!',placement:'top'},
+  // 11. Fucina Storie
+  {selector:'.fucina-stories',title:'🔥 Fucina Storie',body:'Il cuore creativo! Qui generi copy AI per ogni storia. L\'AI legge le storie prima e dopo per creare connessione narrativa.',placement:'top'},
+  // 12. Vista Board
+  {selector:'.fsv-btn[data-view="board"]',title:'📋 Vista Board',body:'Board mostra tutti i giorni come colonne affiancate. Scorri orizzontalmente per vedere tutta la settimana in un colpo d\'occhio.',placement:'bottom'},
+  // 13. Vista Timeline
+  {selector:'.fsv-btn[data-view="timeline"]',title:'📃 Vista Timeline',body:'Timeline elenca tutte le storie verticalmente in ordine cronologico. Perfetta per una lettura lineare della sequenza.',placement:'bottom'},
+  // 14. Card espandibile nella Fucina
+  {selector:'#fucinaBoardContainer',title:'🃏 Card Espandibili',body:'Clicca su una story card nella Fucina per espanderla! Si apre un editor completo con Copy, Nota Visiva, CTA, Hashtag e 3 azioni AI.',placement:'top'},
+  // 15. Story Games area
+  {selector:'.story-games-grid',title:'🎮 11 Story Games',body:'Giochi creativi pensati per le storie! Divisi in 4 categorie: Ispirazione, Challenge, Arena e Fight.',placement:'top',beforeShow:function(){var g=document.querySelector('.story-games-grid');if(g)g.scrollIntoView({behavior:'smooth',block:'center'});return new Promise(function(r){setTimeout(r,400);});}},
+  // 16. Un gioco specifico
+  {selector:'.story-game-card:first-child',title:'🎰 Prova un Gioco!',body:'Ogni gioco ha meccaniche diverse: la Slot genera combinazioni casuali, l\'Oracle propone 3 sequenze AI, lo Sprint ti sfida in 60 secondi!',placement:'top'},
+  // 17. Giochi competitivi
+  {selector:'.story-game-card:last-child',title:'⚔️ Giochi Fight',body:'Nei Fight, 2 AI creano sequenze diverse e tu scegli la migliore. Perfetto per allenare l\'occhio critico!',placement:'top'},
+  // 18. Cronologia
+  {selector:'.help-fab',title:'📜 Cronologia & Aiuto',body:'Da qui accedi alla Cronologia (tutte le modifiche salvate) e puoi rilanciare questo tutorial quando vuoi.',placement:'right'},
+  // 19. Fine
+  {selector:'.mode-tab[data-mode="stories"]',title:'🎯 Ora tocca a te!',body:'Hai visto tutto! Inizia dal Voice Panel per insegnare il tuo stile, poi pianifica i giorni e genera copy con la Fucina AI. Buone storie! 🚀',placement:'bottom'}
 ];
 
 function showStoryOnboarding(){
   if(localStorage.getItem('hl_story_onboarded'))return;
   // Wait for DOM to settle
-  const checkEl=document.querySelector('.story-planner-board')||document.querySelector('.story-voice-panel');
+  const checkEl=document.querySelector('.story-voice-panel')||document.querySelector('.story-board');
   if(!checkEl){setTimeout(showStoryOnboarding,500);return;}
   localStorage.setItem('hl_story_onboarded','1');
   window._storyTour=new GuidedTour(STORY_TOUR_STEPS);
@@ -11432,9 +11476,13 @@ function showStoryOnboarding(){
 
 function replayStoryTutorial(){
   localStorage.removeItem('hl_story_onboarded');
-  window._storyTour=new GuidedTour(STORY_TOUR_STEPS);
-  window._tour=window._storyTour;
-  window._storyTour.start();
+  if(window._tourActive&&window._tour){window._tour.end();}
+  if(currentMode!=='stories')switchMode('stories');
+  setTimeout(()=>{
+    window._storyTour=new GuidedTour(STORY_TOUR_STEPS);
+    window._tour=window._storyTour;
+    window._storyTour.start();
+  },500);
 }
 
 // ===== KEYBOARD SHORTCUTS =====

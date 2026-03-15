@@ -849,6 +849,48 @@ body::after{content:'';position:fixed;inset:0;background:radial-gradient(circle 
 [data-theme="light"] .np-detail{background:rgba(0,0,0,.02)}
 [data-theme="light"] .np-detail-btn{background:rgba(0,0,0,.03);border-color:rgba(0,0,0,.1)}
 .np-item-tag.hook{background:rgba(76,175,80,.1);color:#66bb6a}
+/* Inline hook generation from trends */
+.np-hook-gen{padding:12px;border-top:1px solid rgba(255,255,255,.06);margin-top:8px}
+.np-gen-hook{padding:10px 12px;background:rgba(255,107,53,.04);border:1px solid rgba(255,107,53,.12);border-radius:var(--rs);margin-bottom:8px}
+.np-gen-hook-text{font-size:.85rem;color:var(--t1);line-height:1.5;margin-bottom:6px;font-weight:500}
+.np-gen-hook-actions{display:flex;gap:6px;flex-wrap:wrap}
+.np-gen-hook-actions button{padding:4px 10px;border-radius:10px;font-size:.65rem;font-weight:600;border:1px solid rgba(255,255,255,.1);background:rgba(255,255,255,.05);cursor:pointer;transition:var(--tr);color:var(--t1)}
+.np-gen-hook-actions button:hover{background:rgba(255,107,53,.15);border-color:rgba(255,107,53,.3)}
+/* Creative Hub */
+.creative-hub{background:var(--card);border-radius:var(--r);padding:20px;margin:12px 0;border-left:4px solid #00b894;display:none}
+.creative-hub.visible{display:block}
+.hub-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px}
+.hub-title{font-size:1.1rem;font-weight:800;display:flex;align-items:center;gap:8px}
+.hub-actions{display:flex;gap:8px}
+.hub-action-btn{padding:6px 14px;border-radius:var(--rs);font-size:.75rem;font-weight:600;border:1px solid rgba(0,184,148,.2);background:rgba(0,184,148,.06);color:var(--t1);cursor:pointer;transition:var(--tr)}
+.hub-action-btn:hover{background:rgba(0,184,148,.15);border-color:rgba(0,184,148,.4)}
+.hub-workspace{min-height:200px;border:2px dashed rgba(0,184,148,.15);border-radius:var(--r);padding:16px;position:relative;display:flex;flex-wrap:wrap;gap:10px;align-content:flex-start}
+.hub-workspace.empty::after{content:'Trascina hook dal mazzo, genera con AI, o aggiungi manualmente';position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);color:var(--t2);font-size:.85rem;text-align:center;pointer-events:none;max-width:80%}
+.hub-card{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.1);border-radius:var(--rs);padding:12px;min-width:200px;max-width:340px;flex:1 1 280px;position:relative;transition:var(--tr);cursor:default}
+.hub-card:hover{border-color:rgba(0,184,148,.3);box-shadow:0 4px 15px rgba(0,184,148,.1)}
+.hub-card.selected{border-color:#00b894;box-shadow:0 0 0 2px rgba(0,184,148,.2)}
+.hub-card-text{font-size:.85rem;line-height:1.5;color:var(--t1);margin-bottom:8px;min-height:30px}
+.hub-card-text[contenteditable]{outline:none;border-bottom:1px dashed rgba(255,255,255,.1)}
+.hub-card-meta{font-size:.6rem;color:var(--t2);display:flex;justify-content:space-between;align-items:center}
+.hub-card-source{padding:2px 8px;border-radius:8px;font-weight:600;text-transform:uppercase;letter-spacing:.5px}
+.hub-card-source.mazzo{background:rgba(255,217,61,.1);color:#ffd93d}
+.hub-card-source.ai{background:rgba(168,85,247,.1);color:#a855f7}
+.hub-card-source.trend{background:rgba(255,107,53,.1);color:#ff6b35}
+.hub-card-source.manual{background:rgba(0,184,148,.1);color:#00b894}
+.hub-card-actions{position:absolute;top:6px;right:6px;display:flex;gap:4px;opacity:0;transition:opacity .2s}
+.hub-card:hover .hub-card-actions{opacity:1}
+.hub-card-actions button{width:24px;height:24px;border-radius:6px;border:none;background:rgba(255,255,255,.08);color:var(--t2);cursor:pointer;font-size:.7rem;display:flex;align-items:center;justify-content:center}
+.hub-card-actions button:hover{background:rgba(255,255,255,.15);color:var(--t1)}
+.hub-compare{background:rgba(0,184,148,.03);border:1px solid rgba(0,184,148,.15);border-radius:var(--r);padding:14px;margin-top:12px}
+.hub-compare-title{font-size:.75rem;font-weight:700;color:#00b894;text-transform:uppercase;letter-spacing:1px;margin-bottom:8px}
+.hub-ai-panel{background:rgba(168,85,247,.03);border:1px solid rgba(168,85,247,.15);border-radius:var(--r);padding:14px;margin-top:12px}
+.hub-ai-panel textarea{width:100%;padding:10px;border-radius:var(--rs);border:1px solid rgba(168,85,247,.2);background:var(--input-bg);color:var(--t1);font-size:.85rem;resize:none;min-height:60px}
+.hub-ai-result{margin-top:10px;padding:12px;background:rgba(168,85,247,.05);border-radius:var(--rs);font-size:.85rem;line-height:1.5;color:var(--t1)}
+[data-theme="light"] .hub-workspace{border-color:rgba(0,184,148,.2)}
+[data-theme="light"] .hub-card{background:rgba(0,0,0,.02);border-color:rgba(0,0,0,.08)}
+[data-theme="light"] .np-hook-gen{border-color:rgba(0,0,0,.06)}
+[data-theme="light"] .np-gen-hook{background:rgba(255,107,53,.03);border-color:rgba(255,107,53,.1)}
+[data-theme="light"] .np-gen-hook-actions button{background:rgba(0,0,0,.03);border-color:rgba(0,0,0,.08)}
 .np-banner{padding:12px 16px;background:linear-gradient(135deg,rgba(255,107,53,.05),rgba(232,147,12,.03));border-top:1px solid rgba(255,107,53,.08);font-size:.72rem;color:var(--t2);line-height:1.5}
 .np-banner strong{color:var(--a1)}
 .np-loading{padding:30px;text-align:center;color:var(--t2);font-size:.8rem}
@@ -1822,7 +1864,35 @@ body.light .shimmer::after{background:linear-gradient(90deg,transparent 0%,rgba(
     <div class="game-card" onclick="openGame('tournament')"><span class="icon"><svg viewBox="0 0 32 32"><path d="M11 8h10v3a5 5 0 01-10 0z" fill="#ffd93d33" stroke="#ffd93d" stroke-width="2"/><path d="M16 16v5" stroke="#ffd93d" stroke-width="2"/><path d="M12 21h8" stroke="#ffd93d" stroke-width="2" stroke-linecap="round"/><path d="M7 8l4 3M25 8l-4 3" stroke="#ffd93d" stroke-width="1.5" stroke-linecap="round"/><circle cx="16" cy="11" r="1" fill="#ffd93d"/></svg></span><div class="name">Il Torneo</div><div class="desc">Bracket eliminatorio</div></div>
   </div>
 
+  <!-- STUDIO: Hub + Fucina -->
+  <div class="section-header sh-studio" style="border-color:#00b894">
+    <div class="sh-icon">🧩</div>
+    <div class="sh-text"><h3>Studio Creativo</h3><p>Hub di analisi, confronto e scrittura script</p></div>
+    <span class="sh-count" style="display:flex;gap:6px">
+      <button class="hub-action-btn" onclick="openHub()" style="font-size:.7rem">🧩 Hub</button>
+      <button class="hub-action-btn" onclick="openFucinaStandalone()" style="font-size:.7rem;border-color:rgba(255,107,53,.3);background:rgba(255,107,53,.06)">🔥 Fucina</button>
+    </span>
+  </div>
+
   <div class="game-area" id="gameArea"></div>
+
+  <!-- CREATIVE HUB -->
+  <div class="creative-hub" id="creativeHub">
+    <div class="hub-header">
+      <div class="hub-title">🧩 Creative Hub</div>
+      <div class="hub-actions">
+        <button class="hub-action-btn" onclick="addHubCardManual()">✏️ Aggiungi</button>
+        <button class="hub-action-btn" onclick="importFromMazzoToHub()">⭐ Dal Mazzo</button>
+        <button class="hub-action-btn" onclick="hubAskAI()">🤖 Chiedi AI</button>
+        <button class="hub-action-btn" onclick="hubCompareSelected()">⚖️ Confronta</button>
+        <button class="hub-action-btn" onclick="hubSendToFucina()">🔥 → Fucina</button>
+        <button class="hub-action-btn" onclick="hubClearAll()">🗑️ Pulisci</button>
+        <button class="hub-action-btn" onclick="closeHub()" style="border-color:rgba(255,255,255,.1)">✕</button>
+      </div>
+    </div>
+    <div class="hub-workspace empty" id="hubWorkspace"></div>
+    <div id="hubAiPanel"></div>
+  </div>
 
   <div class="fucina-standalone" id="fucinaStandalone">
     <div class="fucina-standalone-header">
@@ -2877,10 +2947,13 @@ if(!resources.links)resources.links=[];if(!resources.texts)resources.texts=[];if
 function saveVoice(){localStorage.setItem(hlKey('voice'),JSON.stringify(voice));}
 function saveResources(){localStorage.setItem(hlKey('resources'),JSON.stringify(resources));}
 
+let _lastLevelUpTime=0;
 function addXP(n){const oldLv=getLevel();stats.xp+=n;
   const today=new Date().toISOString().split('T')[0];
   if(stats.lastPlayDate!==today){const yesterday=new Date();yesterday.setDate(yesterday.getDate()-1);stats.streak=stats.lastPlayDate===yesterday.toISOString().split('T')[0]?stats.streak+1:1;stats.lastPlayDate=today;}
-  saveStats();updateStats();showToast(`+${n} XP!`);if(getLevel()>oldLv)sLevelUp();}
+  saveStats();updateStats();showToast(`+${n} XP!`);
+  const newLv=getLevel();
+  if(newLv>oldLv&&Date.now()-_lastLevelUpTime>5000){_lastLevelUpTime=Date.now();sLevelUp();}}
 function getLevel(){for(let i=LEVELS.length-1;i>=0;i--)if(stats.xp>=LEVELS[i])return i+1;return 1;}
 function getLvProg(){const l=getLevel();if(l>=LEVELS.length)return 100;const p=LEVELS[l-1]||0,n=LEVELS[l]||p+100;return Math.min(100,((stats.xp-p)/(n-p))*100);}
 function saveStats(){localStorage.setItem(hlKey('stats'),JSON.stringify(stats));}
@@ -3861,7 +3934,23 @@ function closeGame(){
 // ===== GAME 1-5: INSPIRATION (compact) =====
 function renderSlot(){const a=document.getElementById('gameArea');slotLocked=[false,false,false];slotValues=[rand(allTemi()),rand(DB.angoli),rand(DB.hooks)];a.innerHTML=`<button class="back-btn" onclick="closeGame()">← Indietro</button><div class="game-title">🎰 La Slot</div><p class="game-subtitle">Tema + Angolo + Hook. Blocca e ri-gira.</p><div class="slot-container">${[['Tema',0],['Angolo',1],['Hook',2]].map(([l,i])=>`<div class="slot-reel" id="reel${i}"><div class="reel-label">${l}</div><div class="reel-value" id="rv${i}">${slotValues[i]}</div><button class="lock-btn" onclick="toggleLock(${i})">🔒 Blocca</button></div>`).join('')}</div><div class="game-actions"><button class="action-btn btn-hot" onclick="spinSlot()">🔥 GIRA!</button><button class="save-btn" onclick="saveSlot()">⭐ Salva</button></div>`;}
 function toggleLock(i){slotLocked[i]=!slotLocked[i];const r=document.getElementById(`reel${i}`),b=r.querySelector('.lock-btn');r.classList.toggle('locked',slotLocked[i]);b.classList.toggle('locked',slotLocked[i]);b.innerHTML=slotLocked[i]?'🔓 Sbloccato':'🔒 Blocca';sSlotLock();}
-function spinSlot(){const src=[allTemi(),DB.angoli,DB.hooks],dur=[1000,1400,1800];sClick();const container=document.querySelector('.slot-container');const unlocked=slotLocked.filter(x=>!x).length;let landed=0;for(let i=0;i<3;i++){if(slotLocked[i]){landed++;continue;}const r=document.getElementById(`reel${i}`),v=document.getElementById(`rv${i}`);r.classList.remove('landing');r.classList.add('spinning');let si=setInterval(()=>{v.textContent=rand(src[i]);sSpin();},80);setTimeout(()=>{clearInterval(si);r.classList.remove('spinning');r.classList.add('landing');slotValues[i]=rand(src[i]);v.textContent=slotValues[i];sClick();setTimeout(()=>r.classList.remove('landing'),500);landed++;if(landed===3&&!slotLocked.includes(true)){container.classList.add('full-combo');sLevelUp();setTimeout(()=>container.classList.remove('full-combo'),1000);}},dur[i]);}}
+function spinSlot(){const src=[allTemi(),DB.angoli,DB.hooks],dur=[1000,1400,1800];sClick();const container=document.querySelector('.slot-container');const unlocked=slotLocked.filter(x=>!x).length;let landed=0;for(let i=0;i<3;i++){if(slotLocked[i]){landed++;continue;}const r=document.getElementById(`reel${i}`),v=document.getElementById(`rv${i}`);r.classList.remove('landing');r.classList.add('spinning');let si=setInterval(()=>{v.textContent=rand(src[i]);sSpin();},80);setTimeout(()=>{clearInterval(si);r.classList.remove('spinning');r.classList.add('landing');slotValues[i]=rand(src[i]);v.textContent=slotValues[i];sClick();setTimeout(()=>r.classList.remove('landing'),500);landed++;if(landed===3&&!slotLocked.includes(true)){container.classList.add('full-combo');showSlotJackpot();setTimeout(()=>container.classList.remove('full-combo'),1000);}},dur[i]);}}
+function showSlotJackpot(){
+  // Jackpot sound — ascending celebratory tones
+  [523,659,784,1047,1319].forEach((f,i)=>setTimeout(()=>playTone(f,.12,'sine',0.1),i*80));
+  // Visual celebration
+  const ov=document.createElement('div');ov.className='lvup-overlay';
+  ov.innerHTML='<div style="text-align:center"><div class="lvup-badge" style="background:linear-gradient(135deg,#ffd93d,#ff6b35);color:#1a1a2e">🎰 JACKPOT!</div><div class="lvup-sub">Combinazione perfetta — 3 su 3!</div><div style="margin-top:12px"><button onclick="saveSlot();this.closest(\'.lvup-overlay\').remove();showToast(\'Salvato nel mazzo!\')" style="padding:10px 24px;border-radius:12px;background:linear-gradient(135deg,#ff6b35,#e8930c);color:#fff;font-weight:800;border:none;cursor:pointer;font-size:.9rem;margin-right:8px">⭐ Salva Combo</button><button onclick="this.closest(\'.lvup-overlay\').remove()" style="padding:10px 24px;border-radius:12px;background:rgba(255,255,255,.1);color:#fff;font-weight:600;border:1px solid rgba(255,255,255,.2);cursor:pointer;font-size:.85rem">Continua</button></div></div>';
+  document.body.appendChild(ov);
+  requestAnimationFrame(()=>ov.classList.add('active'));
+  // Particles
+  const cx=window.innerWidth/2,cy=window.innerHeight/2;
+  spawnLvParticles(cx,cy);
+  // Glow on reels
+  document.querySelectorAll('.slot-reel').forEach(r=>{r.style.boxShadow='0 0 30px rgba(255,217,61,.6)';r.style.transition='box-shadow .3s';setTimeout(()=>{r.style.boxShadow='';},2500);});
+  // Auto-remove after 8s if still open
+  setTimeout(()=>{if(ov.parentElement)ov.remove();},8000);
+}
 function saveSlot(){saveItem('Slot',`[TEMA] ${slotValues[0]}\n[ANGOLO] ${slotValues[1]}\n[HOOK] ${slotValues[2]}`);}
 
 function renderFlip(){const a=document.getElementById('gameArea');const fps=allFlips();currentFlipIndex=Math.floor(Math.random()*fps.length);const p=fps[currentFlipIndex];a.innerHTML=`<button class="back-btn" onclick="closeGame()">← Indietro</button><div class="game-title">🔄 Il Ribaltamento</div><p class="game-subtitle">Clicca per capovolgere.</p><div class="flip-scene" onclick="doFlip()"><div class="flip-card" id="flipCard"><div class="flip-face flip-front"><div class="word" id="ff">${p.front}</div><div class="hint">👉 Clicca</div></div><div class="flip-face flip-back"><div class="label">Il ribaltamento</div><div class="word" id="fb">${p.back}</div></div></div></div><div class="game-actions"><button class="action-btn btn-cool" onclick="nextFlip()">🔄 Un altro</button><button class="save-btn" onclick="saveFlip()">⭐ Salva</button></div>`;}
@@ -5545,6 +5634,190 @@ function pickTourneyWinner(idx,side){
   renderTourneyPair(idx+1);
 }
 
+// ===== CREATIVE HUB =====
+let hubItems=JSON.parse(localStorage.getItem(hlKey('hubItems'))||'[]');
+function saveHubItems(){localStorage.setItem(hlKey('hubItems'),JSON.stringify(hubItems));}
+
+function openHub(){
+  const hub=document.getElementById('creativeHub');
+  if(hub){hub.classList.add('visible');renderHub();hub.scrollIntoView({behavior:'smooth',block:'start'});}
+}
+function closeHub(){
+  const hub=document.getElementById('creativeHub');
+  if(hub)hub.classList.remove('visible');
+}
+function renderHub(){
+  const ws=document.getElementById('hubWorkspace');
+  if(!ws)return;
+  ws.classList.toggle('empty',hubItems.length===0);
+  ws.innerHTML=hubItems.map((item,i)=>`<div class="hub-card${item.selected?' selected':''}" data-hub-idx="${i}" onclick="toggleHubSelect(${i})">
+    <div class="hub-card-actions">
+      <button onclick="event.stopPropagation();editHubCard(${i})" title="Modifica">✏️</button>
+      <button onclick="event.stopPropagation();removeHubCard(${i})" title="Rimuovi">✕</button>
+    </div>
+    <div class="hub-card-text">${item.text.replace(/</g,'&lt;')}</div>
+    <div class="hub-card-meta">
+      <span class="hub-card-source ${item.source}">${item.source}</span>
+      <span>${new Date(item.ts).toLocaleDateString('it-IT',{day:'numeric',month:'short'})}</span>
+    </div>
+  </div>`).join('');
+}
+
+function sendHookToHub(text,source){
+  source=source||'manual';
+  hubItems.push({text,source,ts:Date.now(),selected:false});
+  saveHubItems();
+  openHub();
+}
+
+function addHubCardManual(){
+  const text=prompt('Scrivi il tuo hook/idea:');
+  if(!text||!text.trim())return;
+  hubItems.push({text:text.trim(),source:'manual',ts:Date.now(),selected:false});
+  saveHubItems();renderHub();sClick();
+}
+
+function importFromMazzoToHub(){
+  if(!savedItems.length){showToast('Il mazzo è vuoto!');return;}
+  // Show a picker overlay
+  const ov=document.createElement('div');ov.className='lvup-overlay';ov.style.overflow='auto';ov.style.padding='40px 20px';
+  let html='<div style="max-width:500px;margin:0 auto;text-align:left"><h3 style="color:#ffd93d;margin-bottom:12px;text-align:center">⭐ Seleziona dal Mazzo</h3>';
+  savedItems.forEach((it,i)=>{
+    html+=`<div style="padding:10px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);border-radius:8px;margin-bottom:6px;cursor:pointer;font-size:.8rem;color:var(--t1);transition:all .2s" onclick="this.classList.toggle('selected');this.style.borderColor=this.classList.contains('selected')?'#00b894':'rgba(255,255,255,.1)';this.style.background=this.classList.contains('selected')?'rgba(0,184,148,.08)':'rgba(255,255,255,.05)'" data-mazzo-idx="${i}">${it.text.substring(0,120).replace(/</g,'&lt;')}<div style="font-size:.6rem;color:var(--t2);margin-top:4px">${it.type}</div></div>`;
+  });
+  html+=`<div style="text-align:center;margin-top:14px">
+    <button onclick="importMazzoSelection(this.closest('.lvup-overlay'))" style="padding:10px 24px;border-radius:12px;background:linear-gradient(135deg,#00b894,#00a381);color:#fff;font-weight:700;border:none;cursor:pointer;margin-right:8px">✓ Importa Selezionati</button>
+    <button onclick="this.closest('.lvup-overlay').remove()" style="padding:10px 24px;border-radius:12px;background:rgba(255,255,255,.1);color:#fff;font-weight:600;border:none;cursor:pointer">Annulla</button>
+  </div></div>`;
+  ov.innerHTML=html;
+  document.body.appendChild(ov);
+  requestAnimationFrame(()=>ov.classList.add('active'));
+}
+function importMazzoSelection(overlay){
+  const selected=overlay.querySelectorAll('.selected');
+  selected.forEach(el=>{
+    const idx=parseInt(el.dataset.mazzoIdx);
+    const item=savedItems[idx];
+    if(item)hubItems.push({text:item.text,source:'mazzo',ts:Date.now(),selected:false});
+  });
+  saveHubItems();renderHub();
+  overlay.remove();
+  showToast(`${selected.length} elementi importati nell'Hub!`);sCorrect();
+}
+
+function toggleHubSelect(i){
+  hubItems[i].selected=!hubItems[i].selected;
+  saveHubItems();renderHub();
+}
+
+function editHubCard(i){
+  const card=document.querySelector(`[data-hub-idx="${i}"] .hub-card-text`);
+  if(!card)return;
+  card.contentEditable='true';
+  card.focus();
+  card.addEventListener('blur',function handler(){
+    card.contentEditable='false';
+    hubItems[i].text=card.textContent.trim();
+    saveHubItems();
+    card.removeEventListener('blur',handler);
+  },{once:true});
+}
+
+function removeHubCard(i){
+  hubItems.splice(i,1);saveHubItems();renderHub();sClick();
+}
+
+function hubClearAll(){
+  if(!hubItems.length)return;
+  if(!confirm('Svuotare l\'Hub?'))return;
+  hubItems=[];saveHubItems();renderHub();
+}
+
+function hubCompareSelected(){
+  const sel=hubItems.filter(it=>it.selected);
+  if(sel.length<2){showToast('Seleziona almeno 2 card da confrontare!');return;}
+  if(!isAI()){showToast('Connetti l\'AI per confrontare!');return;}
+  const panel=document.getElementById('hubAiPanel');
+  panel.innerHTML='<div class="hub-compare"><div class="hub-compare-title">⚖️ Confronto AI in corso...</div><div style="color:var(--t2);font-size:.85rem">Analizzo '+sel.length+' hook<span class="qw-dots"></span></div></div>';
+  const ctx=getCtxPrompt();
+  const hooks=sel.map((h,i)=>`${i+1}. "${h.text}"`).join('\n');
+  callAI(`Sei un esperto di copywriting e content strategy italiano. Confronta questi hook e fai un'analisi dettagliata:
+${hooks}
+
+Per ogni hook: 1) Punti di forza 2) Debolezze 3) Score 1-10
+Poi: il MIGLIORE, il motivo, e un CONSIGLIO per migliorare il peggiore.
+${ctx}
+Rispondi in modo strutturato e diretto.`,500).then(r=>{
+    panel.innerHTML=`<div class="hub-compare"><div class="hub-compare-title">⚖️ Analisi Comparativa</div><div style="white-space:pre-wrap;font-size:.85rem;line-height:1.6;color:var(--t1)">${r.replace(/</g,'&lt;')}</div>
+    <div style="margin-top:10px;text-align:right"><button class="hub-action-btn" onclick="this.closest('.hub-compare').remove()">✕ Chiudi</button></div></div>`;
+  }).catch(e=>{panel.innerHTML=`<div class="hub-compare"><div style="color:#ff4757">Errore: ${e.message}</div></div>`;});
+}
+
+function hubAskAI(){
+  const sel=hubItems.filter(it=>it.selected);
+  const panel=document.getElementById('hubAiPanel');
+  const selText=sel.length?sel.map(h=>`"${h.text}"`).join('\n'):'(nessun hook selezionato)';
+  panel.innerHTML=`<div class="hub-ai-panel">
+    <div style="font-size:.75rem;font-weight:700;color:#a855f7;text-transform:uppercase;letter-spacing:1px;margin-bottom:8px">🤖 Chiedi all'AI${sel.length?' ('+sel.length+' selezionati)':''}</div>
+    <textarea id="hubAiQuestion" placeholder="Es: Migliora questo hook, rendilo più aggressivo, analizza il target..."></textarea>
+    <div style="text-align:right;margin-top:8px">
+      <button class="hub-action-btn" onclick="hubAiSubmit()">🚀 Chiedi</button>
+      <button class="hub-action-btn" onclick="this.closest('.hub-ai-panel').remove()" style="margin-left:4px">✕</button>
+    </div>
+    <div id="hubAiResult"></div>
+  </div>`;
+  document.getElementById('hubAiQuestion').focus();
+}
+
+async function hubAiSubmit(){
+  const q=document.getElementById('hubAiQuestion')?.value?.trim();
+  if(!q){showToast('Scrivi una domanda!');return;}
+  const sel=hubItems.filter(it=>it.selected);
+  const res=document.getElementById('hubAiResult');
+  res.innerHTML='<div style="color:var(--t2);font-size:.85rem;margin-top:10px">Elaboro<span class="qw-dots"></span></div>';
+  const ctx=getCtxPrompt();
+  const hooksCtx=sel.length?`\nHook di riferimento:\n${sel.map((h,i)=>`${i+1}. "${h.text}"`).join('\n')}`:'';
+  const allHubCtx=hubItems.length?`\nTutti gli hook nell'Hub:\n${hubItems.map((h,i)=>`${i+1}. "${h.text}"`).join('\n')}`:'';
+  try{
+    const r=await callAI(`Sei un esperto di copywriting e content strategy italiano. L'utente ha questa domanda/richiesta:
+"${q}"
+${hooksCtx}${allHubCtx}
+${ctx}
+Rispondi in modo diretto, concreto e immediatamente utile. Se generi nuovi hook, scrivili chiaramente separati.`,400);
+    res.innerHTML=`<div class="hub-ai-result">${r.replace(/</g,'&lt;').replace(/\n/g,'<br>')}</div>
+    <div style="margin-top:8px;display:flex;gap:6px;flex-wrap:wrap">
+      <button class="hub-action-btn" onclick="addAiResultToHub()">🧩 Aggiungi all'Hub</button>
+      <button class="hub-action-btn" onclick="sendHookToFucina(document.querySelector('.hub-ai-result')?.textContent)">🔥 → Fucina</button>
+      <button class="hub-action-btn" onclick="navigator.clipboard.writeText(document.querySelector('.hub-ai-result')?.textContent);showToast('Copiato!')">📋 Copia</button>
+    </div>`;
+  }catch(e){
+    res.innerHTML=`<div style="color:#ff4757;margin-top:10px">Errore: ${e.message}</div>`;
+  }
+}
+
+function addAiResultToHub(){
+  const text=document.querySelector('.hub-ai-result')?.textContent;
+  if(!text)return;
+  // Split by newlines if multiple hooks
+  const lines=text.split('\n').filter(l=>l.trim().length>15);
+  if(lines.length>1){
+    lines.forEach(l=>{
+      const clean=l.replace(/^\d+[\.\)\-]\s*/,'').replace(/^["']|["']$/g,'').trim();
+      if(clean.length>10)hubItems.push({text:clean,source:'ai',ts:Date.now(),selected:false});
+    });
+  }else{
+    hubItems.push({text:text.trim(),source:'ai',ts:Date.now(),selected:false});
+  }
+  saveHubItems();renderHub();showToast('Aggiunto all\'Hub!');sCorrect();
+}
+
+function hubSendToFucina(){
+  const sel=hubItems.filter(it=>it.selected);
+  if(!sel.length){showToast('Seleziona almeno un hook!');return;}
+  const bestHook=sel[0].text;
+  sendHookToFucina(bestHook);
+}
+
 // ===== EXPORT =====
 function exportHook(text,format){
   const clean=text.replace(/\[.*?\]/g,'').replace(/→\s*/g,'').replace(/\d★/g,'').trim().split('\n').filter(l=>l.trim()).join('\n');
@@ -6026,6 +6299,56 @@ function updateFilterSuggestion(){
   }
 }
 
+// ===== GENERA HOOK FROM TREND (inline) =====
+async function generateHookFromTrend(trendItem,parentEl){
+  // Show inline hook generation panel right inside the newspaper item
+  let hookPanel=parentEl.querySelector('.np-hook-gen');
+  if(hookPanel){hookPanel.remove();return;}
+  hookPanel=document.createElement('div');hookPanel.className='np-hook-gen';
+  hookPanel.innerHTML='<div style="padding:12px;text-align:center;color:var(--t2);font-size:.85rem">🪝 Genero hook dal trend<span class="qw-dots"></span></div>';
+  parentEl.appendChild(hookPanel);
+  if(!isAI()){
+    // Fallback without AI
+    const hooks=[`"${trendItem.title}" — questo cambia tutto per chi vende online.`,`Hai visto? ${trendItem.title}. Ecco cosa devi fare ORA.`,`${trendItem.title}: 3 cose che nessuno ti sta dicendo.`];
+    renderTrendHooks(hookPanel,hooks,trendItem);return;
+  }
+  const ctx=JSON.parse(localStorage.getItem(hlKey('ctx'))||'{}');
+  const voiceInfo=voice?.tone?.length?`Tono: ${voice.tone.join(', ')}.`:'';
+  try{
+    const r=await callAI(`Sei un copywriter italiano esperto di contenuti virali. Genera 3 hook diversi (provocatorio, emotivo, con dati) ispirati a questo trend: "${trendItem.title} — ${trendItem.desc}". ${ctx.who?'Nicchia: '+ctx.who+'.':''} ${voiceInfo} Ogni hook max 2 frasi. Rispondi SOLO JSON array: ["hook1","hook2","hook3"]`,200);
+    const clean=r.replace(/```json?|```/g,'').trim();
+    const hooks=JSON.parse(clean);
+    if(Array.isArray(hooks))renderTrendHooks(hookPanel,hooks,trendItem);
+    else throw new Error('bad');
+  }catch(e){
+    const hooks=[`"${trendItem.title}" — questo cambia tutto per chi vende online.`,`Hai visto? ${trendItem.title}. Ecco cosa devi fare ORA.`,`${trendItem.title}: 3 cose che nessuno ti sta dicendo.`];
+    renderTrendHooks(hookPanel,hooks,trendItem);
+  }
+}
+function renderTrendHooks(panel,hooks,trendItem){
+  panel.innerHTML=hooks.map((h,i)=>`<div class="np-gen-hook">
+    <div class="np-gen-hook-text">${h.replace(/</g,'&lt;')}</div>
+    <div class="np-gen-hook-actions">
+      <button onclick="navigator.clipboard.writeText('${h.replace(/'/g,"\\'")}');showToast('Copiato!')">📋</button>
+      <button onclick="saveItem('Feed Hook','${h.replace(/'/g,"\\'")}');showToast('Salvato nel mazzo!')">⭐</button>
+      <button onclick="sendHookToHub('${h.replace(/'/g,"\\'")}');showToast('Inviato all\\'Hub!')">🧩</button>
+      <button onclick="sendHookToFucina('${h.replace(/'/g,"\\'")}')">🔥 Fucina</button>
+    </div>
+  </div>`).join('')+'<div style="text-align:center;margin-top:8px"><button onclick="this.closest(\'.np-hook-gen\').remove()" style="font-size:.75rem;color:var(--t2);background:none;border:none;cursor:pointer">✕ Chiudi</button></div>';
+  sCorrect();
+}
+function sendHookToFucina(text){
+  openFucinaStandalone();
+  setTimeout(()=>{
+    startFucinaSetup();
+    setTimeout(()=>{
+      const hookInput=document.querySelector('#fucinaContent textarea,#fucinaContent input[type="text"]');
+      if(hookInput){hookInput.value=text;hookInput.dispatchEvent(new Event('input'));}
+    },300);
+  },300);
+  showToast('Hook inviato in Fucina!');
+}
+
 // ===== QUICK WIN MODE =====
 let qwHooksCache=[];
 function generateQuickWin(mode,customPrompt){
@@ -6112,6 +6435,8 @@ function renderQuickWinResults(hooks){
   const el=document.getElementById('qwResults');
   qwHooksCache=hooks;
   stats.gamesPlayed++;addXP(15);
+  // Scroll to make results visible
+  setTimeout(()=>{el.scrollIntoView({behavior:'smooth',block:'center'});},200);
   el.innerHTML=hooks.map((h,i)=>{
     const safe=h.replace(/</g,'&lt;');
     return`<div class="qw-hook" data-qw-idx="${i}">
@@ -6119,6 +6444,8 @@ function renderQuickWinResults(hooks){
     <div class="qw-hook-actions">
       <button data-action="copy">📋 Copia</button>
       <button data-action="save">⭐ Salva</button>
+      <button data-action="hub">🧩 Hub</button>
+      <button data-action="fucina">🔥 Fucina</button>
       <button data-action="post">📱 Post</button>
     </div>
   </div>`;
@@ -6133,6 +6460,8 @@ function renderQuickWinResults(hooks){
     const action=btn.dataset.action;
     if(action==='copy'){navigator.clipboard?.writeText(text);btn.textContent='✓ Copiato!';setTimeout(()=>btn.textContent='📋 Copia',1500);sClick();}
     else if(action==='save'){saveItem('Quick Win',text);showToast('Salvato nel mazzo!');sCorrect();}
+    else if(action==='hub'){sendHookToHub(text);showToast('Inviato all\'Hub!');}
+    else if(action==='fucina'){sendHookToFucina(text);}
     else if(action==='post'){transformToPost(text);}
   };
 }
@@ -6357,9 +6686,7 @@ function renderNewspaper(data){
       if(action==='save'){saveItem('Feed',(it.title||'')+(it.desc?' — '+it.desc:''));showToast('Salvato nel mazzo!');sCorrect();}
       else if(action==='copy'){navigator.clipboard.writeText(it.title+'\n'+it.desc+(it._detail?'\n\n'+it._detail:''));showToast('Copiato!');}
       else if(action==='hook'){
-        const qwInput=document.getElementById('qwResults');
-        if(qwInput)generateQuickWin('ai','Crea un hook ispirato a: '+it.title+'. '+it.desc);
-        showToast('Genero hook dal trend...');
+        generateHookFromTrend(it,item);
       }
       else if(action==='close'){item.classList.remove('expanded');const det=item.querySelector('.np-detail');if(det)det.remove();}
       return;
@@ -7576,6 +7903,7 @@ function renderSidebar(){
     <div class="side-title">⚡ Azioni Rapide</div>
     <button class="side-btn" onclick="generateQuickWin('ai')">🤖 Genera Hook con AI</button>
     <button class="side-btn" onclick="openFucinaStandalone()">🔥 Apri La Fucina</button>
+    <button class="side-btn" onclick="openHub()">🧩 Creative Hub</button>
     <button class="side-btn" onclick="toggleSaved()">⭐ Il Mazzo (${savedCount})</button>
     <button class="side-btn" onclick="toggleChat()">💬 Chat AI</button>
   </div>

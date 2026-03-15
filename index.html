@@ -2144,20 +2144,19 @@ body.light .shimmer::after{background:linear-gradient(90deg,transparent 0%,rgba(
       </div>
       <div class="chat-knowledge-bar" id="chatKnowledgeBar">
         <span class="ck-label">Fonti AI:</span>
-        <label class="ck-chip active" onclick="this.classList.toggle('active')"><input type="checkbox" checked data-src="brain"> 🧠 Brain</label>
-        <label class="ck-chip active" onclick="this.classList.toggle('active')"><input type="checkbox" checked data-src="mazzo"> 🃏 Mazzo</label>
-        <label class="ck-chip" onclick="this.classList.toggle('active')"><input type="checkbox" data-src="hub"> 🧩 Hub</label>
-        <label class="ck-chip" onclick="this.classList.toggle('active')"><input type="checkbox" data-src="resources"> 📎 Risorse</label>
+        <span class="ck-chip active" data-src="brain" data-active="true" onclick="this.dataset.active=this.dataset.active==='true'?'false':'true';this.classList.toggle('active')">🧠 Brain</span>
+        <span class="ck-chip active" data-src="mazzo" data-active="true" onclick="this.dataset.active=this.dataset.active==='true'?'false':'true';this.classList.toggle('active')">🃏 Mazzo</span>
+        <span class="ck-chip" data-src="hub" data-active="false" onclick="this.dataset.active=this.dataset.active==='true'?'false':'true';this.classList.toggle('active')">🧩 Hub</span>
+        <span class="ck-chip" data-src="resources" data-active="false" onclick="this.dataset.active=this.dataset.active==='true'?'false':'true';this.classList.toggle('active')">📎 Risorse</span>
       </div>
       <div class="chat-input-area">
         <textarea class="chat-input" id="chatInput" placeholder="Scrivi un messaggio..." rows="1"></textarea>
         <button class="chat-send" id="chatSendBtn" onclick="sendChatMessage()">➤</button>
       </div>
       <div class="chat-fast-bar" id="chatFastBar">
-        <button class="chat-fast-btn" data-fast="mazzo">📦 Mazzo</button>
-        <button class="chat-fast-btn" data-fast="brain">🧠 Brain</button>
-        <button class="chat-fast-btn" data-fast="allegati">📎 Allegati</button>
-        <button class="chat-fast-btn" data-fast="ultimo">📋 Ultimo</button>
+        <button class="chat-fast-btn" data-fast="mazzo">⭐ Mazzo</button>
+        <button class="chat-fast-btn" data-fast="script">📝 Script</button>
+        <button class="chat-fast-btn" data-fast="hub">🧩 Hub</button>
         <button class="chat-fast-btn" data-fast="reset">🔄 Reset</button>
       </div>
     </div>
@@ -2837,7 +2836,7 @@ async function chatAiCall(chatMsgs){
   const url=getAiUrl('primary'),model=getAiModel('primary');
   // Build knowledge context from selected sources
   const sources={};
-  document.querySelectorAll('#chatKnowledgeBar input[type="checkbox"]').forEach(cb=>{sources[cb.dataset.src]=cb.checked;});
+  document.querySelectorAll('#chatKnowledgeBar .ck-chip[data-src]').forEach(ch=>{sources[ch.dataset.src]=ch.dataset.active==='true';});
   let knowledgeCtx='';
   // Mazzo context (from float picker OR always if source active)
   if(chatMazzoContext.length){
@@ -2854,13 +2853,29 @@ async function chatAiCall(chatMsgs){
       knowledgeCtx+='\n\nRISORSE CARICATE:\n'+res.texts.slice(0,3).map(t=>t.name+': '+t.content.substring(0,300)).join('\n');
     }
   }
+  // Include Fucina scripts in context if brain source active
+  if(sources.brain){
+    const fucinaScripts=JSON.parse(localStorage.getItem(hlKey('fucina_scripts'))||'[]');
+    if(fucinaScripts.length){
+      knowledgeCtx+='\n\nSCRIPT DALLA FUCINA ('+fucinaScripts.length+' totali):\n'+fucinaScripts.slice(0,3).map((sc,i)=>(i+1)+'. "'+((sc.title||'Script').substring(0,60))+'" ('+sc.type+') — '+(sc.blocks||[]).map(b=>b.label).join(' → ')).join('\n');
+    }
+  }
+  // Chat lessons (memory from past conversations)
+  const chatLessons=(voice&&voice.chatLessons)||[];
+  if(chatLessons.length){
+    knowledgeCtx+='\n\nLEZIONI DA CONVERSAZIONI PRECEDENTI:\n'+chatLessons.slice(-10).map((l,i)=>(i+1)+'. '+l).join('\n');
+  }
   const sourceCount=Object.values(sources).filter(Boolean).length;
-  const sysContent=`Sei un CONSULENTE STRATEGICO esperto di social media, copywriting e content creation in italiano. Hai accesso COMPLETO ai dati dell'utente — usi TUTTO per dare risposte personalizzate e potenti. Parli in modo diretto e colloquiale. Sei concreto e specifico — MAI generico. MAI risposte superficiali.
+  const sysContent=`Sei il CONSULENTE STRATEGICO PERSONALE dell'utente. Hai accesso COMPLETO a tutti i suoi dati: profilo, hook salvati, script, Hub creativo, risorse caricate, Voice DNA. NON sei un chatbot generico — sei il suo direttore creativo con 15 anni di esperienza.
 
-Quando analizzi un hook: (1) identifica la leva psicologica, (2) spiega perché funziona o fallisce con motivi TECNICI, (3) dai 2-3 varianti migliori, (4) suggerisci formato ideale.
-Quando generi: usa TUTTI i dati dell'utente per personalizzare.
-Quando consigli: ragiona come un direttore creativo con 15 anni di esperienza.
-${sourceCount>=3?'HAI MOLTI DATI: ragiona in profondità prima di rispondere. La qualità conta più della velocità.':''}
+REGOLE D'ORO:
+- Quando l'utente chiede di creare o modificare qualcosa, FAI — non spiegare come fare
+- Quando analizzi un hook: (1) leva psicologica, (2) motivi TECNICI perché funziona/fallisce, (3) 2-3 varianti migliori, (4) formato ideale
+- Quando generi: usa TUTTI i dati dell'utente (tono, lessico, pubblico, nicchia) per personalizzare al 100%
+- Cita dati specifici dell'utente nella risposta (es. "visto che il tuo pubblico teme X...")
+- Sii diretto, concreto, specifico. MAI generico. MAI "dipende dal contesto"
+- Se hai dati su conversazioni precedenti, NON ripetere consigli già dati
+${sourceCount>=3?'HAI MOLTI DATI: ragiona in profondità. La qualità conta più della velocità.':''}
 
 ${getCtxPrompt()}${knowledgeCtx}`;
   const recent=chatMsgs.slice(-20).map(m=>({role:m.role==='assistant'?'assistant':'user',content:m.content}));
@@ -2983,6 +2998,14 @@ async function sendChatMessage(overrideText){
     addChatBubble('assistant',response);
     saveChatHistory();
     stats.gamesPlayed++;addXP(5);
+    // Save lesson from this exchange (memory for future chats)
+    if(response.length>50){
+      if(!voice.chatLessons)voice.chatLessons=[];
+      const lesson=(text.substring(0,40)+'→'+response.substring(0,80)).replace(/\n/g,' ');
+      voice.chatLessons.push(lesson);
+      if(voice.chatLessons.length>20)voice.chatLessons.shift();
+      saveVoice();
+    }
   }catch(e){
     hideChatTyping();
     const errMsg='Errore: '+e.message;
@@ -3000,29 +3023,70 @@ function chatFastMazzo(){
   if(!savedItems.length){showToast('Mazzo vuoto! Salva qualche hook prima.');return;}
   mazzoFloatTarget='chat';openMazzoFloat();
 }
-function chatFastBrain(){
-  const ctx=JSON.parse(localStorage.getItem(hlKey('ctx'))||'{}');
-  let parts=[];
-  if(ctx.who)parts.push('Nicchia: '+ctx.who);
-  if(ctx.what)parts.push('Offerta: '+ctx.what);
-  if(ctx.aud)parts.push('Pubblico: '+ctx.aud);
-  if(voice?.tone?.length)parts.push('Tono: '+voice.tone.join(', '));
-  const input=document.getElementById('chatInput');
-  if(input){input.value='Il mio contesto:\n'+parts.join('\n')+'\n\nUsando queste info, ';input.focus();}
+function chatFastScript(){
+  // Open picker of Fucina scripts
+  const scripts=JSON.parse(localStorage.getItem(hlKey('fucina_scripts'))||'[]');
+  if(!scripts.length){showToast('Nessuno script in Fucina! Creane uno prima.');return;}
+  const ov=document.createElement('div');ov.className='mazzo-modal-overlay';
+  ov.onclick=e=>{if(e.target===ov)ov.remove();};
+  const items=scripts.map((sc,i)=>`<div class="mazzo-modal-item" data-idx="${i}" onclick="this.classList.toggle('checked')" style="cursor:pointer">
+    <div class="mazzo-modal-check">✓</div>
+    <div style="flex:1"><div class="mazzo-modal-text">📝 ${(sc.title||'Script '+(i+1)).substring(0,80).replace(/</g,'&lt;')}</div>
+    <div style="display:flex;gap:6px;margin-top:4px"><span class="mazzo-modal-type">${sc.type||'attrazione'}</span><span style="font-size:.6rem;color:var(--t2)">${(sc.blocks||[]).length} blocchi</span></div></div>
+  </div>`).join('');
+  ov.innerHTML=`<div class="mazzo-modal">
+    <div class="mazzo-modal-header"><h3>📝 Inserisci Script in Chat</h3><span style="font-size:.75rem;color:var(--t2)">${scripts.length} script</span></div>
+    <div class="mazzo-modal-body">${items}</div>
+    <div class="mazzo-modal-footer">
+      <button class="hub-btn-cancel" onclick="this.closest('.mazzo-modal-overlay').remove()">Annulla</button>
+      <button class="hub-btn-confirm" onclick="chatInsertScripts(this.closest('.mazzo-modal-overlay'))">✓ Inserisci</button>
+    </div>
+  </div>`;
+  document.body.appendChild(ov);
 }
-function chatFastAllegati(){
-  if(resources?.texts?.length){
-    const txt=resources.texts[0].content.substring(0,500);
-    const input=document.getElementById('chatInput');
-    if(input){input.value='Analizza questo testo:\n\n'+txt;input.focus();}
-  }else{toggleResources();}
-}
-function chatFastUltimo(){
-  const last=savedItems.length?savedItems[savedItems.length-1].text:
-    (gameHistory?.hooks?.length?gameHistory.hooks[gameHistory.hooks.length-1].text:null);
-  if(!last){showToast('Nessun hook salvato ancora.');return;}
+function chatInsertScripts(overlay){
+  const scripts=JSON.parse(localStorage.getItem(hlKey('fucina_scripts'))||'[]');
+  const selected=overlay.querySelectorAll('.mazzo-modal-item.checked');
+  if(!selected.length){showToast('Seleziona almeno uno script!');return;}
+  let text='Ecco i miei script dalla Fucina:\n\n';
+  selected.forEach(el=>{
+    const sc=scripts[parseInt(el.dataset.idx)];
+    if(sc){text+=`--- ${sc.title||'Script'} (${sc.type}) ---\n`;(sc.blocks||[]).forEach(b=>{text+=`[${b.label||b.key}] ${b.text||''}\n`;});text+='\n';}
+  });
   const input=document.getElementById('chatInput');
-  if(input){input.value='Migliora questo hook:\n\n'+last;input.focus();}
+  if(input){input.value=text+'Analizza e migliora questi script.';input.focus();}
+  overlay.remove();
+}
+function chatFastHub(){
+  if(!hubItems||!hubItems.length){showToast('Hub vuoto! Aggiungi contenuti prima.');return;}
+  const ov=document.createElement('div');ov.className='mazzo-modal-overlay';
+  ov.onclick=e=>{if(e.target===ov)ov.remove();};
+  const items=hubItems.map((it,i)=>`<div class="mazzo-modal-item" data-idx="${i}" onclick="this.classList.toggle('checked')" style="cursor:pointer">
+    <div class="mazzo-modal-check">✓</div>
+    <div style="flex:1"><div class="mazzo-modal-text">🧩 ${it.text.substring(0,140).replace(/</g,'&lt;')}</div>
+    <div style="margin-top:4px"><span class="mazzo-modal-type">${it.source||'manual'}</span></div></div>
+  </div>`).join('');
+  ov.innerHTML=`<div class="mazzo-modal">
+    <div class="mazzo-modal-header"><h3>🧩 Inserisci da Hub in Chat</h3><span style="font-size:.75rem;color:var(--t2)">${hubItems.length} elementi</span></div>
+    <div class="mazzo-modal-body">${items}</div>
+    <div class="mazzo-modal-footer">
+      <button class="hub-btn-cancel" onclick="this.closest('.mazzo-modal-overlay').remove()">Annulla</button>
+      <button class="hub-btn-confirm" onclick="chatInsertHub(this.closest('.mazzo-modal-overlay'))">✓ Inserisci</button>
+    </div>
+  </div>`;
+  document.body.appendChild(ov);
+}
+function chatInsertHub(overlay){
+  const selected=overlay.querySelectorAll('.mazzo-modal-item.checked');
+  if(!selected.length){showToast('Seleziona almeno un elemento!');return;}
+  let text='Ecco contenuti dal mio Creative Hub:\n\n';
+  selected.forEach(el=>{
+    const it=hubItems[parseInt(el.dataset.idx)];
+    if(it)text+=`- ${it.text.substring(0,200)}\n`;
+  });
+  const input=document.getElementById('chatInput');
+  if(input){input.value=text+'\nAnalizza questi contenuti e dammi feedback.';input.focus();}
+  overlay.remove();
 }
 function initChat(){
   renderChatHistory();updateChatStatus();
@@ -3041,9 +3105,8 @@ function initChat(){
     const btn=e.target.closest('[data-fast]');if(!btn)return;
     const a=btn.dataset.fast;
     if(a==='mazzo')chatFastMazzo();
-    else if(a==='brain')chatFastBrain();
-    else if(a==='allegati')chatFastAllegati();
-    else if(a==='ultimo')chatFastUltimo();
+    else if(a==='script')chatFastScript();
+    else if(a==='hub')chatFastHub();
     else if(a==='reset')clearChatHistory();
   };
   const sugWrap=document.getElementById('chatSuggestions');
@@ -4613,22 +4676,23 @@ function closeGame(){
 // ===== GAME 1-5: INSPIRATION (compact) =====
 function renderSlot(){const a=document.getElementById('gameArea');slotLocked=[false,false,false];slotValues=[rand(allTemi()),rand(DB.angoli),rand(DB.hooks)];a.innerHTML=`<button class="back-btn" onclick="closeGame()">← Indietro</button><div class="game-title">🎰 La Slot</div><p class="game-subtitle">Tema + Angolo + Hook. Blocca e ri-gira.</p><div class="slot-container">${[['Tema',0],['Angolo',1],['Hook',2]].map(([l,i])=>`<div class="slot-reel" id="reel${i}"><div class="reel-label">${l}</div><div class="reel-value" id="rv${i}">${slotValues[i]}</div><button class="lock-btn" onclick="toggleLock(${i})">🔒 Blocca</button></div>`).join('')}</div><div class="game-actions"><button class="action-btn btn-hot" onclick="spinSlot()">🔥 GIRA!</button><button class="save-btn" onclick="saveSlot()">⭐ Salva</button></div>`;}
 function toggleLock(i){slotLocked[i]=!slotLocked[i];const r=document.getElementById(`reel${i}`),b=r.querySelector('.lock-btn');r.classList.toggle('locked',slotLocked[i]);b.classList.toggle('locked',slotLocked[i]);b.innerHTML=slotLocked[i]?'🔓 Sbloccato':'🔒 Blocca';sSlotLock();}
-function spinSlot(){const src=[allTemi(),DB.angoli,DB.hooks],dur=[1000,1400,1800];sClick();const container=document.querySelector('.slot-container');const unlocked=slotLocked.filter(x=>!x).length;let landed=0;for(let i=0;i<3;i++){if(slotLocked[i]){landed++;continue;}const r=document.getElementById(`reel${i}`),v=document.getElementById(`rv${i}`);r.classList.remove('landing');r.classList.add('spinning');let si=setInterval(()=>{v.textContent=rand(src[i]);sSpin();},80);setTimeout(()=>{clearInterval(si);r.classList.remove('spinning');r.classList.add('landing');slotValues[i]=rand(src[i]);v.textContent=slotValues[i];sClick();setTimeout(()=>r.classList.remove('landing'),500);landed++;if(landed===3&&!slotLocked.includes(true)){container.classList.add('full-combo');showSlotJackpot();setTimeout(()=>container.classList.remove('full-combo'),1000);}},dur[i]);}}
+function spinSlot(){const src=[allTemi(),DB.angoli,DB.hooks],dur=[1000,1400,1800];sClick();const container=document.querySelector('.slot-container');const unlocked=slotLocked.filter(x=>!x).length;let landed=0;for(let i=0;i<3;i++){if(slotLocked[i]){landed++;continue;}const r=document.getElementById(`reel${i}`),v=document.getElementById(`rv${i}`);r.classList.remove('landing');r.classList.add('spinning');let si=setInterval(()=>{v.textContent=rand(src[i]);sSpin();},80);setTimeout(()=>{clearInterval(si);r.classList.remove('spinning');r.classList.add('landing');slotValues[i]=rand(src[i]);v.textContent=slotValues[i];sClick();setTimeout(()=>r.classList.remove('landing'),500);landed++;if(landed===3&&!slotLocked.includes(true)){container.classList.add('full-combo');const isSpecial=slotValues[0].split(' ')[0]===slotValues[2].split(' ')[0]||Math.random()<0.2;if(isSpecial)showSlotJackpot();setTimeout(()=>container.classList.remove('full-combo'),1000);}},dur[i]);}}
 function showSlotJackpot(){
-  // Jackpot sound — ascending celebratory tones
-  [523,659,784,1047,1319].forEach((f,i)=>setTimeout(()=>playTone(f,.12,'sine',0.1),i*80));
-  // Visual celebration
-  const ov=document.createElement('div');ov.className='lvup-overlay';
-  ov.innerHTML='<div style="text-align:center"><div class="lvup-badge" style="background:linear-gradient(135deg,#ffd93d,#ff6b35);color:#1a1a2e">🎰 JACKPOT!</div><div class="lvup-sub">Combinazione perfetta — 3 su 3!</div><div style="margin-top:12px"><button onclick="saveSlot();this.closest(\'.lvup-overlay\').remove();showToast(\'Salvato nel mazzo!\')" style="padding:10px 24px;border-radius:12px;background:linear-gradient(135deg,#ff6b35,#e8930c);color:#fff;font-weight:800;border:none;cursor:pointer;font-size:.9rem;margin-right:8px">⭐ Salva Combo</button><button onclick="this.closest(\'.lvup-overlay\').remove()" style="padding:10px 24px;border-radius:12px;background:rgba(255,255,255,.1);color:#fff;font-weight:600;border:1px solid rgba(255,255,255,.2);cursor:pointer;font-size:.85rem">Continua</button></div></div>';
-  document.body.appendChild(ov);
-  requestAnimationFrame(()=>ov.classList.add('active'));
-  // Particles
-  const cx=window.innerWidth/2,cy=window.innerHeight/2;
-  spawnLvParticles(cx,cy);
+  // Jackpot sound — short celebratory tones
+  [523,659,784].forEach((f,i)=>setTimeout(()=>playTone(f,.1,'sine',0.1),i*80));
+  // Inline banner under reels instead of fullscreen overlay
+  const container=document.querySelector('.slot-container');
+  if(!container)return;
+  const old=document.querySelector('.slot-jackpot-banner');if(old)old.remove();
+  const bn=document.createElement('div');bn.className='slot-jackpot-banner';
+  bn.innerHTML='<span>🎰 <strong>JACKPOT!</strong> Combinazione perfetta — 3 su 3!</span><button onclick="saveSlot();this.parentElement.remove();showToast(\'Salvato nel mazzo!\')">⭐ Salva</button><button onclick="this.parentElement.remove()" style="background:none;border:1px solid rgba(255,255,255,.25);color:#fff">✕</button>';
+  bn.style.cssText='margin:12px auto;max-width:480px;padding:12px 16px;border-radius:14px;background:linear-gradient(135deg,rgba(255,217,61,.15),rgba(255,107,53,.15));border:1px solid rgba(255,217,61,.3);display:flex;align-items:center;gap:10px;animation:fadeInUp .4s;font-size:.85rem;color:var(--t1,#fff)';
+  bn.querySelectorAll('button').forEach(b=>b.style.cssText+='padding:6px 14px;border-radius:8px;cursor:pointer;font-size:.75rem;font-weight:700;white-space:nowrap;'+(b.textContent.includes('Salva')?'background:linear-gradient(135deg,#ff6b35,#e8930c);color:#fff;border:none;':''));
+  container.after(bn);
   // Glow on reels
-  document.querySelectorAll('.slot-reel').forEach(r=>{r.style.boxShadow='0 0 30px rgba(255,217,61,.6)';r.style.transition='box-shadow .3s';setTimeout(()=>{r.style.boxShadow='';},2500);});
-  // Auto-remove after 8s if still open
-  setTimeout(()=>{if(ov.parentElement)ov.remove();},8000);
+  document.querySelectorAll('.slot-reel').forEach(r=>{r.style.boxShadow='0 0 20px rgba(255,217,61,.5)';r.style.transition='box-shadow .3s';setTimeout(()=>{r.style.boxShadow='';},2000);});
+  // Auto-remove after 3s
+  setTimeout(()=>{if(bn.parentElement)bn.style.opacity='0';bn.style.transition='opacity .5s';setTimeout(()=>{if(bn.parentElement)bn.remove();},500);},3000);
 }
 function saveSlot(){saveItem('Slot',`[TEMA] ${slotValues[0]}\n[ANGOLO] ${slotValues[1]}\n[HOOK] ${slotValues[2]}`);}
 
@@ -6360,12 +6424,43 @@ function renderAutorunSetup(){
   const lengths=[{k:'corto',label:'Corto'},{k:'medio',label:'Medio'},{k:'narrativo',label:'Narrativo'}];
   const toneOpts=['Aggressivo','Empatico','Ironico','Provocatorio','Educativo','Motivazionale','Storytelling','Minimalista'];
 
+  // Build topic suggestions from user data
+  const ctx=JSON.parse(localStorage.getItem(hlKey('ctx'))||'{}');
+  const mondoData=JSON.parse(localStorage.getItem(hlKey('mondo'))||'{}');
+  const vDna=JSON.parse(localStorage.getItem(hlKey('voice'))||'{}');
+  const fucinaScripts=JSON.parse(localStorage.getItem(hlKey('fucina_scripts'))||'[]');
+  let topicSuggestions=[];
+  // From saved hooks (last 5 unique topics)
+  if(savedItems.length){
+    const recentTexts=savedItems.slice(-5).map(it=>it.text.substring(0,50));
+    topicSuggestions.push(...recentTexts.slice(0,2));
+  }
+  // From mondo temi
+  if(mondoData.temi&&mondoData.temi.length){
+    topicSuggestions.push(...mondoData.temi.slice(0,2));
+  }
+  // From ctx
+  if(ctx.who)topicSuggestions.push(ctx.who);
+  if(ctx.what)topicSuggestions.push(ctx.what);
+  // Deduplicate and limit
+  topicSuggestions=[...new Set(topicSuggestions)].slice(0,5);
+
+  // Context summary
+  const ctxParts=[];
+  if(savedItems.length)ctxParts.push(savedItems.length+' hook dal Mazzo');
+  if(fucinaScripts.length)ctxParts.push(fucinaScripts.length+' script Fucina');
+  if(hubItems&&hubItems.length)ctxParts.push(hubItems.length+' item Hub');
+  if(ctx.who)ctxParts.push('Nicchia: '+ctx.who.substring(0,30));
+  if(vDna.tone&&vDna.tone.length)ctxParts.push('Tono: '+vDna.tone.join(', '));
+  if(ctx.aud)ctxParts.push('Pubblico: '+ctx.aud.substring(0,30));
+
   document.getElementById('autorunContent').innerHTML=`
     <div class="autorun-setup">
       <div class="autorun-setup-card" style="animation-delay:.05s">
         <h3><span>🎯</span> Cosa vuoi creare?</h3>
         <label>TOPIC / ARGOMENTO</label>
         <input type="text" id="arTopic" value="${s.topic.replace(/"/g,'&quot;')}" placeholder="Es: Come iniziare a vendere su Amazon..." />
+        ${topicSuggestions.length?`<div style="margin-top:8px"><span style="font-size:.7rem;color:var(--t2)">💡 Suggerimenti dai tuoi dati:</span><div style="display:flex;flex-wrap:wrap;gap:6px;margin-top:6px">${topicSuggestions.map(t=>`<span class="autorun-chip" onclick="document.getElementById('arTopic').value=this.textContent;sClick()" style="font-size:.7rem;padding:4px 10px;cursor:pointer">${t.substring(0,50)}</span>`).join('')}</div></div>`:''}
         <label style="margin-top:14px">OBIETTIVO</label>
         <div class="autorun-chips" id="arGoalChips">
           ${goals.map(g=>`<div class="autorun-chip${s.goal===g.k?' active':''}" onclick="arSelectGoal('${g.k}')">${g.icon} ${g.label}</div>`).join('')}
@@ -6399,6 +6494,10 @@ function renderAutorunSetup(){
           </div>
         </details>
       </div>
+      ${ctxParts.length?`<div class="autorun-setup-card" style="animation-delay:.3s;background:rgba(0,184,148,.04);border-color:rgba(0,184,148,.15)">
+        <h3 style="font-size:.8rem;color:var(--a2)"><span>📊</span> L'AI userà anche:</h3>
+        <div style="display:flex;flex-wrap:wrap;gap:6px;margin-top:6px">${ctxParts.map(p=>`<span style="font-size:.7rem;padding:4px 10px;border-radius:8px;background:rgba(0,184,148,.08);color:var(--t2)">${p}</span>`).join('')}</div>
+      </div>`:''}
       ${isAI()?'<button class="autorun-launch-btn" onclick="launchAutorun()">⚡ Lancia Autorun</button>':`
         <div class="autorun-setup-card" style="text-align:center;border-color:rgba(239,68,68,.2)">
           <h3><span>🔌</span> AI Non Connessa</h3>
@@ -6441,6 +6540,11 @@ async function launchAutorun(){
   const tmpEl=document.getElementById('arTemp');
   if(tmpEl)s.temperature=[0.7,0.85,1.0][parseInt(tmpEl.value)||1];
 
+  // Fallback: if topic empty, use last saved hook or nicchia
+  if(!s.topic){
+    if(savedItems.length){s.topic=savedItems[savedItems.length-1].text.substring(0,80);}
+    else{const cx=JSON.parse(localStorage.getItem(hlKey('ctx'))||'{}');if(cx.who)s.topic=cx.who;}
+  }
   if(!s.topic){showToast('Inserisci un topic!');return;}
 
   autorunState.phase='pipeline';
@@ -6663,7 +6767,14 @@ ALT2|{alternativa 2}
 ALT3|{alternativa 3}
 ${st.blocks.map(b=>'SCRIPT_'+b.key.toUpperCase()+'|{testo per '+b.label+'}').join('\n')}`;
 
-  const prompt=`RISULTATI DELLA SESSIONE CREATIVA:\n\n${pipeOutputs}\n\nTOPIC: ${s.topic}\nOBIETTIVO: ${s.goal}\n\nProduci il risultato finale con il formato richiesto.`;
+  // Include best mazzo hooks as stylistic reference
+  let mazzoRef='';
+  if(savedItems&&savedItems.length){
+    const best=savedItems.filter(it=>it.rating>=4).slice(0,5);
+    const sample=best.length?best:savedItems.slice(-5);
+    mazzoRef='\n\nRIFERIMENTI STILISTICI (hook migliori dal Mazzo dell\'utente):\n'+sample.map((h,i)=>(i+1)+'. "'+h.text.substring(0,100)+'"').join('\n');
+  }
+  const prompt=`RISULTATI DELLA SESSIONE CREATIVA:\n\n${pipeOutputs}${mazzoRef}\n\nTOPIC: ${s.topic}\nOBIETTIVO: ${s.goal}\n\nProduci il risultato finale con il formato richiesto. Usa lo stile dei riferimenti dal Mazzo come ispirazione.`;
 
   const r=await aiCall(sys,prompt,800,s.temperature||0.85);
   if(!r)throw new Error('Nessuna risposta dall\'AI');
@@ -7412,20 +7523,60 @@ function importFromMazzoToHub(){
   if(!savedItems.length){showToast('Il mazzo è vuoto!');return;}
   const ov=document.createElement('div');ov.className='mazzo-modal-overlay';
   ov.onclick=e=>{if(e.target===ov)ov.remove();};
-  let items=savedItems.map((it,i)=>`<div class="mazzo-modal-item" data-mazzo-idx="${i}" onclick="this.classList.toggle('checked')">
-    <div class="mazzo-modal-check">✓</div>
-    <div><div class="mazzo-modal-text">${it.text.substring(0,150).replace(/</g,'&lt;')}</div>
-    <div class="mazzo-modal-type">${it.type||'hook'}</div></div>
-  </div>`).join('');
+  // Categorize items
+  function getCat(it){
+    const t=(it.type||'').toLowerCase();
+    if(t.includes('script')||t.includes('fucina'))return 'script';
+    if(t.includes('blocco')||t.includes('block'))return 'blocco';
+    return 'hook';
+  }
+  const catIcons={hook:'🪝',script:'📝',blocco:'🧩'};
+  const catLabels={hook:'Hook',script:'Script',blocco:'Blocchi'};
+  const counts={all:savedItems.length,hook:0,script:0,blocco:0};
+  savedItems.forEach(it=>counts[getCat(it)]++);
+
+  function renderMazzoItems(filterCat,search){
+    return savedItems.map((it,i)=>{
+      const cat=getCat(it);
+      if(filterCat!=='all'&&cat!==filterCat)return '';
+      if(search&&!it.text.toLowerCase().includes(search.toLowerCase()))return '';
+      return `<div class="mazzo-modal-item" data-mazzo-idx="${i}" onclick="this.classList.toggle('checked')">
+        <div class="mazzo-modal-check">✓</div>
+        <div style="flex:1"><div class="mazzo-modal-text">${catIcons[cat]} ${it.text.substring(0,140).replace(/</g,'&lt;')}</div>
+        <div style="display:flex;gap:6px;margin-top:4px"><span class="mazzo-modal-type">${it.type||'hook'}</span><span style="font-size:.6rem;padding:2px 6px;border-radius:6px;background:rgba(255,255,255,.06);color:var(--t2)">${catLabels[cat]}</span>${it.rating?'<span style="font-size:.6rem;color:#ffd93d">'+('★'.repeat(it.rating))+'</span>':''}</div></div>
+      </div>`;
+    }).join('');
+  }
+
   ov.innerHTML=`<div class="mazzo-modal">
     <div class="mazzo-modal-header"><h3>⭐ Importa dal Mazzo</h3><span style="font-size:.75rem;color:var(--t2)">${savedItems.length} elementi</span></div>
-    <div class="mazzo-modal-body">${items}</div>
+    <div style="padding:0 16px 8px;display:flex;flex-direction:column;gap:8px">
+      <input type="text" id="mazzoSearchInput" placeholder="🔍 Cerca..." style="width:100%;padding:8px 12px;border-radius:10px;border:1px solid rgba(255,255,255,.1);background:rgba(255,255,255,.04);color:var(--t1);font-size:.8rem;outline:none" oninput="mazzoFilterItems()">
+      <div style="display:flex;gap:6px;flex-wrap:wrap" id="mazzoFilterTabs">
+        <button class="autorun-chip active" data-cat="all" onclick="mazzoSetFilter('all')">Tutti (${counts.all})</button>
+        <button class="autorun-chip" data-cat="hook" onclick="mazzoSetFilter('hook')">🪝 Hook (${counts.hook})</button>
+        <button class="autorun-chip" data-cat="script" onclick="mazzoSetFilter('script')">📝 Script (${counts.script})</button>
+        <button class="autorun-chip" data-cat="blocco" onclick="mazzoSetFilter('blocco')">🧩 Blocchi (${counts.blocco})</button>
+      </div>
+    </div>
+    <div class="mazzo-modal-body" id="mazzoModalBody">${renderMazzoItems('all','')}</div>
     <div class="mazzo-modal-footer">
       <button class="hub-btn-cancel" onclick="this.closest('.mazzo-modal-overlay').remove()">Annulla</button>
       <button class="hub-btn-confirm" onclick="importMazzoSelection(this.closest('.mazzo-modal-overlay'))">✓ Importa Selezionati</button>
     </div>
   </div>`;
   document.body.appendChild(ov);
+
+  window._mazzoFilterCat='all';
+  window.mazzoSetFilter=function(cat){
+    window._mazzoFilterCat=cat;
+    document.querySelectorAll('#mazzoFilterTabs .autorun-chip').forEach(b=>b.classList.toggle('active',b.dataset.cat===cat));
+    mazzoFilterItems();
+  };
+  window.mazzoFilterItems=function(){
+    const search=(document.getElementById('mazzoSearchInput')||{}).value||'';
+    document.getElementById('mazzoModalBody').innerHTML=renderMazzoItems(window._mazzoFilterCat,search);
+  };
 }
 function importMazzoSelection(overlay){
   const selected=overlay.querySelectorAll('.mazzo-modal-item.checked');

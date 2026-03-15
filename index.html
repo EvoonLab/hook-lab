@@ -11282,8 +11282,8 @@ class GuidedTour{
         this._positionTooltip(el,step.placement);
         if(step.interactive)this._setupInteraction(step,el);
         else this.clickZone.style.display='none';
-        // Re-position after tooltip renders to get accurate height
-        setTimeout(()=>{this.tooltip.classList.add('visible');this._positionTooltip(el,step.placement);},200);
+        // Re-position after tooltip renders to get accurate height, then show
+        setTimeout(()=>{this._positionTooltip(el,step.placement);this.tooltip.classList.add('visible');},200);
       },500);
     };
     this.tooltip.classList.remove('visible');
@@ -11307,7 +11307,8 @@ class GuidedTour{
   _positionTooltip(el,pref){
     const r=el.getBoundingClientRect();const gap=16;const vw=window.innerWidth;const vh=window.innerHeight;
     // Mobile → bottom sheet
-    if(vw<=600){this.tooltip.style.cssText='';this.tooltip.className='tour-tooltip';return;}
+    const wasVisible=this.tooltip.classList.contains('visible');
+    if(vw<=600){this.tooltip.style.cssText='';this.tooltip.className='tour-tooltip'+(wasVisible?' visible':'');return;}
     const tw=Math.min(340,vw-40);const th=this.tooltip.offsetHeight||200;
     let pos=pref||'bottom';let x,y;
     // Try preferred, fallback
@@ -11318,7 +11319,7 @@ class GuidedTour{
     else if(pos==='left'){x=r.left-gap-tw;y=r.top+r.height/2-th/2;}
     else{x=r.right+gap;y=r.top+r.height/2-th/2;}
     x=Math.max(10,Math.min(x,vw-tw-10));y=Math.max(10,Math.min(y,vh-th-10));
-    this.tooltip.className='tour-tooltip tour-'+pos;
+    this.tooltip.className='tour-tooltip tour-'+pos+(wasVisible?' visible':'');
     this.tooltip.style.left=x+'px';this.tooltip.style.top=y+'px';this.tooltip.style.width=tw+'px';
   }
   _setupInteraction(step,el){

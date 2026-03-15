@@ -3197,6 +3197,9 @@ function hlKey(k){return currentTeamId?'hl_'+currentTeamId+'_'+k:'hl_'+k;}
 
 let _supaProfile=null; // cached Supabase profile for role checks
 async function showTeamSelector(){
+  // Guard: prevent double opening
+  const existingOv=document.getElementById('teamOverlay');
+  if(existingOv&&existingOv.style.display==='flex')return;
   // Wait for Supabase session if not ready
   if(!supaUser&&supabaseClient){
     try{
@@ -3264,7 +3267,7 @@ if(supabaseClient&&supaUser){
   supabaseClient.from('profiles').upsert({id:supaUser.id,role:teamId,username:displayName},{onConflict:'id'}).then(()=>console.log('[HOOKA] Role saved to Supabase'));
 }
 // Onboarding for new users
-if(!localStorage.getItem('hl_onboarded')){setTimeout(()=>{if(typeof showOnboarding==='function')showOnboarding();},500);}
+if(!localStorage.getItem('hl_onboarded')){setTimeout(()=>{const to=document.getElementById('teamOverlay');if(to&&to.style.display!=='none')return;if(typeof showOnboarding==='function')showOnboarding();},1500);}
 }
 
 function reloadAllData(){
@@ -11224,8 +11227,11 @@ class GuidedTour{
 
 function showOnboarding(){
   if(localStorage.getItem('hl_onboarded'))return;
+  if(window._tourActive)return; // Prevent double tour
   const teamOv=document.getElementById('teamOverlay');
-  if(teamOv&&teamOv.style.display!=='none'){setTimeout(showOnboarding,1000);return;}
+  if(teamOv&&teamOv.style.display!=='none'){setTimeout(showOnboarding,1500);return;}
+  const authGate=document.getElementById('authGate');
+  if(authGate&&authGate.style.display!=='none'){setTimeout(showOnboarding,2000);return;}
   window._tour=new GuidedTour(TOUR_STEPS);
   window._tour.start();
 }
@@ -12541,7 +12547,14 @@ function openStoryGame(gid){
   }
 }
 function closeStoryGame(){
+  // Clear ALL game timers to prevent leaks
   if(_sprintTimer){clearInterval(_sprintTimer);_sprintTimer=null;}
+  if(typeof _battleTimer!=='undefined'&&_battleTimer){clearInterval(_battleTimer);_battleTimer=null;}
+  // Reset game states
+  if(typeof _sprintSec!=='undefined')_sprintSec=60;
+  if(typeof _swipeIdx!=='undefined')_swipeIdx=0;
+  window._swipeBank=null;
+  // Clear game area
   const area=document.getElementById('storyGameArea');
   if(area){area.className='game-area';area.innerHTML='';}
 }
@@ -12628,6 +12641,9 @@ function saveOracleSeq(btn){
 // ===== STORY SPRINT GAME (V9.6 — Inline) =====
 let _sprintTimer=null;let _sprintSec=60;
 function renderStorySprintGame(area){
+  // Reset state on re-entry to prevent timer leaks
+  if(_sprintTimer){clearInterval(_sprintTimer);_sprintTimer=null;}
+  _sprintSec=60;
   const temi=['MISSION STORY','SOCIAL PROOF','URGENZA CHIUSURA','RISULTATI STUDENTI','Q&A OBIEZIONI','LIFESTYLE + VALORE','DENTRO vs FUORI','GARANZIA ESCLUSIVA'];
   const tema=temi[Math.floor(Math.random()*temi.length)];
   area.innerHTML=`<button class="back-btn" onclick="closeStoryGame()">← Chiudi</button>
@@ -12943,9 +12959,11 @@ function openStoryUrgencyGame(){openStoryGame('story_urgency');}
 // ===== STORY GAME: STORY BATTLE 🏆 =====
 let _battleTimer=null;
 function renderStoryBattleGame(area){
+  // Reset timer on re-entry
+  if(_battleTimer){clearInterval(_battleTimer);_battleTimer=null;}
   const temi=['Lancio prodotto','Testimonianza cliente','Behind the scenes','Obiezione comune','Risultato ottenuto','Giornata tipo','Errore da evitare','Consiglio non richiesto'];
   const tema=temi[Math.floor(Math.random()*temi.length)];
-  area.innerHTML=`<button class="back-btn" onclick="closeStoryGame();if(_battleTimer){clearInterval(_battleTimer);_battleTimer=null;}">← Chiudi</button>
+  area.innerHTML=`<button class="back-btn" onclick="closeStoryGame()">← Chiudi</button>
     <div class="game-title">🏆 Story Battle</div>
     <p class="game-subtitle">Tu vs AI — chi scrive la storia migliore? 90 secondi!</p>
     <div style="background:var(--card2);border-radius:12px;padding:16px;text-align:center;margin:12px 0">

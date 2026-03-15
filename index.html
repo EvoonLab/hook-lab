@@ -2032,11 +2032,12 @@ body.light .shimmer::after{background:linear-gradient(90deg,transparent 0%,rgba(
     <input type="password" id="gatePassword" placeholder="Password (min 6 caratteri)" style="width:100%;padding:11px 14px;margin-bottom:12px;border-radius:8px;background:var(--input-bg);border:1px solid var(--input-border);color:var(--t1);font-size:.85rem;box-sizing:border-box" />
     <div id="gateError" style="display:none;padding:8px 12px;border-radius:8px;background:rgba(255,0,0,.12);color:#ff5555;font-size:.72rem;margin-bottom:10px"></div>
     <button onclick="doGateAuth()" id="gateSubmitBtn" style="width:100%;padding:12px;border-radius:10px;background:var(--gf);color:#fff;border:none;cursor:pointer;font-weight:800;font-size:.9rem">🚀 Accedi</button>
-    <div style="display:flex;align-items:center;gap:10px;margin:14px 0"><div style="flex:1;height:1px;background:rgba(255,255,255,.1)"></div><span style="font-size:.7rem;color:var(--t2)">oppure</span><div style="flex:1;height:1px;background:rgba(255,255,255,.1)"></div></div>
+    <div style="text-align:center;margin-top:6px"><button onclick="resetGatePassword()" style="background:none;border:none;color:var(--a1);cursor:pointer;font-size:.68rem;text-decoration:underline;opacity:.8">🔑 Password dimenticata?</button></div>
+    <div style="display:flex;align-items:center;gap:10px;margin:14px 0"><div style="flex:1;height:1px;background:var(--input-border)"></div><span style="font-size:.7rem;color:var(--t2)">oppure</span><div style="flex:1;height:1px;background:var(--input-border)"></div></div>
     <div style="display:flex;flex-direction:column;gap:6px">
-      <button onclick="doGoogleAuth()" style="padding:10px 16px;border-radius:10px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.15);color:var(--t1);cursor:pointer;font-size:.78rem;width:100%;display:flex;align-items:center;justify-content:center;gap:8px"><img src="https://www.google.com/favicon.ico" style="width:14px;height:14px" alt="G"/>Continua con Google</button>
-      <button onclick="doGithubAuth()" style="padding:10px 16px;border-radius:10px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.15);color:var(--t1);cursor:pointer;font-size:.78rem;width:100%;display:flex;align-items:center;justify-content:center;gap:8px"><svg width="14" height="14" viewBox="0 0 16 16" fill="currentColor"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/></svg>Continua con GitHub</button>
-      <button onclick="doDiscordAuth()" style="padding:10px 16px;border-radius:10px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.15);color:var(--t1);cursor:pointer;font-size:.78rem;width:100%;display:flex;align-items:center;justify-content:center;gap:8px"><svg width="14" height="14" viewBox="0 0 16 16" fill="#5865F2"><path d="M13.55 3.15A13.2 13.2 0 0010.2 2a9.8 9.8 0 00-.43.88 12.3 12.3 0 00-3.54 0A9.3 9.3 0 005.8 2a13.3 13.3 0 00-3.36 1.15A14.5 14.5 0 00.2 12.82a13.4 13.4 0 004.1 2.13 10 10 0 00.88-1.46 8.5 8.5 0 01-1.39-.68l.33-.27a9.5 9.5 0 008.16 0l.33.27c-.44.27-.9.5-1.39.68.25.52.54 1 .88 1.46a13.3 13.3 0 004.1-2.13 14.4 14.4 0 00-2.25-9.67zM5.35 10.9c-.82 0-1.5-.77-1.5-1.72s.66-1.72 1.5-1.72 1.51.78 1.5 1.72c0 .95-.66 1.72-1.5 1.72zm5.3 0c-.82 0-1.5-.77-1.5-1.72s.66-1.72 1.5-1.72 1.51.78 1.5 1.72c0 .95-.66 1.72-1.5 1.72z"/></svg>Continua con Discord</button>
+      <button onclick="doGoogleAuth()" style="padding:10px 16px;border-radius:10px;background:var(--input-bg);border:1px solid var(--input-border);color:var(--t1);cursor:pointer;font-size:.78rem;width:100%;display:flex;align-items:center;justify-content:center;gap:8px"><img src="https://www.google.com/favicon.ico" style="width:14px;height:14px" alt="G"/>Continua con Google</button>
+      <button onclick="doGithubAuth()" style="padding:10px 16px;border-radius:10px;background:var(--input-bg);border:1px solid var(--input-border);color:var(--t1);cursor:pointer;font-size:.78rem;width:100%;display:flex;align-items:center;justify-content:center;gap:8px"><svg width="14" height="14" viewBox="0 0 16 16" fill="currentColor"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/></svg>Continua con GitHub</button>
+      <button onclick="doDiscordAuth()" style="padding:10px 16px;border-radius:10px;background:var(--input-bg);border:1px solid var(--input-border);color:var(--t1);cursor:pointer;font-size:.78rem;width:100%;display:flex;align-items:center;justify-content:center;gap:8px"><svg width="14" height="14" viewBox="0 0 16 16" fill="#5865F2"><path d="M13.55 3.15A13.2 13.2 0 0010.2 2a9.8 9.8 0 00-.43.88 12.3 12.3 0 00-3.54 0A9.3 9.3 0 005.8 2a13.3 13.3 0 00-3.36 1.15A14.5 14.5 0 00.2 12.82a13.4 13.4 0 004.1 2.13 10 10 0 00.88-1.46 8.5 8.5 0 01-1.39-.68l.33-.27a9.5 9.5 0 008.16 0l.33.27c-.44.27-.9.5-1.39.68.25.52.54 1 .88 1.46a13.3 13.3 0 004.1-2.13 14.4 14.4 0 00-2.25-9.67zM5.35 10.9c-.82 0-1.5-.77-1.5-1.72s.66-1.72 1.5-1.72 1.51.78 1.5 1.72c0 .95-.66 1.72-1.5 1.72zm5.3 0c-.82 0-1.5-.77-1.5-1.72s.66-1.72 1.5-1.72 1.51.78 1.5 1.72c0 .95-.66 1.72-1.5 1.72z"/></svg>Continua con Discord</button>
     </div>
   </div>
   <p style="font-size:.6rem;color:var(--t2);margin-top:16px;text-align:center">DSS Edition &bull; Powered by Supabase</p>
@@ -2822,14 +2823,14 @@ function openAuthModal(){
       <button onclick="doAuth()" id="authSubmitBtn" style="width:100%;padding:12px;border-radius:10px;background:var(--gf);color:#fff;border:none;cursor:pointer;font-weight:800;font-size:.9rem">🚀 Accedi</button>
     </div>
     <div style="display:flex;flex-direction:column;gap:6px;margin-top:14px">
-      <button onclick="doGoogleAuth()" style="padding:10px 16px;border-radius:10px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.15);color:var(--t1);cursor:pointer;font-size:.78rem;width:100%;display:flex;align-items:center;justify-content:center;gap:8px">
+      <button onclick="doGoogleAuth()" style="padding:10px 16px;border-radius:10px;background:var(--input-bg);border:1px solid var(--input-border);color:var(--t1);cursor:pointer;font-size:.78rem;width:100%;display:flex;align-items:center;justify-content:center;gap:8px">
         <img src="https://www.google.com/favicon.ico" style="width:14px;height:14px" alt="G"/>Continua con Google
       </button>
-      <button onclick="doGithubAuth()" style="padding:10px 16px;border-radius:10px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.15);color:var(--t1);cursor:pointer;font-size:.78rem;width:100%;display:flex;align-items:center;justify-content:center;gap:8px">
+      <button onclick="doGithubAuth()" style="padding:10px 16px;border-radius:10px;background:var(--input-bg);border:1px solid var(--input-border);color:var(--t1);cursor:pointer;font-size:.78rem;width:100%;display:flex;align-items:center;justify-content:center;gap:8px">
         <svg width="14" height="14" viewBox="0 0 16 16" fill="currentColor"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/></svg>
         Continua con GitHub
       </button>
-      <button onclick="doDiscordAuth()" style="padding:10px 16px;border-radius:10px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.15);color:var(--t1);cursor:pointer;font-size:.78rem;width:100%;display:flex;align-items:center;justify-content:center;gap:8px">
+      <button onclick="doDiscordAuth()" style="padding:10px 16px;border-radius:10px;background:var(--input-bg);border:1px solid var(--input-border);color:var(--t1);cursor:pointer;font-size:.78rem;width:100%;display:flex;align-items:center;justify-content:center;gap:8px">
         <svg width="14" height="14" viewBox="0 0 16 16" fill="#5865F2"><path d="M13.55 3.15A13.2 13.2 0 0010.2 2a9.8 9.8 0 00-.43.88 12.3 12.3 0 00-3.54 0A9.3 9.3 0 005.8 2a13.3 13.3 0 00-3.36 1.15A14.5 14.5 0 00.2 12.82a13.4 13.4 0 004.1 2.13 10 10 0 00.88-1.46 8.5 8.5 0 01-1.39-.68l.33-.27a9.5 9.5 0 008.16 0l.33.27c-.44.27-.9.5-1.39.68.25.52.54 1 .88 1.46a13.3 13.3 0 004.1-2.13 14.4 14.4 0 00-2.25-9.67zM5.35 10.9c-.82 0-1.5-.77-1.5-1.72s.66-1.72 1.5-1.72 1.51.78 1.5 1.72c0 .95-.66 1.72-1.5 1.72zm5.3 0c-.82 0-1.5-.77-1.5-1.72s.66-1.72 1.5-1.72 1.51.78 1.5 1.72c0 .95-.66 1.72-1.5 1.72z"/></svg>
         Continua con Discord
       </button>
@@ -2890,6 +2891,20 @@ async function doAuth(){
     errDiv.style.background='rgba(255,0,0,.12)';errDiv.style.color='#ff5555';
     btn.disabled=false;btn.textContent=_authMode==='login'?'🚀 Accedi':'🚀 Registrati';
   }
+}
+
+async function resetGatePassword(){
+  const email=document.getElementById('gateEmail')?.value?.trim();
+  if(!email){showToast('Inserisci prima la tua email');return;}
+  if(!supabaseClient){showToast('Supabase non connesso');return;}
+  try{
+    const{error}=await supabaseClient.auth.resetPasswordForEmail(email,{redirectTo:window.location.origin+window.location.pathname});
+    if(error)throw error;
+    const errDiv=document.getElementById('gateError');
+    errDiv.style.display='block';errDiv.style.background='rgba(0,184,148,.12)';errDiv.style.color='#00b894';
+    errDiv.innerHTML='📧 Email di reset inviata a <b>'+email+'</b>! Controlla la posta (anche spam).';
+    showToast('📧 Email di reset password inviata!');
+  }catch(e){showToast('Errore: '+e.message);}
 }
 
 async function resendConfirmation(email){
@@ -4823,7 +4838,7 @@ let currentFlipIndex=0,currentDevilIndex=0;
 function rand(a){return a[Math.floor(Math.random()*a.length)];}
 function showToast(m){const t=document.getElementById('toast');t.textContent=m;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2000);}
 function animateScore(){setTimeout(()=>{document.querySelectorAll('.score-display:not(.pop)').forEach(el=>el.classList.add('pop'));},50);}
-function saveItem(type,text){if(savedItems.some(i=>i.text===text)){showToast('Già nel mazzo!');return false;}savedItems.unshift({type,text,timestamp:Date.now(),category:'hook',rating:0});localStorage.setItem(hlKey('saved'),JSON.stringify(savedItems));updateSavedCount();stats.hooksWritten++;saveStats();showToast('Salvato!');sSave();return true;}
+function saveItem(type,text){if(savedItems.some(i=>i.text===text)){showToast('Già nel mazzo!');return false;}savedItems.unshift({type,text,timestamp:Date.now(),category:'hook',rating:0});localStorage.setItem(hlKey('saved'),JSON.stringify(savedItems));updateSavedCount();stats.hooksWritten++;saveStats();showToast('Salvato!');sSave();sendWebhook('hook_saved',{type,text:text.substring(0,500)});return true;}
 function saveScript(idx){
   const script=fucinaScripts[idx];if(!script)return false;
   const type=SCRIPT_TYPES[script.type];
@@ -5769,7 +5784,7 @@ function openGame(g){
       sub.replaceWith(desc);
     }
   }
-  area.scrollIntoView({behavior:'smooth',block:'nearest'});
+  area.scrollIntoView({behavior:'smooth',block:'start'});
   lastGameGrid=catKey;
 }
 let lastGameGrid='inspire';
@@ -9970,18 +9985,34 @@ IMPORTANTE: Rispondi SOLO con il JSON. NESSUN testo prima o dopo. NESSUN comment
 function renderNewspaperRaw(text){
   const el=document.getElementById('npContent');
   if(!el)return;
-  // Last attempt: try parsing the raw text with aggressive extraction
+  // Aggressive JSON extraction attempts
+  let clean=(text||'').replace(/```json?|```/g,'').trim();
+  // Attempt 1: standard parse
   try{
-    let clean=(text||'').replace(/```json?|```/g,'').trim();
     const fb=clean.indexOf('{'),lb=clean.lastIndexOf('}');
     if(fb!==-1&&lb>fb){
-      const data=JSON.parse(clean.substring(fb,lb+1));
+      let jsonStr=clean.substring(fb,lb+1);
+      // Fix common AI JSON issues: trailing commas, unescaped newlines
+      jsonStr=jsonStr.replace(/,\s*([\]}])/g,'$1').replace(/\n/g,' ');
+      const data=JSON.parse(jsonStr);
       if(data.trends||data.ideas){newspaperData=data;newspaperLastLoad=Date.now();renderNewspaper(data);return;}
     }
   }catch(e){}
-  // True fallback: formatted display with smart highlighting
-  const cleaned=(text||'').replace(/</g,'&lt;')
-    .replace(/\n/g,'<br>')
+  // Attempt 2: extract individual items with regex and build structure
+  try{
+    const titles=[...clean.matchAll(/"title"\s*:\s*"([^"]+)"/g)].map(m=>m[1]);
+    const descs=[...clean.matchAll(/"desc"\s*:\s*"([^"]+)"/g)].map(m=>m[1]);
+    const whys=[...clean.matchAll(/"why"\s*:\s*"([^"]+)"/g)].map(m=>m[1]);
+    const hooks=[...clean.matchAll(/"hook"\s*:\s*"([^"]+)"/g)].map(m=>m[1]);
+    if(titles.length>=2){
+      // Build structured cards from regex-extracted data
+      const cards=titles.map((t,i)=>({title:t,desc:descs[i]||'',why:whys[i]||'',hook:hooks[i]||'',tag:i<Math.ceil(titles.length/2)?'trend':'idea'}));
+      const data={trends:cards.filter(c=>c.tag==='trend'),ideas:cards.filter(c=>c.tag==='idea')};
+      newspaperData=data;newspaperLastLoad=Date.now();renderNewspaper(data);return;
+    }
+  }catch(e){}
+  // True fallback: render as formatted cards from text
+  const cleaned=(text||'').replace(/</g,'&lt;').replace(/\n/g,'<br>')
     .replace(/"title"\s*:\s*"([^"]+)"/g,'"title": "<strong style=\'color:var(--a1)\'>$1</strong>"')
     .replace(/"desc"\s*:\s*"([^"]+)"/g,'"desc": "<em style=\'color:var(--t2)\'>$1</em>"');
   el.innerHTML=`<div style="padding:16px">
@@ -13697,10 +13728,106 @@ function openConnectionsPanel(){
       </div>
     </div>
 
+    <!-- WEBHOOKS & API -->
+    <div style="margin-bottom:12px">
+      <div style="font-size:.72rem;font-weight:800;color:#f472b6;text-transform:uppercase;letter-spacing:1.5px;margin-bottom:8px">🔗 Webhooks & Automazioni</div>
+      <div style="display:flex;flex-direction:column;gap:6px">
+        <div onclick="document.getElementById('connectionsPanel')?.remove();openWebhookSettings()" style="display:flex;align-items:center;padding:10px 14px;background:rgba(244,114,182,.04);border:1px solid rgba(244,114,182,.15);border-radius:10px;cursor:pointer">
+          ${dot(!!localStorage.getItem('hl_webhooks'))}<span style="font-size:.8rem;font-weight:600;flex:1">🪝 Webhook URL</span>
+          <span style="font-size:.65rem;color:var(--t2)">${localStorage.getItem('hl_webhooks')?'Configurato':'Configura →'}</span>
+        </div>
+        <div style="display:flex;align-items:center;padding:10px 14px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:10px;opacity:.7">
+          ${dot(!!localStorage.getItem('hl_webhooks'))}<span style="font-size:.8rem;font-weight:600;flex:1">⚡ Make / Zapier / n8n</span>
+          <span style="font-size:.65rem;color:var(--t2)">Usa il Webhook URL</span>
+        </div>
+      </div>
+      <div style="display:flex;align-items:center;gap:8px;margin-top:6px">
+        <p style="font-size:.6rem;color:var(--t2);margin:0">Invia hook salvati, script completati e giochi a Make, Zapier o n8n</p>
+        <button onclick="event.stopPropagation();showConnectionGuide('webhook')" style="flex-shrink:0;width:22px;height:22px;border-radius:50%;background:rgba(244,114,182,.12);border:1px solid rgba(244,114,182,.3);color:#f472b6;cursor:pointer;font-size:.65rem;font-weight:800;line-height:1" title="Guida setup">?</button>
+      </div>
+    </div>
+
     <button onclick="document.getElementById('connectionsPanel')?.remove()" style="width:100%;padding:10px;border-radius:10px;background:none;border:1px solid rgba(255,255,255,.1);color:var(--t2);cursor:pointer;font-size:.78rem;margin-top:4px">✕ Chiudi</button>
   </div>`;
   document.body.appendChild(ov);
   ov.addEventListener('click',e=>{if(e.target===ov)ov.remove();});
+}
+
+// ===== WEBHOOKS & API =====
+function openWebhookSettings(){
+  const existing=document.getElementById('webhookModal');if(existing)existing.remove();
+  const urls=JSON.parse(localStorage.getItem('hl_webhooks')||'[]');
+  const ov=document.createElement('div');ov.id='webhookModal';
+  ov.style.cssText='position:fixed;inset:0;z-index:99999;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,.85)';
+  ov.innerHTML=`<div style="background:var(--card);border-radius:16px;padding:24px;width:92%;max-width:460px;border:1px solid rgba(244,114,182,.2)">
+    <h3 style="text-align:center;margin-bottom:4px;color:#f472b6">🪝 Webhook Settings</h3>
+    <p style="text-align:center;font-size:.65rem;color:var(--t2);margin-bottom:16px">Ogni volta che salvi un hook o completi uno script, HOOKA invia i dati ai tuoi webhook</p>
+    <div id="webhookList" style="display:flex;flex-direction:column;gap:6px;margin-bottom:12px">
+      ${urls.map((u,i)=>`<div style="display:flex;gap:6px;align-items:center">
+        <input type="text" value="${u}" style="flex:1;padding:8px;border-radius:8px;background:var(--input-bg);border:1px solid var(--input-border);color:var(--t1);font-size:.72rem" id="whUrl${i}"/>
+        <button onclick="removeWebhook(${i})" style="padding:6px 10px;border-radius:6px;background:rgba(239,68,68,.1);border:1px solid rgba(239,68,68,.2);color:#ef4444;cursor:pointer;font-size:.7rem">✕</button>
+      </div>`).join('')}
+    </div>
+    <div style="display:flex;gap:6px;margin-bottom:12px">
+      <input type="text" id="newWebhookUrl" placeholder="https://hook.make.com/xxx o Zapier URL" style="flex:1;padding:8px;border-radius:8px;background:var(--input-bg);border:1px solid var(--input-border);color:var(--t1);font-size:.72rem"/>
+      <button onclick="addWebhook()" style="padding:8px 14px;border-radius:8px;background:rgba(244,114,182,.12);border:1px solid rgba(244,114,182,.3);color:#f472b6;cursor:pointer;font-size:.72rem;font-weight:600;white-space:nowrap">+ Aggiungi</button>
+    </div>
+    <button onclick="testWebhook()" style="width:100%;padding:8px;border-radius:8px;background:rgba(34,197,94,.1);border:1px solid rgba(34,197,94,.2);color:#22c55e;cursor:pointer;font-size:.72rem;font-weight:600;margin-bottom:8px">🧪 Testa Webhook</button>
+    <div style="padding:10px;background:rgba(255,255,255,.03);border-radius:8px;border:1px solid rgba(255,255,255,.06);margin-bottom:12px">
+      <p style="font-size:.62rem;color:var(--t2);margin:0 0 4px 0"><b>Eventi inviati:</b></p>
+      <p style="font-size:.6rem;color:var(--t2);margin:0">• <code>hook_saved</code> — quando salvi un hook nel Mazzo</p>
+      <p style="font-size:.6rem;color:var(--t2);margin:0">• <code>script_completed</code> — quando completi uno script in Fucina</p>
+      <p style="font-size:.6rem;color:var(--t2);margin:0">• <code>game_completed</code> — quando finisci un gioco</p>
+      <p style="font-size:.6rem;color:var(--t2);margin:0">• <code>story_planned</code> — quando pianifichi una storia nel calendario</p>
+    </div>
+    <button onclick="document.getElementById('webhookModal')?.remove()" style="width:100%;padding:8px;border-radius:8px;background:none;border:1px solid rgba(255,255,255,.1);color:var(--t2);cursor:pointer;font-size:.72rem">Chiudi</button>
+  </div>`;
+  document.body.appendChild(ov);
+  ov.addEventListener('click',e=>{if(e.target===ov)ov.remove();});
+}
+
+function addWebhook(){
+  const input=document.getElementById('newWebhookUrl');
+  const url=input?.value?.trim();
+  if(!url||!url.startsWith('http')){showToast('Inserisci un URL valido (https://...)');return;}
+  const urls=JSON.parse(localStorage.getItem('hl_webhooks')||'[]');
+  urls.push(url);
+  localStorage.setItem('hl_webhooks',JSON.stringify(urls));
+  showToast('✅ Webhook aggiunto!');
+  document.getElementById('webhookModal')?.remove();
+  openWebhookSettings();
+}
+
+function removeWebhook(idx){
+  const urls=JSON.parse(localStorage.getItem('hl_webhooks')||'[]');
+  urls.splice(idx,1);
+  localStorage.setItem('hl_webhooks',JSON.stringify(urls));
+  showToast('Webhook rimosso');
+  document.getElementById('webhookModal')?.remove();
+  openWebhookSettings();
+}
+
+async function testWebhook(){
+  const urls=JSON.parse(localStorage.getItem('hl_webhooks')||'[]');
+  if(!urls.length){showToast('Nessun webhook configurato');return;}
+  const payload={event:'test',timestamp:new Date().toISOString(),data:{message:'HOOKA webhook test!',source:'hooka',user:getUserDisplayName()}};
+  let ok=0;
+  for(const url of urls){
+    try{
+      await fetch(url,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload),mode:'no-cors'});
+      ok++;
+    }catch(e){console.warn('[HOOKA] Webhook failed:',url,e);}
+  }
+  showToast(ok?`✅ Test inviato a ${ok} webhook!`:'❌ Nessun webhook raggiungibile');
+}
+
+async function sendWebhook(event,data){
+  const urls=JSON.parse(localStorage.getItem('hl_webhooks')||'[]');
+  if(!urls.length)return;
+  const payload={event,timestamp:new Date().toISOString(),data:{...data,user:getUserDisplayName(),source:'hooka'}};
+  for(const url of urls){
+    try{fetch(url,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload),mode:'no-cors'}).catch(()=>{});}catch(e){}
+  }
 }
 
 // ===== CONNECTION GUIDES =====
@@ -13757,6 +13884,20 @@ function showConnectionGuide(type){
         {icon:'3️⃣',text:'Clicca <b>"Esporta su Drive"</b> per salvare hook, script e profili'},
         {icon:'4️⃣',text:'Usa <b>"Importa da file"</b> per caricare JSON, TXT o MD'},
         {icon:'💡',text:'<b>Nota:</b> Il login Google deve essere fatto con lo stesso account del tuo Drive'}
+      ]
+    },
+    webhook:{
+      title:'🪝 Come configurare i Webhook',
+      color:'#f472b6',
+      steps:[
+        {icon:'1️⃣',text:'Crea uno scenario su <a href="https://make.com" target="_blank" style="color:#f472b6;text-decoration:underline">Make.com</a>, <a href="https://zapier.com" target="_blank" style="color:#f472b6;text-decoration:underline">Zapier</a> o <a href="https://n8n.io" target="_blank" style="color:#f472b6;text-decoration:underline">n8n</a>'},
+        {icon:'2️⃣',text:'Aggiungi un trigger <b>"Webhook"</b> o <b>"Custom Webhook"</b>'},
+        {icon:'3️⃣',text:'Copia l\'<b>URL del webhook</b> che ti viene dato'},
+        {icon:'4️⃣',text:'In HOOKA → 🔌 AI → <b>🪝 Webhook URL</b> → incolla l\'URL'},
+        {icon:'5️⃣',text:'Clicca <b>"🧪 Testa Webhook"</b> per verificare la ricezione'},
+        {icon:'6️⃣',text:'Configura le azioni successive nello scenario (Google Sheets, Slack, Email, ecc.)'},
+        {icon:'📋',text:'<b>Dati inviati:</b> Ogni evento include: tipo (hook_saved, script_completed, game_completed), dati del contenuto, utente, timestamp'},
+        {icon:'💡',text:'<b>Esempio Make:</b> Webhook → Google Sheets = tutti i tuoi hook salvati automaticamente in un foglio!'}
       ]
     }
   };

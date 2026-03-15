@@ -2693,6 +2693,7 @@ body.light .shimmer::after{background:linear-gradient(90deg,transparent 0%,rgba(
   <button class="help-review-btn" onclick="localStorage.removeItem('hl_onboarded');toggleHelp();setTimeout(showOnboarding,300);">🎓 Rivedi Tutorial Interattivo</button>
   <button class="help-review-btn" onclick="toggleHelp();setTimeout(startDemoMode,300);" style="margin-top:6px;background:rgba(139,92,246,.12);border-color:rgba(139,92,246,.3);color:#8b5cf6">🎬 Demo Mode — Tour Automatico</button>
   <button class="help-review-btn" onclick="toggleHelp();setTimeout(openNotificationsPanel,300);" style="margin-top:6px;background:rgba(236,72,153,.08);border-color:rgba(236,72,153,.25);color:#ec4899">🔔 Notifiche Team</button>
+  <button class="help-review-btn" onclick="toggleHelp();setTimeout(openHistoryPanel,300);" style="margin-top:6px;background:rgba(34,197,94,.08);border-color:rgba(34,197,94,.25);color:#22c55e">📜 Cronologia Lavori</button>
 </div>
 <div class="toast" id="toast"></div>
 <div class="smart-tip" id="smartTip"><button class="smart-tip-close" onclick="dismissSmartTip()">&times;</button><div class="smart-tip-inner"><div class="smart-tip-icon" id="smartTipIcon"></div><div class="smart-tip-body"><div class="smart-tip-text" id="smartTipText"></div><div id="smartTipAction"></div></div></div></div>
@@ -4857,7 +4858,7 @@ let currentFlipIndex=0,currentDevilIndex=0;
 function rand(a){return a[Math.floor(Math.random()*a.length)];}
 function showToast(m){const t=document.getElementById('toast');t.textContent=m;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2000);}
 function animateScore(){setTimeout(()=>{document.querySelectorAll('.score-display:not(.pop)').forEach(el=>el.classList.add('pop'));},50);}
-function saveItem(type,text){if(savedItems.some(i=>i.text===text)){showToast('Già nel mazzo!');return false;}savedItems.unshift({type,text,timestamp:Date.now(),category:'hook',rating:0});localStorage.setItem(hlKey('saved'),JSON.stringify(savedItems));updateSavedCount();stats.hooksWritten++;saveStats();showToast('Salvato!');sSave();sendWebhook('hook_saved',{type,text:text.substring(0,500)});sendTeamNotification('hook_saved',{type,text:text.substring(0,100)});return true;}
+function saveItem(type,text){if(savedItems.some(i=>i.text===text)){showToast('Già nel mazzo!');return false;}savedItems.unshift({type,text,timestamp:Date.now(),category:'hook',rating:0});localStorage.setItem(hlKey('saved'),JSON.stringify(savedItems));updateSavedCount();stats.hooksWritten++;saveStats();showToast('Salvato!');sSave();sendWebhook('hook_saved',{type,text:text.substring(0,500)});sendTeamNotification('hook_saved',{type,text:text.substring(0,100)});logHistory('mazzo','save',{type,text:text.substring(0,300)});return true;}
 function saveScript(idx){
   const script=fucinaScripts[idx];if(!script)return false;
   const type=SCRIPT_TYPES[script.type];
@@ -4947,6 +4948,7 @@ function initProfileCollapse(){if(profileCollapsed){const card=document.getEleme
 let _scrollCollapseInit=false;
 window.addEventListener('scroll',()=>{
   if(_scrollCollapseInit)return;
+  if(window._tourActive||window._demoActive)return;
   if(window.scrollY>120&&!profileCollapsed){
     _scrollCollapseInit=true;
     toggleProfileCard();
@@ -9668,15 +9670,39 @@ function renderTrendHooks(panel,hooks,trendItem){
   sCorrect();
 }
 function sendHookToFucina(text){
+  if(currentMode==='stories'){
+    // In Stories mode → manda alla Fucina Storie
+    sendToFucinaStories(text);
+    return;
+  }
   openFucinaStandalone();
   setTimeout(()=>{
     startFucinaSetup();
     setTimeout(()=>{
-      const hookInput=document.querySelector('#fucinaContent textarea,#fucinaContent input[type="text"]');
-      if(hookInput){hookInput.value=text;hookInput.dispatchEvent(new Event('input'));}
-    },300);
-  },300);
-  showToast('Hook inviato in Fucina!');
+      const hookInput=document.querySelector('#fucinaContent textarea,#fucinaContent input[type="text"],.fucina-block textarea,#fucinaSetup textarea');
+      if(hookInput){hookInput.value=text;hookInput.dispatchEvent(new Event('input'));showToast('✅ Hook inviato in Fucina!');}
+      else{showToast('⚠️ Fucina non pronta — riprova');}
+    },500);
+  },400);
+}
+function sendToFucinaStories(text){
+  // Find first empty story in current day or add new one
+  const seq=getActiveSequence();if(!seq||!seq.days)return;
+  const sel=document.getElementById('fucinaDaySelect');
+  const dayIdx=sel?parseInt(sel.value)||0:0;
+  const day=seq.days[dayIdx];if(!day)return;
+  // Find first story with empty text, or add new
+  let targetIdx=day.stories.findIndex(s=>!s.testo||s.testo.trim()==='');
+  if(targetIdx===-1){
+    day.stories.push({tipo:'Testo',testo:'',nota_visiva:''});
+    targetIdx=day.stories.length-1;
+  }
+  day.stories[targetIdx].testo=text;
+  saveStoryPlanner();
+  renderFucinaBoard();
+  showToast('✅ Testo inviato alla Fucina Storie — Giorno '+(day.day||dayIdx+1));
+  // Open the card
+  setTimeout(()=>openStoryCard(dayIdx,targetIdx),300);
 }
 
 // ===== QUICK WIN MODE =====
@@ -11218,7 +11244,7 @@ class GuidedTour{
     const pre=step.beforeShow?step.beforeShow():null;
     const proceed=()=>{
       const el=document.querySelector(step.selector);
-      if(!el){if(i<this.steps.length-1){this.goToStep(i+1);}else{this.end();}return;}
+      if(!el||(!el.offsetParent&&el.style.display==='none')){if(i<this.steps.length-1){this.goToStep(i+1);}else{this.end();}return;}
       el.scrollIntoView({behavior:'smooth',block:'center'});
       setTimeout(()=>{
         // Re-scroll in case first scroll was interrupted
@@ -11229,7 +11255,7 @@ class GuidedTour{
         if(step.interactive)this._setupInteraction(step,el);
         else this.clickZone.style.display='none';
         // Re-position after tooltip renders to get accurate height
-        setTimeout(()=>{this.tooltip.classList.add('visible');this._positionTooltip(el,step.placement);},80);
+        setTimeout(()=>{this.tooltip.classList.add('visible');this._positionTooltip(el,step.placement);},100);
       },500);
     };
     this.tooltip.classList.remove('visible');
@@ -11809,6 +11835,7 @@ async function generateWorkshopContent(type){
       <button onclick="saveWorkshopResult('${type}','${arg.replace(/'/g,"\\'")}')" style="padding:7px 14px;border-radius:6px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);color:var(--t2);cursor:pointer;font-size:.7rem;font-weight:600">💾 Salva nel Mazzo</button>
       <button onclick="startWorkshopTool('${type}')" style="padding:7px 14px;border-radius:6px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);color:var(--t2);cursor:pointer;font-size:.7rem;font-weight:600">🔄 Genera di Nuovo</button>
     </div>`;
+  logHistory('workshop','generate',{type,arg,text:result?.substring(0,300)});
   sClick();
 }
 
@@ -12213,6 +12240,115 @@ function openNotificationsPanel(){
   document.body.appendChild(ov);
 }
 
+// ===== HISTORY / CRONOLOGIA =====
+let _historyLog=JSON.parse(localStorage.getItem(hlKey('history_log'))||'[]');
+
+function logHistory(module,action,data){
+  _historyLog.push({
+    id:Date.now(),
+    module,
+    action,
+    data:{...data,_snapshot:typeof data.text==='string'?data.text.substring(0,500):undefined},
+    timestamp:Date.now()
+  });
+  if(_historyLog.length>200)_historyLog=_historyLog.slice(-200);
+  try{localStorage.setItem(hlKey('history_log'),JSON.stringify(_historyLog));}catch(e){}
+}
+
+function openHistoryPanel(){
+  const ov=document.createElement('div');ov.id='historyOverlay';
+  ov.style.cssText='position:fixed;inset:0;z-index:9999;background:rgba(0,0,0,.85);display:flex;align-items:center;justify-content:center;animation:fadeIn .2s ease';
+  ov.onclick=e=>{if(e.target===ov)ov.remove();};
+
+  const modules=['all','stories','fucina','hub','mazzo','workshop','feed'];
+  const moduleLabels={all:'📋 Tutti',stories:'📱 Storie',fucina:'🔥 Fucina',hub:'🏠 Hub',mazzo:'⭐ Mazzo',workshop:'🎓 Workshop',feed:'📰 Feed'};
+  const filterBtns=modules.map(m=>`<button class="hist-filter-btn${m==='all'?' active':''}" data-mod="${m}" onclick="filterHistory('${m}')" style="padding:5px 12px;border-radius:16px;border:1px solid rgba(255,255,255,.1);background:${m==='all'?'var(--a1)':'rgba(255,255,255,.06)'};color:${m==='all'?'#fff':'var(--t2)'};cursor:pointer;font-size:.68rem;font-weight:600;white-space:nowrap">${moduleLabels[m]}</button>`).join('');
+
+  const entries=_historyLog.slice().reverse().slice(0,50);
+  const entriesHtml=renderHistoryEntries(entries);
+
+  ov.innerHTML=`
+    <div style="background:var(--card,#1a1a2e);border-radius:16px;padding:24px;max-width:600px;width:95%;max-height:85vh;overflow:hidden;display:flex;flex-direction:column;box-shadow:0 20px 60px rgba(0,0,0,.5);border:1px solid rgba(255,255,255,.08)">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px">
+        <h2 style="margin:0;font-size:1rem">📜 Cronologia Lavori</h2>
+        <span onclick="document.getElementById('historyOverlay')?.remove()" style="cursor:pointer;font-size:1.2rem;opacity:.6">✕</span>
+      </div>
+      <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:14px;padding-bottom:10px;border-bottom:1px solid rgba(255,255,255,.06)">${filterBtns}</div>
+      <div id="historyEntries" style="overflow-y:auto;flex:1">${entriesHtml}</div>
+      <div style="margin-top:12px;text-align:center">
+        <button onclick="clearHistory()" style="padding:6px 14px;border-radius:6px;background:rgba(239,68,68,.1);border:1px solid rgba(239,68,68,.2);color:#ef4444;cursor:pointer;font-size:.68rem">🗑️ Pulisci Cronologia</button>
+      </div>
+    </div>`;
+  document.body.appendChild(ov);
+}
+
+function renderHistoryEntries(entries){
+  if(!entries.length)return '<div style="text-align:center;padding:30px;color:var(--t2);font-size:.8rem">Nessun elemento in cronologia</div>';
+  const icons={stories:'📱',fucina:'🔥',hub:'🏠',mazzo:'⭐',workshop:'🎓',feed:'📰'};
+  const actionLabels={create:'creato',edit:'modificato',generate:'generato AI',save:'salvato',delete:'eliminato'};
+  return entries.map(e=>{
+    const ago=Math.round((Date.now()-e.timestamp)/60000);
+    const agoText=ago<1?'ora':ago<60?`${ago}m fa`:ago<1440?`${Math.round(ago/60)}h fa`:`${Math.round(ago/1440)}g fa`;
+    const preview=e.data?._snapshot||e.data?.text?.substring(0,100)||e.data?.title||e.data?.type||'';
+    return `<div class="hist-entry" data-module="${e.module}" style="padding:12px;border-bottom:1px solid rgba(255,255,255,.04);cursor:pointer;transition:background .15s" onmouseenter="this.style.background='rgba(255,255,255,.03)'" onmouseleave="this.style.background=''" onclick="expandHistoryEntry(${e.id})">
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px">
+        <span style="font-size:.9rem">${icons[e.module]||'📋'}</span>
+        <span style="font-size:.72rem;font-weight:700;color:var(--a1);text-transform:capitalize">${e.module}</span>
+        <span style="font-size:.65rem;color:var(--t2)">${actionLabels[e.action]||e.action}</span>
+        <span style="margin-left:auto;font-size:.6rem;color:var(--t3,#666)">${agoText}</span>
+      </div>
+      ${preview?`<div style="font-size:.7rem;color:var(--t2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%">"${preview}"</div>`:''}
+    </div>`;
+  }).join('');
+}
+
+function filterHistory(mod){
+  document.querySelectorAll('.hist-filter-btn').forEach(b=>{
+    const active=b.dataset.mod===mod;
+    b.style.background=active?'var(--a1)':'rgba(255,255,255,.06)';
+    b.style.color=active?'#fff':'var(--t2)';
+    b.classList.toggle('active',active);
+  });
+  const entries=_historyLog.slice().reverse().slice(0,50);
+  const filtered=mod==='all'?entries:entries.filter(e=>e.module===mod);
+  const container=document.getElementById('historyEntries');
+  if(container)container.innerHTML=renderHistoryEntries(filtered);
+}
+
+function expandHistoryEntry(id){
+  const entry=_historyLog.find(e=>e.id===id);if(!entry)return;
+  const data=entry.data||{};
+  const content=data._snapshot||data.text||data.title||JSON.stringify(data,null,2);
+  const date=new Date(entry.timestamp).toLocaleString('it-IT');
+
+  const modal=document.createElement('div');modal.id='histDetailModal';
+  modal.style.cssText='position:fixed;inset:0;z-index:10001;background:rgba(0,0,0,.7);display:flex;align-items:center;justify-content:center';
+  modal.onclick=e=>{if(e.target===modal)modal.remove();};
+  modal.innerHTML=`
+    <div style="background:var(--card,#1a1a2e);border-radius:12px;padding:20px;max-width:480px;width:90%;max-height:70vh;overflow-y:auto;border:1px solid rgba(255,255,255,.1)">
+      <div style="display:flex;justify-content:space-between;margin-bottom:12px">
+        <div><span style="font-size:.8rem;font-weight:700;text-transform:capitalize">${entry.module}</span> · <span style="font-size:.7rem;color:var(--t2)">${entry.action}</span></div>
+        <span onclick="this.closest('#histDetailModal').remove()" style="cursor:pointer;opacity:.6">✕</span>
+      </div>
+      <div style="font-size:.65rem;color:var(--t3,#666);margin-bottom:12px">📅 ${date}</div>
+      <div style="background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.06);border-radius:8px;padding:14px;font-size:.75rem;color:var(--t1);line-height:1.6;white-space:pre-wrap;word-break:break-word">${content}</div>
+      <div style="display:flex;gap:8px;margin-top:12px">
+        <button onclick="navigator.clipboard.writeText(document.querySelector('#histDetailModal .hist-content')?.textContent||'${content.replace(/'/g,"\\'")}');showToast('📋 Copiato!')" style="padding:6px 12px;border-radius:6px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);color:var(--t2);cursor:pointer;font-size:.68rem">📋 Copia</button>
+        <button onclick="sendHookToFucina('${content.replace(/'/g,"\\'").replace(/\n/g,' ')}');document.getElementById('histDetailModal')?.remove();document.getElementById('historyOverlay')?.remove()" style="padding:6px 12px;border-radius:6px;background:rgba(255,107,53,.12);border:1px solid rgba(255,107,53,.2);color:var(--a1);cursor:pointer;font-size:.68rem">🔥 Manda in Fucina</button>
+      </div>
+    </div>`;
+  document.body.appendChild(modal);
+}
+
+function clearHistory(){
+  if(!confirm('Vuoi cancellare tutta la cronologia?'))return;
+  _historyLog=[];
+  localStorage.removeItem(hlKey('history_log'));
+  const container=document.getElementById('historyEntries');
+  if(container)container.innerHTML=renderHistoryEntries([]);
+  showToast('🗑️ Cronologia pulita');
+}
+
 // ===== STORIES MODE =====
 function renderStoriesMode(){
   const target=document.querySelector('.main-col')||document.querySelector('.container');
@@ -12357,17 +12493,17 @@ function renderStoriesMode(){
   </div>
   ${phraseBar}
 
-  <!-- FUCINA STORIES -->
+  <!-- FUCINA STORIES — ClickUp Board -->
   <div class="fucina-stories" id="fucinaStories">
     <div class="fucina-stories-header">
-      <h3>🔥 Fucina Storie <span style="font-size:.62rem;font-weight:400;color:var(--t2)">— Sequenza del giorno</span></h3>
+      <h3>🔥 Fucina Storie <span style="font-size:.62rem;font-weight:400;color:var(--t2)">— Board completo</span></h3>
       <div style="display:flex;gap:6px;align-items:center">
-        <select id="fucinaDaySelect" onchange="renderFucinaDay()" style="padding:6px 10px;border-radius:8px;background:var(--input-bg);border:1px solid var(--input-border);color:var(--t1);font-size:.72rem">
-          ${days.map((d,i)=>`<option value="${i}">G${d.day||i+1} — ${d.tema||'Giorno '+(i+1)}</option>`).join('')}
-        </select>
+        <button class="fsv-btn active" data-view="board" onclick="setFucinaView('board')" style="padding:4px 10px;border-radius:6px;background:var(--a1);border:none;color:#fff;cursor:pointer;font-size:.62rem;font-weight:700">📋 Board</button>
+        <button class="fsv-btn" data-view="timeline" onclick="setFucinaView('timeline')" style="padding:4px 10px;border-radius:6px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);color:var(--t2);cursor:pointer;font-size:.62rem;font-weight:700">📃 Timeline</button>
+        <button onclick="openHistoryPanel()" style="padding:4px 10px;border-radius:6px;background:rgba(34,197,94,.08);border:1px solid rgba(34,197,94,.2);color:#22c55e;cursor:pointer;font-size:.62rem;font-weight:700">📜</button>
       </div>
     </div>
-    <div class="fs-timeline" id="fsTimeline"></div>
+    <div id="fucinaBoardContainer" style="overflow-x:auto;padding-bottom:8px"></div>
   </div>
 
   <!-- STUDIO: Hub + Fucina (Stories) -->
@@ -13098,43 +13234,272 @@ function getDayStrategy(day,cycle){
 }
 
 // ===== FUCINA STORIES — Timeline View (Sequence-Aware) =====
-function renderFucinaDay(){
-  const sel=document.getElementById('fucinaDaySelect');
-  const tl=document.getElementById('fsTimeline');
-  if(!sel||!tl)return;
-  const dayIdx=parseInt(sel.value)||0;
-  const seq=getActiveSequence();
-  const dayData=seq.days[dayIdx];
-  if(!dayData){tl.innerHTML='';return;}
-  const dayNum=dayData.day||dayIdx+1;
-  const strat=getDayStrategy(dayNum,storyPlanner.activeCycle);
-  const stratObj=STORY_STRATEGIES.find(s=>s.id===strat);
+let _fucinaView='board';
+function setFucinaView(view){
+  _fucinaView=view;
+  document.querySelectorAll('.fsv-btn').forEach(b=>{
+    const active=b.dataset.view===view;
+    b.style.background=active?'var(--a1)':'rgba(255,255,255,.06)';
+    b.style.color=active?'#fff':'var(--t2)';
+    b.style.border=active?'none':'1px solid rgba(255,255,255,.1)';
+    b.classList.toggle('active',active);
+  });
+  renderFucinaBoard();
+}
 
-  let cards='';
-  (dayData.stories||[]).forEach((s,i)=>{
-    const icon=STORY_TYPE_ICONS[s.tipo]||'📸';
-    const posLabel=i===0?'🎬 APERTURA':i===dayData.stories.length-1?'🎯 CHIUSURA':`📍 ${i+1}/${dayData.stories.length}`;
-    cards+=`<div class="fs-card" id="fsCard${i}">
-      <div class="fs-card-type">${icon} ${s.tipo} <span style="margin-left:auto;font-size:.5rem;opacity:.7">${posLabel}</span></div>
-      <div class="fs-card-copy" contenteditable="true" onblur="fucinaSaveInline(${dayIdx},${i},this.textContent)">${s.testo||''}</div>
-      <div class="fs-card-note">${s.nota_visiva||'📷 nota visiva'}</div>
-      <div class="fs-card-strategy"><span class="strategy-chip" data-s="${strat}" style="font-size:.5rem;padding:2px 6px">${stratObj?.emoji||''} ${strat}</span></div>
-      <div class="fs-card-actions">
-        <button onclick="fucinaAI(${dayIdx},${i},'genera')" style="background:rgba(255,107,53,.12);color:var(--a1)">🤖 Genera</button>
-        <button onclick="fucinaAI(${dayIdx},${i},'riscrivi')" style="background:rgba(168,85,247,.1);color:#a855f7">🔄 Riscrivi</button>
-        <button onclick="fucinaAI(${dayIdx},${i},'forte')" style="background:rgba(239,68,68,.1);color:#ef4444">🎯 Più forte</button>
+function renderFucinaBoard(){
+  const container=document.getElementById('fucinaBoardContainer');
+  if(!container)return;
+  const seq=getActiveSequence();
+  if(!seq||!seq.days){container.innerHTML='<div style="text-align:center;padding:20px;color:var(--t2);font-size:.75rem">Nessuna sequenza attiva</div>';return;}
+
+  if(_fucinaView==='timeline'){
+    renderFucinaTimeline(container,seq);
+    return;
+  }
+
+  // Board view — all days as columns
+  const stratColors={urgency:'#ef4444',scarcity:'#f59e0b',fomo:'#a855f7',opportunita:'#22c55e',social_proof:'#3b82f6',qa:'#06b6d4',obiezioni:'#f43f5e',esclusivita:'#eab308'};
+  let cols='';
+  seq.days.forEach((d,di)=>{
+    const dayNum=d.day||di+1;
+    const strat=getDayStrategy(dayNum,storyPlanner.activeCycle);
+    const stratObj=STORY_STRATEGIES.find(s=>s.id===strat);
+    const stratColor=stratColors[strat]||'var(--a1)';
+    const storyCount=(d.stories||[]).length;
+
+    let miniCards='';
+    (d.stories||[]).forEach((s,si)=>{
+      const icon=STORY_TYPE_ICONS[s.tipo]||'📸';
+      const posLabel=si===0?'OPEN':si===storyCount-1?'CLOSE':`#${si+1}`;
+      const hasText=s.testo&&s.testo.trim().length>0;
+      const preview=hasText?s.testo.substring(0,60)+'...':'⚡ Vuoto — clicca per scrivere';
+      miniCards+=`<div onclick="openStoryCard(${di},${si})" style="padding:10px 12px;border-radius:8px;background:rgba(255,255,255,.03);border:1px solid ${hasText?'rgba(255,255,255,.06)':stratColor+'30'};cursor:pointer;transition:all .15s;margin-bottom:6px" onmouseenter="this.style.borderColor='${stratColor}';this.style.background='rgba(255,255,255,.06)'" onmouseleave="this.style.borderColor='${hasText?'rgba(255,255,255,.06)':stratColor+'30'}';this.style.background='rgba(255,255,255,.03)'">
+        <div style="display:flex;align-items:center;gap:5px;margin-bottom:4px">
+          <span style="font-size:.7rem">${icon}</span>
+          <span style="font-size:.58rem;font-weight:700;color:${stratColor}">${s.tipo}</span>
+          <span style="margin-left:auto;font-size:.48rem;padding:1px 5px;border-radius:4px;background:${stratColor}15;color:${stratColor};font-weight:700">${posLabel}</span>
+        </div>
+        <div style="font-size:.65rem;color:${hasText?'var(--t1)':'var(--t3,#555)'};line-height:1.4;${hasText?'':'font-style:italic'}">${preview}</div>
+      </div>`;
+    });
+
+    cols+=`<div style="min-width:200px;max-width:220px;flex-shrink:0;background:rgba(255,255,255,.02);border:1px solid rgba(255,255,255,.06);border-radius:10px;padding:10px;display:flex;flex-direction:column">
+      <div style="text-align:center;padding:8px 6px;margin-bottom:8px;border-bottom:2px solid ${stratColor}30">
+        <div style="font-size:.75rem;font-weight:800;color:var(--t1)">G${dayNum}</div>
+        <div style="font-size:.6rem;color:var(--t2);margin-top:2px">${d.tema||'Giorno '+dayNum}</div>
+        <div style="font-size:.5rem;margin-top:3px"><span style="color:${stratColor};font-weight:700">${stratObj?.emoji||''} ${strat}</span></div>
       </div>
+      <div style="flex:1">${miniCards}</div>
+      <div onclick="addStoryToDay(${di});renderFucinaBoard()" style="text-align:center;padding:6px;border-radius:6px;border:1px dashed rgba(255,255,255,.1);cursor:pointer;font-size:.6rem;color:var(--t3,#555);margin-top:4px;transition:all .15s" onmouseenter="this.style.borderColor='var(--a1)';this.style.color='var(--a1)'" onmouseleave="this.style.borderColor='rgba(255,255,255,.1)';this.style.color='var(--t3,#555)'">+ Aggiungi</div>
     </div>`;
   });
-  cards+=`<div class="fs-card-add" onclick="addStoryToDay(${dayIdx})">+</div>`;
-  tl.innerHTML=cards;
+
+  container.innerHTML=`<div style="display:flex;gap:10px;padding:4px 0;overflow-x:auto;scroll-snap-type:x proximity">${cols}</div>`;
 }
+
+function renderFucinaTimeline(container,seq){
+  let html='';
+  seq.days.forEach((d,di)=>{
+    const dayNum=d.day||di+1;
+    const strat=getDayStrategy(dayNum,storyPlanner.activeCycle);
+    const stratObj=STORY_STRATEGIES.find(s=>s.id===strat);
+    html+=`<div style="margin-bottom:16px">
+      <div style="font-size:.8rem;font-weight:800;color:var(--t1);margin-bottom:8px;display:flex;align-items:center;gap:8px">
+        <span style="background:var(--a1);color:#fff;padding:2px 8px;border-radius:6px;font-size:.65rem">G${dayNum}</span>
+        ${d.tema||''} <span style="font-size:.6rem;color:var(--t2)">${stratObj?.emoji||''} ${strat}</span>
+      </div>`;
+    (d.stories||[]).forEach((s,si)=>{
+      const icon=STORY_TYPE_ICONS[s.tipo]||'📸';
+      const hasText=s.testo&&s.testo.trim().length>0;
+      html+=`<div onclick="openStoryCard(${di},${si})" style="padding:12px 14px;margin-bottom:6px;margin-left:20px;border-left:2px solid rgba(255,107,53,.3);border-radius:0 8px 8px 0;background:rgba(255,255,255,.02);cursor:pointer;transition:background .15s" onmouseenter="this.style.background='rgba(255,255,255,.05)'" onmouseleave="this.style.background='rgba(255,255,255,.02)'">
+        <div style="font-size:.65rem;display:flex;align-items:center;gap:6px;margin-bottom:4px"><span>${icon}</span><strong style="color:var(--a1)">${s.tipo}</strong></div>
+        <div style="font-size:.72rem;color:${hasText?'var(--t1)':'var(--t3,#555)'};line-height:1.5">${hasText?s.testo:'Clicca per scrivere...'}</div>
+      </div>`;
+    });
+    html+=`</div>`;
+  });
+  container.innerHTML=html||'<div style="text-align:center;padding:20px;color:var(--t2)">Nessuna storia</div>';
+}
+
+// ===== STORY CARD MODAL (ClickUp-style) =====
+function openStoryCard(dayIdx,storyIdx){
+  const seq=getActiveSequence();if(!seq||!seq.days[dayIdx])return;
+  const day=seq.days[dayIdx];
+  const story=day.stories[storyIdx];if(!story)return;
+  const dayNum=day.day||dayIdx+1;
+  const strat=getDayStrategy(dayNum,storyPlanner.activeCycle);
+  const stratObj=STORY_STRATEGIES.find(s=>s.id===strat);
+  const icon=STORY_TYPE_ICONS[story.tipo]||'📸';
+  const storyCount=day.stories.length;
+  const posLabel=storyIdx===0?'🎬 Apertura':storyIdx===storyCount-1?'🎯 Chiusura':`📍 Story ${storyIdx+1}/${storyCount}`;
+  const stratColors={urgency:'#ef4444',scarcity:'#f59e0b',fomo:'#a855f7',opportunita:'#22c55e',social_proof:'#3b82f6',qa:'#06b6d4',obiezioni:'#f43f5e',esclusivita:'#eab308'};
+  const sColor=stratColors[strat]||'var(--a1)';
+
+  // Get history for this card
+  const cardHistory=_historyLog.filter(h=>h.module==='stories'&&h.data?.dayIdx===dayIdx&&h.data?.storyIdx===storyIdx).slice(-5).reverse();
+  const histHtml=cardHistory.length?cardHistory.map(h=>{
+    const ago=Math.round((Date.now()-h.timestamp)/60000);
+    const agoText=ago<1?'ora':ago<60?`${ago}m`:ago<1440?`${Math.round(ago/60)}h`:`${Math.round(ago/1440)}g`;
+    return `<div style="font-size:.6rem;color:var(--t3,#555);padding:3px 0;border-bottom:1px solid rgba(255,255,255,.03)"><span style="color:${h.action==='generate'?'var(--a1)':'var(--t2)'}">${h.action==='generate'?'🤖 AI':'✏️ Edit'}</span> ${agoText} fa${h.data?.text?': "'+h.data.text.substring(0,50)+'..."':''}</div>`;
+  }).join(''):'<div style="font-size:.6rem;color:var(--t3,#555)">Nessuna modifica precedente</div>';
+
+  document.getElementById('storyCardModal')?.remove();
+  const modal=document.createElement('div');modal.id='storyCardModal';
+  modal.style.cssText='position:fixed;inset:0;z-index:9999;background:rgba(0,0,0,.85);display:flex;align-items:center;justify-content:center;animation:fadeIn .2s ease';
+  modal.onclick=e=>{if(e.target===modal){closeStoryCard(dayIdx,storyIdx);}};
+
+  modal.innerHTML=`
+    <div style="background:var(--card,#1a1a2e);border-radius:16px;max-width:580px;width:95%;max-height:90vh;overflow-y:auto;box-shadow:0 20px 60px rgba(0,0,0,.5);border:1px solid ${sColor}30">
+      <!-- Header -->
+      <div style="padding:16px 20px;border-bottom:1px solid rgba(255,255,255,.06);display:flex;align-items:center;gap:10px;background:${sColor}08;border-radius:16px 16px 0 0">
+        <span style="font-size:1.3rem">${icon}</span>
+        <div style="flex:1">
+          <div style="font-size:.85rem;font-weight:800;color:var(--t1)">${story.tipo} — G${dayNum}</div>
+          <div style="font-size:.62rem;color:var(--t2);display:flex;gap:8px;align-items:center;margin-top:2px">
+            <span>${posLabel}</span>
+            <span style="color:${sColor};font-weight:700">${stratObj?.emoji||''} ${strat}</span>
+            <span>${day.tema||''}</span>
+          </div>
+        </div>
+        <span onclick="closeStoryCard(${dayIdx},${storyIdx})" style="cursor:pointer;font-size:1.2rem;opacity:.6;padding:4px">✕</span>
+      </div>
+
+      <!-- Body -->
+      <div style="padding:20px">
+        <!-- Copy principale -->
+        <label style="font-size:.65rem;font-weight:700;color:var(--a1);text-transform:uppercase;letter-spacing:.5px">📝 Copy</label>
+        <textarea id="scCopy" style="width:100%;box-sizing:border-box;min-height:120px;padding:12px;border-radius:10px;border:1px solid rgba(255,255,255,.1);background:var(--input-bg,rgba(255,255,255,.06));color:var(--t1);font-size:.82rem;line-height:1.6;resize:vertical;margin:6px 0 14px">${story.testo||''}</textarea>
+
+        <!-- Nota visiva -->
+        <label style="font-size:.65rem;font-weight:700;color:#8b5cf6;text-transform:uppercase;letter-spacing:.5px">📷 Nota Visiva</label>
+        <input id="scVisual" type="text" value="${story.nota_visiva||''}" placeholder="Descrivi cosa si vede nella story (foto, video, grafica...)" style="width:100%;box-sizing:border-box;padding:10px 12px;border-radius:8px;border:1px solid rgba(255,255,255,.1);background:var(--input-bg,rgba(255,255,255,.06));color:var(--t1);font-size:.75rem;margin:6px 0 14px">
+
+        <!-- CTA -->
+        <label style="font-size:.65rem;font-weight:700;color:#22c55e;text-transform:uppercase;letter-spacing:.5px">🎯 CTA (Call to Action)</label>
+        <input id="scCta" type="text" value="${story.cta||''}" placeholder="Es: Scorri su, Rispondi al sondaggio, Link in bio..." style="width:100%;box-sizing:border-box;padding:10px 12px;border-radius:8px;border:1px solid rgba(255,255,255,.1);background:var(--input-bg,rgba(255,255,255,.06));color:var(--t1);font-size:.75rem;margin:6px 0 14px">
+
+        <!-- Hashtags -->
+        <label style="font-size:.65rem;font-weight:700;color:#f59e0b;text-transform:uppercase;letter-spacing:.5px"># Hashtag</label>
+        <input id="scHashtags" type="text" value="${story.hashtags||''}" placeholder="#marketing #storytelling #business" style="width:100%;box-sizing:border-box;padding:10px 12px;border-radius:8px;border:1px solid rgba(255,255,255,.1);background:var(--input-bg,rgba(255,255,255,.06));color:var(--t1);font-size:.75rem;margin:6px 0 14px">
+
+        <!-- AI Actions -->
+        <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:16px">
+          <button id="scAiGen" onclick="storyCardAI(${dayIdx},${storyIdx},'genera')" style="flex:1;min-width:100px;padding:9px 14px;border-radius:8px;background:rgba(255,107,53,.12);border:1px solid rgba(255,107,53,.2);color:var(--a1);cursor:pointer;font-weight:700;font-size:.72rem">🤖 Genera Copy</button>
+          <button onclick="storyCardAI(${dayIdx},${storyIdx},'riscrivi')" style="flex:1;min-width:100px;padding:9px 14px;border-radius:8px;background:rgba(139,92,246,.1);border:1px solid rgba(139,92,246,.2);color:#8b5cf6;cursor:pointer;font-weight:700;font-size:.72rem">🔄 Riscrivi</button>
+          <button onclick="storyCardAI(${dayIdx},${storyIdx},'forte')" style="flex:1;min-width:100px;padding:9px 14px;border-radius:8px;background:rgba(239,68,68,.1);border:1px solid rgba(239,68,68,.2);color:#ef4444;cursor:pointer;font-weight:700;font-size:.72rem">🎯 Più Forte</button>
+        </div>
+
+        <!-- Quick Actions -->
+        <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:16px;padding-top:12px;border-top:1px solid rgba(255,255,255,.06)">
+          <button onclick="saveItem('story_copy',document.getElementById('scCopy').value)" style="padding:7px 12px;border-radius:6px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);color:var(--t2);cursor:pointer;font-size:.65rem;font-weight:600">⭐ Salva nel Mazzo</button>
+          <button onclick="navigator.clipboard.writeText(document.getElementById('scCopy').value);showToast('📋 Copiato!')" style="padding:7px 12px;border-radius:6px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);color:var(--t2);cursor:pointer;font-size:.65rem;font-weight:600">📋 Copia</button>
+          <button onclick="clickupSendStoryCard(${dayIdx},${storyIdx})" style="padding:7px 12px;border-radius:6px;background:rgba(34,197,94,.08);border:1px solid rgba(34,197,94,.2);color:#22c55e;cursor:pointer;font-size:.65rem;font-weight:600">📤 ClickUp</button>
+        </div>
+
+        <!-- History -->
+        <details style="margin-top:4px">
+          <summary style="font-size:.65rem;font-weight:700;color:var(--t2);cursor:pointer;padding:6px 0">📜 Cronologia modifiche (${cardHistory.length})</summary>
+          <div style="padding:8px 0">${histHtml}</div>
+        </details>
+      </div>
+
+      <!-- Footer Nav -->
+      <div style="padding:12px 20px;border-top:1px solid rgba(255,255,255,.06);display:flex;justify-content:space-between;align-items:center">
+        <button onclick="${storyIdx>0?`closeStoryCard(${dayIdx},${storyIdx});openStoryCard(${dayIdx},${storyIdx-1})`:'void(0)'}" style="padding:6px 12px;border-radius:6px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);color:var(--t2);cursor:pointer;font-size:.68rem;opacity:${storyIdx>0?1:.3}">← Precedente</button>
+        <span style="font-size:.6rem;color:var(--t3,#555)">${storyIdx+1}/${storyCount}</span>
+        <button onclick="${storyIdx<storyCount-1?`closeStoryCard(${dayIdx},${storyIdx});openStoryCard(${dayIdx},${storyIdx+1})`:'void(0)'}" style="padding:6px 12px;border-radius:6px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);color:var(--t2);cursor:pointer;font-size:.68rem;opacity:${storyIdx<storyCount-1?1:.3}">Successiva →</button>
+      </div>
+    </div>`;
+  document.body.appendChild(modal);
+}
+
+function closeStoryCard(dayIdx,storyIdx){
+  // Save all fields before closing
+  const seq=getActiveSequence();
+  if(seq&&seq.days[dayIdx]?.stories[storyIdx]){
+    const story=seq.days[dayIdx].stories[storyIdx];
+    const copy=document.getElementById('scCopy')?.value;
+    const visual=document.getElementById('scVisual')?.value;
+    const cta=document.getElementById('scCta')?.value;
+    const hashtags=document.getElementById('scHashtags')?.value;
+    if(copy!==undefined)story.testo=copy;
+    if(visual!==undefined)story.nota_visiva=visual;
+    if(cta!==undefined)story.cta=cta;
+    if(hashtags!==undefined)story.hashtags=hashtags;
+    saveStoryPlanner();
+    if(copy&&copy!==story._prevText)logHistory('stories','edit',{dayIdx,storyIdx,text:copy});
+  }
+  document.getElementById('storyCardModal')?.remove();
+  renderFucinaBoard();
+}
+
+async function storyCardAI(dayIdx,storyIdx,action){
+  const seq=getActiveSequence();
+  const dayData=seq.days[dayIdx];if(!dayData||!dayData.stories[storyIdx])return;
+  const story=dayData.stories[storyIdx];
+  const copyEl=document.getElementById('scCopy');if(!copyEl)return;
+  const currentText=copyEl.value;
+  const genBtn=document.getElementById('scAiGen');
+  if(genBtn)genBtn.textContent='⏳ AI...';
+  copyEl.value='⏳ AI sta generando...';
+
+  const dayNum=dayData.day||dayIdx+1;
+  const strat=getDayStrategy(dayNum,storyPlanner.activeCycle);
+  const totalDays=seq.days.length;
+  const allStories=(dayData.stories||[]).map((s,j)=>`Storia ${j+1} (${s.tipo}): "${s.testo}"`).join('\n');
+  const prevStory=storyIdx>0?dayData.stories[storyIdx-1]:null;
+  const nextStory=storyIdx<dayData.stories.length-1?dayData.stories[storyIdx+1]:null;
+  const actionMap={genera:'Scrivi da zero il COPY per questa storia.',riscrivi:`Riscrivi questo copy in modo diverso ma stesso messaggio: "${currentText}"`,forte:`Rendi questo copy PIÙ FORTE, più urgente, più emotivo: "${currentText}"`};
+
+  const prompt=`Sei un esperto di Instagram Stories per business/personal brand. ${actionMap[action]||actionMap.genera}
+
+CONTESTO: ${seq.name} — Giorno ${dayNum}/${totalDays}
+Tema: ${dayData.tema||''} (${dayData.desc||''})
+Tipo storia: ${story.tipo}
+Strategia: ${strat}
+
+SEQUENZA COMPLETA DEL GIORNO (${dayData.stories.length} storie):
+${allStories}
+
+Stai scrivendo la STORIA ${storyIdx+1} di ${dayData.stories.length}.
+${prevStory?'La storia PRIMA: "'+prevStory.testo+'" — CREA CONNESSIONE narrativa.':'Questa è la PRIMA storia del giorno — APRI forte, cattura attenzione.'}
+${nextStory?'La storia DOPO: "'+nextStory.testo+'" — prepara il terreno per questa.':'Questa è l\'ULTIMA storia — CHIUDI con impatto, CTA o frase memorabile.'}
+
+${getStoryCtxPrompt()}
+
+Scrivi SOLO il copy (max 3-4 frasi brevi, format story). Il filo narrativo deve essere COERENTE con le storie adiacenti.`;
+
+  try{
+    const r=await callAI(prompt);
+    copyEl.value=r;
+    story.testo=r;
+    saveStoryPlanner();
+    logHistory('stories','generate',{dayIdx,storyIdx,action,text:r});
+    playTone(523,.08,'sine',.1);
+    showToast('✅ Copy generato!');
+  }catch(e){copyEl.value=currentText||'';showToast('❌ Errore AI');}
+  if(genBtn)genBtn.textContent='🤖 Genera Copy';
+}
+
+function clickupSendStoryCard(dayIdx,storyIdx){
+  const copy=document.getElementById('scCopy')?.value||'';
+  const visual=document.getElementById('scVisual')?.value||'';
+  const cta=document.getElementById('scCta')?.value||'';
+  if(!copy){showToast('⚠️ Scrivi prima il copy!');return;}
+  const content=`📱 STORY COPY:\n${copy}\n\n📷 Visual: ${visual}\n🎯 CTA: ${cta}`;
+  openClickUpPicker(content,'story');
+}
+
+// Keep old function name as alias for compatibility
+function renderFucinaDay(){renderFucinaBoard();}
 
 function fucinaSaveInline(dayIdx,storyIdx,value){
   const seq=getActiveSequence();
   if(seq.days[dayIdx]?.stories[storyIdx]){
     seq.days[dayIdx].stories[storyIdx].testo=value;
     saveStoryPlanner();
+    logHistory('stories','edit',{dayIdx,storyIdx,text:value});
   }
 }
 
@@ -13179,6 +13544,7 @@ Scrivi SOLO il copy (max 3-4 frasi brevi, format story). Il filo narrativo deve 
     // Save directly to sequence
     seq.days[dayIdx].stories[idx].testo=r;
     saveStoryPlanner();
+    logHistory('stories','generate',{dayIdx,storyIdx:idx,action,text:r});
     playTone(523,.08,'sine',.1);
   }catch(e){copyEl.textContent='Errore: '+e.message;}
 }
@@ -14016,6 +14382,127 @@ async function clickupSendScript(){
     if(!taskResp.ok)throw new Error('Errore creazione task');
     showToast('✅ Script inviato a ClickUp!');
   }catch(e){showToast('ClickUp errore: '+e.message);}
+}
+
+// ===== CLICKUP PICKER (Send to specific list) =====
+let _clickupCache={teams:null,spaces:{},lists:{}};
+
+async function openClickUpPicker(content,type){
+  const token=localStorage.getItem('hl_clickup_token');
+  if(!token){showToast('⚠️ Configura ClickUp prima (Connessioni → ClickUp)');return;}
+
+  // Create modal
+  document.getElementById('clickupPickerModal')?.remove();
+  const modal=document.createElement('div');modal.id='clickupPickerModal';
+  modal.style.cssText='position:fixed;inset:0;z-index:10001;background:rgba(0,0,0,.8);display:flex;align-items:center;justify-content:center;animation:fadeIn .2s ease';
+  modal.onclick=e=>{if(e.target===modal)modal.remove();};
+  modal.innerHTML=`
+    <div style="background:var(--card,#1a1a2e);border-radius:16px;padding:24px;max-width:450px;width:90%;border:1px solid rgba(255,255,255,.1);box-shadow:0 20px 60px rgba(0,0,0,.5)">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px">
+        <h3 style="margin:0;font-size:.95rem">📤 Invia a ClickUp</h3>
+        <span onclick="document.getElementById('clickupPickerModal')?.remove()" style="cursor:pointer;opacity:.6;font-size:1.2rem">✕</span>
+      </div>
+      <div style="font-size:.7rem;color:var(--t2);margin-bottom:12px">Tipo: <strong style="color:var(--a1)">${type||'contenuto'}</strong></div>
+      <div style="background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.06);border-radius:8px;padding:10px;margin-bottom:16px;max-height:80px;overflow-y:auto;font-size:.7rem;color:var(--t2);white-space:pre-line">${(content||'').substring(0,200)}${content?.length>200?'...':''}</div>
+      <div id="ckPickerBody" style="min-height:100px;display:flex;align-items:center;justify-content:center">
+        <div style="text-align:center;color:var(--t2);font-size:.75rem">⏳ Caricamento workspace...</div>
+      </div>
+    </div>`;
+  document.body.appendChild(modal);
+
+  // Load workspaces
+  try{
+    if(!_clickupCache.teams){
+      const r=await fetch('https://api.clickup.com/api/v2/team',{headers:{'Authorization':token}});
+      const d=await r.json();
+      _clickupCache.teams=d.teams||[];
+    }
+    if(!_clickupCache.teams.length){throw new Error('Nessun workspace trovato');}
+    renderClickUpPickerStep1(content,type);
+  }catch(e){
+    document.getElementById('ckPickerBody').innerHTML=`<div style="text-align:center;color:#ef4444;font-size:.75rem">❌ ${e.message}<br><button onclick="document.getElementById('clickupPickerModal')?.remove()" style="margin-top:10px;padding:6px 14px;border-radius:6px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);color:var(--t2);cursor:pointer;font-size:.7rem">Chiudi</button></div>`;
+  }
+}
+
+async function renderClickUpPickerStep1(content,type){
+  const token=localStorage.getItem('hl_clickup_token');
+  const body=document.getElementById('ckPickerBody');if(!body)return;
+  const teams=_clickupCache.teams;
+
+  // Auto-select first team, load spaces
+  const teamId=teams[0].id;
+  if(!_clickupCache.spaces[teamId]){
+    const r=await fetch(`https://api.clickup.com/api/v2/team/${teamId}/space`,{headers:{'Authorization':token}});
+    const d=await r.json();
+    _clickupCache.spaces[teamId]=d.spaces||[];
+  }
+  const spaces=_clickupCache.spaces[teamId];
+
+  // Load lists for each space
+  for(const space of spaces){
+    if(!_clickupCache.lists[space.id]){
+      try{
+        const r=await fetch(`https://api.clickup.com/api/v2/space/${space.id}/list`,{headers:{'Authorization':token}});
+        const d=await r.json();
+        _clickupCache.lists[space.id]=d.lists||[];
+        // Also check folderless lists
+        const fr=await fetch(`https://api.clickup.com/api/v2/space/${space.id}/folder`,{headers:{'Authorization':token}});
+        const fd=await fr.json();
+        for(const folder of (fd.folders||[])){
+          const flr=await fetch(`https://api.clickup.com/api/v2/folder/${folder.id}/list`,{headers:{'Authorization':token}});
+          const fld=await flr.json();
+          _clickupCache.lists[space.id]=(_clickupCache.lists[space.id]||[]).concat(fld.lists||[]);
+        }
+      }catch(e){}
+    }
+  }
+
+  // Render space → list picker
+  let spacesHtml='';
+  spaces.forEach(space=>{
+    const lists=_clickupCache.lists[space.id]||[];
+    const listsHtml=lists.map(l=>`<div onclick="clickupSendToList('${l.id}',this)" data-content="${btoa(unescape(encodeURIComponent(content||'')))}" data-type="${type||''}" style="padding:8px 12px;margin:4px 0 4px 16px;border-radius:6px;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.06);cursor:pointer;font-size:.7rem;color:var(--t1);transition:all .15s;display:flex;align-items:center;gap:6px" onmouseenter="this.style.borderColor='var(--a1)'" onmouseleave="this.style.borderColor='rgba(255,255,255,.06)'">
+      <span style="font-size:.6rem;color:var(--t2)">📋</span> ${l.name}
+    </div>`).join('');
+    spacesHtml+=`<details style="margin-bottom:8px" ${spaces.length===1?'open':''}>
+      <summary style="font-size:.75rem;font-weight:700;color:var(--t1);cursor:pointer;padding:6px 0">🗂️ ${space.name} <span style="font-size:.6rem;color:var(--t3,#555)">(${lists.length} liste)</span></summary>
+      ${listsHtml||'<div style="padding:8px 16px;font-size:.65rem;color:var(--t3,#555)">Nessuna lista</div>'}
+    </details>`;
+  });
+
+  body.innerHTML=`
+    <div style="width:100%">
+      <div style="font-size:.7rem;font-weight:700;color:var(--t2);margin-bottom:8px">📂 ${teams[0].name} — Seleziona una lista:</div>
+      <div style="max-height:250px;overflow-y:auto;padding-right:4px">${spacesHtml}</div>
+    </div>`;
+}
+
+async function clickupSendToList(listId,el){
+  const token=localStorage.getItem('hl_clickup_token');if(!token)return;
+  const contentB64=el?.dataset?.content||'';
+  const type=el?.dataset?.type||'hook';
+  let content='';
+  try{content=decodeURIComponent(escape(atob(contentB64)));}catch(e){content='Contenuto da HOOKA';}
+
+  const typeLabels={hook:'🎣 Hook',script:'📝 Script',story:'📱 Story',workshop:'🎓 Workshop'};
+  const taskName=`${typeLabels[type]||'📌 Contenuto'} HOOKA — ${new Date().toLocaleDateString('it-IT')}`;
+
+  el.innerHTML='⏳ Invio...';
+  try{
+    const r=await fetch(`https://api.clickup.com/api/v2/list/${listId}/task`,{
+      method:'POST',
+      headers:{'Authorization':token,'Content-Type':'application/json'},
+      body:JSON.stringify({name:taskName,description:content,status:'to do'})
+    });
+    if(!r.ok)throw new Error('Errore HTTP '+r.status);
+    const task=await r.json();
+    showToast('✅ Task creata su ClickUp!');
+    document.getElementById('clickupPickerModal')?.remove();
+    logHistory('fucina','create',{text:`Inviato a ClickUp: ${taskName}`,type});
+  }catch(e){
+    el.innerHTML='❌ Errore';
+    showToast('ClickUp errore: '+e.message);
+  }
 }
 
 // ===== GOOGLE DRIVE INTEGRATION =====

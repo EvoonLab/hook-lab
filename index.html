@@ -202,6 +202,55 @@ body::after{content:'';position:fixed;inset:0;background:radial-gradient(circle 
 .mode-coming-soon p{font-size:.8rem;color:var(--t2);line-height:1.5}
 [data-theme="light"] .mode-tab{background:rgba(0,0,0,.03);border-color:rgba(0,0,0,.08)}
 [data-theme="light"] .mode-tab:not(.active):hover{background:rgba(0,0,0,.06)}
+/* ===== STORY PLANNER ===== */
+.story-planner{max-width:920px;margin:16px auto;padding:0}
+.story-planner-header{display:flex;align-items:center;justify-content:space-between;padding:14px 18px;background:var(--card);border-radius:var(--r) var(--r) 0 0;border:1px solid rgba(255,255,255,.08);border-bottom:none}
+.story-planner-header h2{font-size:1rem;font-weight:800;display:flex;align-items:center;gap:8px}
+.story-cycle-toggle{display:flex;gap:6px}
+.story-cycle-btn{padding:6px 14px;border-radius:16px;font-size:.72rem;font-weight:700;border:1px solid rgba(255,255,255,.1);background:rgba(255,255,255,.04);color:var(--t2);cursor:pointer;transition:var(--tr)}
+.story-cycle-btn.active{background:linear-gradient(135deg,#e8930c,#ff6b35);color:#fff;border-color:transparent;box-shadow:0 2px 8px rgba(255,107,53,.25)}
+.story-board{display:flex;gap:8px;padding:14px;overflow-x:auto;background:var(--card);border:1px solid rgba(255,255,255,.08);border-top:none;border-radius:0 0 var(--r) var(--r);min-height:300px}
+.story-day-col{min-width:160px;max-width:180px;flex-shrink:0;background:rgba(255,255,255,.03);border-radius:10px;padding:8px;border:1px solid rgba(255,255,255,.06);transition:var(--tr)}
+.story-day-col:hover{border-color:rgba(255,107,53,.2);background:rgba(255,255,255,.05)}
+.story-day-head{text-align:center;margin-bottom:8px;padding-bottom:6px;border-bottom:1px solid rgba(255,255,255,.06)}
+.story-day-num{font-size:.9rem;font-weight:900;color:var(--a1)}
+.story-day-tema{font-size:.62rem;color:var(--t2);line-height:1.3;margin-top:2px}
+.story-card{background:var(--card2);border-radius:8px;padding:8px 10px;margin-bottom:6px;border:1px solid rgba(255,255,255,.05);cursor:pointer;transition:var(--tr);font-size:.68rem;line-height:1.4}
+.story-card:hover{border-color:rgba(255,107,53,.25);transform:translateY(-1px)}
+.story-card .sc-type{font-size:.58rem;font-weight:700;text-transform:uppercase;color:var(--a2);margin-bottom:3px;letter-spacing:.5px}
+.story-card .sc-text{color:var(--t1)}
+.story-card .sc-note{font-size:.58rem;color:var(--t2);margin-top:3px;font-style:italic}
+.story-day-add{text-align:center;padding:6px;border-radius:8px;border:1px dashed rgba(255,255,255,.1);color:var(--t2);font-size:.65rem;cursor:pointer;transition:var(--tr)}
+.story-day-add:hover{border-color:var(--a1);color:var(--a1)}
+/* Story games area */
+.story-games-area{max-width:920px;margin:16px auto;display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:12px}
+.story-game-card{background:var(--card);border-radius:var(--r);padding:16px;border:1px solid rgba(255,255,255,.06);cursor:pointer;transition:var(--tr)}
+.story-game-card:hover{border-color:rgba(255,107,53,.3);transform:translateY(-2px);box-shadow:0 8px 25px rgba(0,0,0,.3)}
+.story-game-card .sgc-icon{font-size:1.8rem;margin-bottom:8px}
+.story-game-card .sgc-title{font-size:.85rem;font-weight:800;margin-bottom:4px}
+.story-game-card .sgc-desc{font-size:.7rem;color:var(--t2);line-height:1.4}
+.story-game-card .sgc-tag{display:inline-block;font-size:.58rem;font-weight:700;padding:2px 8px;border-radius:10px;margin-top:8px;background:rgba(255,107,53,.1);color:var(--a1)}
+/* Story Sequence slot */
+.story-slot-machine{max-width:500px;margin:0 auto;text-align:center}
+.story-slot-row{display:flex;gap:8px;margin:12px 0}
+.story-slot-reel{flex:1;background:var(--card2);border-radius:10px;padding:12px 8px;border:1px solid rgba(255,255,255,.06);min-height:80px;display:flex;align-items:center;justify-content:center;overflow:hidden;position:relative}
+.story-slot-reel .ssr-label{font-size:.58rem;color:var(--t2);position:absolute;top:4px;left:8px;font-weight:700;text-transform:uppercase}
+.story-slot-reel .ssr-value{font-size:.78rem;font-weight:700;color:var(--t1);text-align:center;line-height:1.3;transition:all .3s}
+.story-slot-reel.spinning .ssr-value{animation:storySlotSpin .15s linear infinite}
+@keyframes storySlotSpin{0%{transform:translateY(-100%);opacity:0}50%{transform:translateY(0);opacity:1}100%{transform:translateY(100%);opacity:0}}
+.story-slot-result{margin-top:16px;padding:16px;background:var(--card2);border-radius:var(--r);border:1px solid rgba(255,255,255,.06);text-align:left}
+/* Fonti picker modal */
+.fonti-picker-overlay{position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:9999;display:flex;align-items:center;justify-content:center}
+.fonti-picker{background:var(--card);border-radius:var(--r);padding:18px;max-width:420px;width:90%;max-height:65vh;overflow-y:auto;border:1px solid rgba(255,255,255,.1)}
+.fonti-picker h3{font-size:.9rem;margin-bottom:10px}
+.fonti-picker-item{display:flex;align-items:center;gap:8px;padding:8px;border-radius:8px;cursor:pointer;transition:var(--tr);border:1px solid transparent;margin-bottom:4px}
+.fonti-picker-item:hover{background:rgba(255,255,255,.04)}
+.fonti-picker-item.selected{background:rgba(255,107,53,.08);border-color:rgba(255,107,53,.2)}
+.fonti-picker-item .fpi-check{width:18px;height:18px;border-radius:50%;border:2px solid rgba(255,255,255,.15);display:flex;align-items:center;justify-content:center;font-size:.6rem;flex-shrink:0}
+.fonti-picker-item.selected .fpi-check{background:var(--a1);border-color:var(--a1);color:#fff}
+.fonti-picker-item .fpi-text{font-size:.72rem;color:var(--t1);line-height:1.3;flex:1}
+.fonti-picker-footer{display:flex;gap:8px;margin-top:12px;justify-content:flex-end}
+.fonti-picker-counter{font-size:.65rem;color:var(--t2);margin-top:6px}
 .profile-actions{display:flex;gap:6px;margin-top:10px;align-items:center}
 .ctx-saved{font-size:.7rem;color:var(--a2);opacity:0;transition:opacity .4s;margin-left:auto}
 .ctx-saved.show{opacity:1}
@@ -296,7 +345,15 @@ body::after{content:'';position:fixed;inset:0;background:radial-gradient(circle 
 .sh-challenge{border-color:#ffd93d}
 .sh-arena{border-color:#ff4757}
 .sh-fight{border-color:#a855f7}
+.section-header.sh-studio{margin:20px auto 10px;padding:16px 24px;border:2px solid rgba(0,184,148,.25);border-left:4px solid #00b894;background:linear-gradient(135deg,rgba(0,184,148,.06),rgba(0,184,148,.01));box-shadow:0 4px 20px rgba(0,184,148,.08)}
+.sh-studio .sh-count{background:none;padding:0;display:flex;gap:8px}
+.sh-studio .hub-action-btn{padding:10px 22px;font-size:.85rem;font-weight:800;border-radius:12px;transition:all .3s;letter-spacing:.3px}
+.sh-studio .hub-action-btn:hover{transform:scale(1.08);box-shadow:0 0 20px rgba(0,184,148,.35)}
+.sh-studio .hub-action-btn:last-child{border-color:rgba(255,107,53,.3);background:rgba(255,107,53,.08);animation:fucinaGlow 2s ease-in-out infinite alternate}
+.sh-studio .hub-action-btn:last-child:hover{box-shadow:0 0 25px rgba(255,107,53,.4)}
+@keyframes fucinaGlow{0%{box-shadow:0 0 5px rgba(255,107,53,.1)}100%{box-shadow:0 0 18px rgba(255,107,53,.25)}}
 [data-theme="light"] .section-header{background:var(--card);box-shadow:0 1px 4px rgba(0,0,0,.06)}
+[data-theme="light"] .section-header.sh-studio{border-color:rgba(0,184,148,.2);box-shadow:0 2px 12px rgba(0,184,148,.08)}
 [data-theme="light"] .section-header .sh-count{background:rgba(0,0,0,.04)}
 
 .grid-nav{position:relative;display:flex;align-items:center;gap:0;margin-bottom:10px}
@@ -2152,11 +2209,23 @@ body.light .shimmer::after{background:linear-gradient(90deg,transparent 0%,rgba(
         </div>
       </div>
       <div class="chat-knowledge-bar" id="chatKnowledgeBar">
-        <span class="ck-label">Fonti AI:</span>
+        <span class="ck-label">Fonti:</span>
         <span class="ck-chip active" data-src="brain" data-active="true" onclick="this.dataset.active=this.dataset.active==='true'?'false':'true';this.classList.toggle('active')">🧠 Brain</span>
-        <span class="ck-chip active" data-src="mazzo" data-active="true" onclick="this.dataset.active=this.dataset.active==='true'?'false':'true';this.classList.toggle('active')">🃏 Mazzo</span>
-        <span class="ck-chip" data-src="hub" data-active="false" onclick="this.dataset.active=this.dataset.active==='true'?'false':'true';this.classList.toggle('active')">🧩 Hub</span>
+        <span class="ck-chip active" data-src="mazzo" data-active="true" onclick="openFontiPicker('mazzo')">🃏 Mazzo</span>
+        <span class="ck-chip" data-src="hub" data-active="false" onclick="openFontiPicker('hub')">🧩 Hub</span>
         <span class="ck-chip" data-src="resources" data-active="false" onclick="this.dataset.active=this.dataset.active==='true'?'false':'true';this.classList.toggle('active')">📎 Risorse</span>
+      </div>
+      <div class="chat-knowledge-bar" id="chatGoalBar" style="margin-top:4px">
+        <span class="ck-label">Obiettivo:</span>
+        <span class="ck-chip active" data-goal="attrazione" onclick="setChatGoal('attrazione')">🔥 Attrazione</span>
+        <span class="ck-chip" data-goal="educazione" onclick="setChatGoal('educazione')">📚 Educazione</span>
+        <span class="ck-chip" data-goal="vendita" onclick="setChatGoal('vendita')">💰 Vendita</span>
+      </div>
+      <div class="chat-knowledge-bar" id="chatCtaBar" style="margin-top:4px;display:none">
+        <span class="ck-label">CTA:</span>
+        <span class="ck-chip active" data-cta="commenta" onclick="setChatCta(this)">💬 Commenta X per...</span>
+        <span class="ck-chip" data-cta="link" onclick="setChatCta(this)">🔗 Clicca il link</span>
+        <span class="ck-chip" data-cta="seguimi" onclick="setChatCta(this)">➕ Seguimi per...</span>
       </div>
       <div class="chat-input-area">
         <textarea class="chat-input" id="chatInput" placeholder="Scrivi un messaggio..." rows="1"></textarea>
@@ -2847,14 +2916,19 @@ async function chatAiCall(chatMsgs){
   const sources={};
   document.querySelectorAll('#chatKnowledgeBar .ck-chip[data-src]').forEach(ch=>{sources[ch.dataset.src]=ch.dataset.active==='true';});
   let knowledgeCtx='';
-  // Mazzo context (from float picker OR always if source active)
+  // Mazzo context (from float picker OR selected fonti items)
   if(chatMazzoContext.length){
     knowledgeCtx+='\n\nHOOK DAL MAZZO (analizzali in profondità):\n'+chatMazzoContext.map((h,i)=>(i+1)+'. "'+h+'"').join('\n');
   } else if(sources.mazzo&&savedItems&&savedItems.length){
-    knowledgeCtx+='\n\nHOOK SALVATI NEL MAZZO ('+savedItems.length+' totali, ecco i migliori):\n'+savedItems.slice(0,8).map((s,i)=>(i+1)+'. "'+s.text.substring(0,100)+'"').join('\n');
+    const mazzoSel=chatSelectedFonti.mazzo||[];
+    const mazzoCtx=mazzoSel.length?mazzoSel.map(idx=>savedItems[idx]).filter(Boolean):savedItems.slice(0,8);
+    knowledgeCtx+='\n\nHOOK SALVATI NEL MAZZO ('+savedItems.length+' totali'+(mazzoSel.length?', '+mazzoSel.length+' selezionati':'')+'):\n'+mazzoCtx.map((s,i)=>(i+1)+'. "'+s.text.substring(0,150)+'"').join('\n');
   }
   if(sources.hub&&typeof hubItems!=='undefined'&&hubItems&&hubItems.length){
-    knowledgeCtx+='\n\nCONTENUTI HUB CREATIVI:\n'+hubItems.slice(0,6).map((h,i)=>(i+1)+'. '+h.text.substring(0,120)).join('\n');
+    const hubSel=chatSelectedFonti.hub||[];
+    const hubCtx=hubSel.length?hubSel.map(idx=>hubItems[idx]).filter(Boolean):hubItems.slice(0,6);
+    knowledgeCtx+='\n\nCONTENUTI HUB CREATIVI'+(hubSel.length?' ('+hubSel.length+' selezionati)':'')+':'
+      +'\n'+hubCtx.map((h,i)=>(i+1)+'. '+h.text.substring(0,150)).join('\n');
   }
   if(sources.resources){
     const res=JSON.parse(localStorage.getItem(hlKey('resources'))||'{}');
@@ -2875,6 +2949,11 @@ async function chatAiCall(chatMsgs){
     knowledgeCtx+='\n\nLEZIONI DA CONVERSAZIONI PRECEDENTI:\n'+chatLessons.slice(-10).map((l,i)=>(i+1)+'. '+l).join('\n');
   }
   const sourceCount=Object.values(sources).filter(Boolean).length;
+  // Goal + CTA context
+  const goalLabels={attrazione:'ATTRAZIONE (hook virali, pattern interrupt, curiosity gap)',educazione:'EDUCAZIONE (valore pratico, tutorial, insight, framework)',vendita:'VENDITA (CTA dirette, scarcity, social proof, obiezioni)'};
+  const ctaLabels={commenta:'💬 Commenta X per...',link:'🔗 Clicca il link in bio',seguimi:'➕ Seguimi per altri contenuti simili'};
+  const goalCtx=`\nOBIETTIVO SELEZIONATO: ${goalLabels[chatGoal]||chatGoal}${chatGoal==='vendita'?'\nCTA SCELTA: '+ctaLabels[chatCta]:''}`;
+
   const sysContent=`Sei il CONSULENTE STRATEGICO PERSONALE dell'utente. Hai accesso COMPLETO a tutti i suoi dati: profilo, hook salvati, script, Hub creativo, risorse caricate, Voice DNA. NON sei un chatbot generico — sei il suo direttore creativo con 15 anni di esperienza.
 
 REGOLE D'ORO:
@@ -2885,6 +2964,20 @@ REGOLE D'ORO:
 - Sii diretto, concreto, specifico. MAI generico. MAI "dipende dal contesto"
 - Se hai dati su conversazioni precedenti, NON ripetere consigli già dati
 ${sourceCount>=3?'HAI MOLTI DATI: ragiona in profondità. La qualità conta più della velocità.':''}
+
+TIPI DI CONTENUTO (usa quello selezionato dall'utente):
+- ATTRAZIONE: hook virali, pattern interrupt, curiosity gap, primi 3 secondi
+- EDUCAZIONE: valore pratico, tutorial, insight, framework, "ti spiego come"
+- VENDITA: CTA dirette, scarcity, social proof, obiezioni. I 3 CTA principali: "commenta X per...", "clicca il link in bio", "seguimi per altri contenuti simili"
+NON sbilanciare sempre su attrazione. Rispetta l'obiettivo selezionato.
+
+REGOLE DI INTERAZIONE:
+- Dopo ogni analisi o creazione, proponi 2-3 AZIONI CONCRETE come prossimo step
+- Usa i dati del Mazzo dell'utente per fare proposte specifiche: "Ho visto nel tuo mazzo questo hook che potrebbe essere perfetto per..."
+- Se crei uno script, dì: "Vuoi che lo mandi in Fucina per completarlo?"
+- NON essere passivo. Sii un consulente che AGISCE e PROPONE.
+- Se l'utente è vago, chiedi: quale obiettivo? attrazione, educazione o vendita?
+${goalCtx}
 
 ${getCtxPrompt()}${knowledgeCtx}`;
   const recent=chatMsgs.slice(-20).map(m=>({role:m.role==='assistant'?'assistant':'user',content:m.content}));
@@ -2969,8 +3062,27 @@ function addChatBubble(role,content){
   const time=new Date().toLocaleTimeString('it-IT',{hour:'2-digit',minute:'2-digit'});
   const speakBtn=role==='assistant'?'<button onclick="speakAI(this.closest(\'.chat-bubble\').textContent)" style="background:none;border:none;cursor:pointer;font-size:.7rem;opacity:.5;padding:2px" title="Ascolta">🔊</button>':'';
   div.innerHTML=(role==='user'?content.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/\n/g,'<br>'):formatChatContent(content))+'<span class="cb-time">'+time+' '+speakBtn+'</span>';
+  // Detect script-like content and add action buttons
+  if(role==='assistant'&&/\[(HOOK|APERTURA|PROBLEMA|SOLUZIONE|CTA|AMPLIFICA|OBIEZIONE|CHIUSURA|STORIA|TRANSIZIONE|VALORE|SCENA|INTRO|FINALE)\]/i.test(content)){
+    div.innerHTML+='<div style="margin-top:8px;padding-top:8px;border-top:1px solid rgba(255,255,255,.08);display:flex;gap:6px;flex-wrap:wrap"><button onclick="chatSendToFucina(this)" class="hub-action-btn" style="font-size:.7rem;padding:5px 12px">🔥 → Fucina</button><button onclick="chatCopyBubble(this)" class="hub-action-btn" style="font-size:.7rem;padding:5px 12px;border-color:rgba(255,255,255,.15);background:rgba(255,255,255,.04)">📋 Copia</button><button onclick="chatSaveBubble(this)" class="hub-action-btn" style="font-size:.7rem;padding:5px 12px;border-color:rgba(255,255,255,.15);background:rgba(255,255,255,.04)">⭐ Salva</button></div>';
+  }
   el.appendChild(div);
   scrollChatBottom();
+}
+function chatSendToFucina(btn){
+  const bubble=btn.closest('.chat-bubble');if(!bubble)return;
+  const text=bubble.textContent.replace(/🔥 → Fucina|📋 Copia|⭐ Salva|🔊/g,'').trim();
+  sendHookToFucina(text);
+}
+function chatCopyBubble(btn){
+  const bubble=btn.closest('.chat-bubble');if(!bubble)return;
+  const text=bubble.textContent.replace(/🔥 → Fucina|📋 Copia|⭐ Salva|🔊/g,'').trim();
+  navigator.clipboard.writeText(text).then(()=>showToast('📋 Copiato!'));
+}
+function chatSaveBubble(btn){
+  const bubble=btn.closest('.chat-bubble');if(!bubble)return;
+  const text=bubble.textContent.replace(/🔥 → Fucina|📋 Copia|⭐ Salva|🔊/g,'').trim();
+  saveItem('Chat AI',text);showToast('⭐ Salvato nel Mazzo!');
 }
 function showChatTyping(){
   const el=document.getElementById('chatMessages');if(!el)return;
@@ -3096,6 +3208,18 @@ function chatInsertHub(overlay){
   const input=document.getElementById('chatInput');
   if(input){input.value=text+'\nAnalizza questi contenuti e dammi feedback.';input.focus();}
   overlay.remove();
+}
+let chatGoal='attrazione';
+let chatCta='commenta';
+function setChatGoal(goal){
+  chatGoal=goal;
+  document.querySelectorAll('#chatGoalBar .ck-chip').forEach(c=>c.classList.toggle('active',c.dataset.goal===goal));
+  const ctaBar=document.getElementById('chatCtaBar');
+  if(ctaBar)ctaBar.style.display=goal==='vendita'?'':'none';
+}
+function setChatCta(chip){
+  chatCta=chip.dataset.cta;
+  document.querySelectorAll('#chatCtaBar .ck-chip').forEach(c=>c.classList.toggle('active',c.dataset.cta===chatCta));
 }
 function initChat(){
   renderChatHistory();updateChatStatus();
@@ -8893,6 +9017,191 @@ const SCRIPT_TYPES={
     ]}
 };
 
+// ===== STORY SCRIPT TYPES =====
+const STORY_SCRIPT_TYPES={
+  promo_day:{icon:'📢',name:'Promo Cycle Day',desc:'Giornata push verso offerta',color:'#ec4899',
+    blocks:[
+      {key:'tema',label:'Tema del Giorno',hint:'Il tema portante della giornata (es. Mission Story, Q&A, Urgenza)'},
+      {key:'storia1',label:'Storia 1',hint:'Prima storia della sequenza — apertura'},
+      {key:'storia2',label:'Storia 2',hint:'Seconda storia — sviluppo'},
+      {key:'storia3',label:'Storia 3',hint:'Terza storia — contenuto core'},
+      {key:'storia4',label:'Storia 4',hint:'Quarta storia — rinforzo/CTA'},
+      {key:'cta',label:'CTA Finale',hint:'Call-to-action con scarcity/urgenza progressiva'}
+    ]},
+  out_promo_day:{icon:'🌱',name:'Out of Promo Day',desc:'Nurture/FOMO tra cicli',color:'#00b894',
+    blocks:[
+      {key:'tema',label:'Tema del Giorno',hint:'Il tema portante (es. Esclusività, Risultati, Valore gratis)'},
+      {key:'storia1',label:'Storia 1',hint:'Prima storia — hook del giorno'},
+      {key:'storia2',label:'Storia 2',hint:'Seconda storia — sviluppo'},
+      {key:'storia3',label:'Storia 3',hint:'Terza storia — social proof/contenuto'},
+      {key:'storia4',label:'Storia 4',hint:'Quarta storia — chiusura FOMO'}
+    ]},
+  story_singola:{icon:'📸',name:'Story Singola',desc:'Singola storia standalone',color:'#00b4d8',
+    blocks:[
+      {key:'hook_visivo',label:'Hook Visivo',hint:'Descrizione di cosa mostrare visivamente per fermare lo swipe'},
+      {key:'testo',label:'Testo/Copy',hint:'Il copy della storia'},
+      {key:'interazione',label:'CTA/Interazione',hint:'Sondaggio, quiz, swipe up, DM, sticker'}
+    ]}
+};
+
+// Promo Cycle template (from official doc)
+const PROMO_CYCLE_TEMPLATE=[
+  {day:1,tema:'MISSION STORY',desc:'Ho la missione di…',stories:[
+    {tipo:'volto',testo:'Volto + oggi è il grande giorno'},
+    {tipo:'sondaggio',testo:'Sondaggio con domanda aizzante e affamante'},
+    {tipo:'storytelling',testo:'MISSION STORY'},
+    {tipo:'social_proof',testo:'Social proof (5 o 6) su domande generali & obiezioni'}
+  ]},
+  {day:2,tema:'Q&A',desc:'Troppe richieste, rispondo alle domande',stories:[
+    {tipo:'volto',testo:'Volto + buongiorno & big claim'},
+    {tipo:'screenshot',testo:'Risultati personali (screenshot, dashboards)'},
+    {tipo:'cta',testo:'CTA con Mission story + scarcity (chiudo tra 1 settimana)'},
+    {tipo:'volto',testo:'Troppe domande, ottimizziamo tempi = Q&A'},
+    {tipo:'screenshot',testo:'Risposte alle domande'}
+  ]},
+  {day:3,tema:'SOCIAL PROOF CANDIDATURE',desc:'Scrivimi in DM per info',stories:[
+    {tipo:'lifestyle',testo:'Lifestyle + buongiorno & business quote'},
+    {tipo:'screenshot',testo:'Risultati personali / studenti'},
+    {tipo:'storytelling',testo:'Perché adp è il business migliore? (bullet points)'},
+    {tipo:'social_proof',testo:'3 social proof di gente che è entrata (BENVENUTI)'},
+    {tipo:'cta',testo:'CTA, invito a scrivere in DM'}
+  ]},
+  {day:4,tema:'SONDAGGIO MISSION STORY',desc:'Sul programma — Sono interessato/No',stories:[
+    {tipo:'volto',testo:'Volto + big claim'},
+    {tipo:'sondaggio',testo:'Mission story (con sondaggio per outreach) + scarcity'},
+    {tipo:'lifestyle',testo:'Lifestyle'}
+  ]},
+  {day:5,tema:'RISULTATI / TESTIMONIANZE',desc:'Scrivimi se vuoi farne parte',stories:[
+    {tipo:'volto',testo:'Volto + risultati personali'},
+    {tipo:'storytelling',testo:'Storytelling (cammino dell\'eroe)'}
+  ]},
+  {day:6,tema:'MISSION STORY SCARCITY',desc:'5 posti occupati — CTA DM',stories:[
+    {tipo:'lifestyle',testo:'Lifestyle + life quote'},
+    {tipo:'cta',testo:'Mission story scarcity 5 posti occupati (chiudo tra 4 giorni)'},
+    {tipo:'social_proof',testo:'Social proof (benvenuti + domande & obiezioni)'}
+  ]},
+  {day:7,tema:'Q&A ROUND 2',desc:'Troppe richieste, risposte',stories:[
+    {tipo:'volto',testo:'Volto + business quote'},
+    {tipo:'screenshot',testo:'Risultati personali / risultati studenti'},
+    {tipo:'cta',testo:'CTA con Mission story + scarcity (chiudo tra 3 giorni)'},
+    {tipo:'volto',testo:'Q&A risposte'}
+  ]},
+  {day:8,tema:'SOCIAL PROOF + URGENZA',desc:'-2 giorni alla chiusura',stories:[
+    {tipo:'lifestyle',testo:'Vita di lusso + -2 GIORNI ALLA CHIUSURA'},
+    {tipo:'screenshot',testo:'Soldi'},
+    {tipo:'storytelling',testo:'Perché adp è il business migliore? (bullet points)'},
+    {tipo:'social_proof',testo:'3 social proof di gente che è entrata (BENVENUTI)'},
+    {tipo:'cta',testo:'Social proof di chiesta info = scrivimi in DM'}
+  ]},
+  {day:9,tema:'RISULTATI + CTA URGENTE',desc:'-1 giorno, farne parte',stories:[
+    {tipo:'volto',testo:'Faccia con soldi (volto + dash)'},
+    {tipo:'storytelling',testo:'Valore (come funziona tutto questo + evidenzia semplicità)'},
+    {tipo:'cta',testo:'CTA + MENO UN GIORNO'}
+  ]},
+  {day:10,tema:'URGENZA MASSIMA',desc:'Ultima opportunità — CHIUSURA',stories:[
+    {tipo:'volto',testo:'FACCIA con ULTIMO GIORNO'},
+    {tipo:'cta',testo:'MISSION STORY con DASH + CTA (scrivimi in dm, oggi si chiude)'},
+    {tipo:'social_proof',testo:'Social proof + benvenuto studenti + domande generaliste'}
+  ]}
+];
+
+// Out of Promo Cycle template (from official doc)
+const OUT_PROMO_TEMPLATE=[
+  {day:1,tema:'IL CANCELLO SI CHIUDE',desc:'Chi è dentro è dentro. Chi è fuori vedremo.',stories:[
+    {tipo:'volto',testo:'Volto serio + "Abbiamo chiuso. 12 persone dentro. Stop."'},
+    {tipo:'screenshot',testo:'Screenshot WhatsApp degli studenti appena entrati (eccitati)'},
+    {tipo:'storytelling',testo:'"NON riapro finché questi 12 non fatturano. Questa è la promessa."'},
+    {tipo:'screenshot',testo:'Foto/video prima call con i nuovi (sfocata) + "Si inizia"'}
+  ]},
+  {day:2,tema:'DENTRO SUCCEDONO COSE',desc:'Mostra cosa succede dentro senza far vedere troppo',stories:[
+    {tipo:'volto',testo:'"Stamattina 3 ore di call privata con i nuovi entrati"'},
+    {tipo:'screenshot',testo:'Screenshot calendario pieno di call 1-1 + "Questo è affiancamento vero"'},
+    {tipo:'social_proof',testo:'Audio studente: "Mirko, già trovato il prodotto!"'},
+    {tipo:'storytelling',testo:'"Chi è fuori può studiare da solo. Chi è dentro, cammina con me."'}
+  ]},
+  {day:3,tema:'VALORE GRATIS (MA INUTILE SENZA NOI)',desc:'Regalo qualcosa ma faccio capire che da solo non basta',stories:[
+    {tipo:'volto',testo:'"Vi regalo una strategia da 2000€ (tanto da soli non riuscite)"'},
+    {tipo:'storytelling',testo:'Mini tutorial su ricerca prodotto (2-4 storie)'},
+    {tipo:'storytelling',testo:'"Sai qual è il problema? Che ora hai la teoria. Ma chi ti corregge?"'},
+    {tipo:'screenshot',testo:'Screenshot studente dentro che applica CON NOI la stessa strategia'}
+  ]},
+  {day:4,tema:'PRIMI RISULTATI LAMPO',desc:'Chi è dentro corre, chi è fuori guarda',stories:[
+    {tipo:'volto',testo:'"Giorno 4. Marco ha già ordinato i sample."'},
+    {tipo:'screenshot',testo:'Screenshot conversazione con fornitore cinese'},
+    {tipo:'storytelling',testo:'"Se fosse da solo? Avrebbe già fatto 10 errori."'},
+    {tipo:'social_proof',testo:'Video Marco che ringrazia per il supporto'}
+  ]},
+  {day:5,tema:'IL GRUPPO ESCLUSIVO',desc:'Community chiusa, energia pazzesca, tu sei fuori',stories:[
+    {tipo:'screenshot',testo:'"Il gruppo privato sta esplodendo" (screenshot sfocato chat)'},
+    {tipo:'social_proof',testo:'"15 messaggi vocali di supporto in 1 ora. Questo è il team."'},
+    {tipo:'social_proof',testo:'Testimonianza vecchio studente che aiuta i nuovi'},
+    {tipo:'storytelling',testo:'"Non è un corso. È una squadra. E la squadra è al completo."'}
+  ]},
+  {day:6,tema:'NEWSPAPER SOCIAL PROOF',desc:'Articoli, menzioni, autorità esterna',stories:[
+    {tipo:'screenshot',testo:'Articolo giornale locale'},
+    {tipo:'screenshot',testo:'Screenshot menzione in podcast famoso'},
+    {tipo:'storytelling',testo:'"Mentre altri promettono, noi finiamo sui giornali"'},
+    {tipo:'screenshot',testo:'Collage di 3-4 articoli/menzioni'}
+  ]},
+  {day:7,tema:'REALITY CHECK',desc:'La verità cruda su chi ce la fa e chi no',stories:[
+    {tipo:'volto',testo:'"Vuoi la verità? Il 90% di chi prova da solo, molla."'},
+    {tipo:'screenshot',testo:'Screenshot di gruppi Facebook pieni di domande senza risposte'},
+    {tipo:'storytelling',testo:'"I miei studenti? 8 su 10 vendono entro 60 giorni."'},
+    {tipo:'storytelling',testo:'"La differenza? L\'affiancamento. Che ora non puoi avere."'}
+  ]},
+  {day:8,tema:'CASE STUDY COMPLETO',desc:'Storia di trasformazione studente',stories:[
+    {tipo:'volto',testo:'"Vi racconto di Giuseppe. 6 mesi fa faceva il corriere."'},
+    {tipo:'screenshot',testo:'Percorso con screenshot (da zero a 5k/mese) — 2-4 storie'},
+    {tipo:'social_proof',testo:'Video testimonianza Giuseppe'},
+    {tipo:'storytelling',testo:'"Giuseppe è entrato quando c\'era posto. Tu?"'}
+  ]},
+  {day:9,tema:'DENTRO vs FUORI',desc:'Split screen confronto diretto',stories:[
+    {tipo:'screenshot',testo:'Split screen "Chi è dentro / Chi è fuori"'},
+    {tipo:'storytelling',testo:'"Dentro: call 1-1 ogni settimana. Fuori: video YouTube."'},
+    {tipo:'storytelling',testo:'"Dentro: correzione errori in tempo reale. Fuori: errori da 1000€"'},
+    {tipo:'storytelling',testo:'"Non è cattiveria. È la realtà del business."'}
+  ]},
+  {day:10,tema:'AGGIORNAMENTO STUDENTI',desc:'I nuovi entrati stanno già producendo',stories:[
+    {tipo:'volto',testo:'"Update: 3 studenti hanno già scelto il prodotto vincente"'},
+    {tipo:'screenshot',testo:'Screenshot analisi prodotto fatta insieme'},
+    {tipo:'storytelling',testo:'"Tempo impiegato da soli? 2 mesi. Con noi? 10 giorni."'},
+    {tipo:'social_proof',testo:'Audio studente "Senza di voi avrei già mollato"'}
+  ]},
+  {day:11,tema:'GARANZIA CHE NON PUOI AVERE',desc:'Garanzia scritta di risultato',stories:[
+    {tipo:'volto',testo:'"Sai cosa hanno loro che tu non hai? Una garanzia SCRITTA."'},
+    {tipo:'screenshot',testo:'Foto contratto con garanzia (parti blur)'},
+    {tipo:'storytelling',testo:'"Se non vendono, io ci rimetto. Per questo li seguo ogni giorno."'},
+    {tipo:'storytelling',testo:'"Questa garanzia? Solo per chi ho preso. Gli altri, si arrangiano."'}
+  ]},
+  {day:12,tema:'RISULTATI VECCHI STUDENTI',desc:'Chi è entrato 6 mesi fa, oggi dove sta',stories:[
+    {tipo:'volto',testo:'"Ricordate l\'apertura di gennaio? Ecco dove sono ora."'},
+    {tipo:'screenshot',testo:'Carousel di screenshot fatturati (2-4 storie)'},
+    {tipo:'storytelling',testo:'"Prossima apertura? Quando questi fatturano. Non prima."'}
+  ]},
+  {day:13,tema:'Q&A (SENZA PROMESSE)',desc:'Rispondo alle domande ma non do speranze',stories:[
+    {tipo:'volto',testo:'"Troppe domande su quando riapro. La risposta? Non lo so."'},
+    {tipo:'storytelling',testo:'Risposte a domande tecniche (non su aperture) — 2-4 storie'},
+    {tipo:'storytelling',testo:'"Posso insegnarti la teoria. Ma l\'esecuzione? È un\'altra storia."'}
+  ]},
+  {day:14,tema:'CHIUSURA CICLO',desc:'Focus su chi è dentro, chi è fuori si arrangia',stories:[
+    {tipo:'volto',testo:'"2 settimane dentro. Primi sample arrivati."'},
+    {tipo:'screenshot',testo:'Foto prodotti sul tavolo'},
+    {tipo:'storytelling',testo:'"Ora 2 settimane di test e ottimizzazione. Solo con chi è dentro."'},
+    {tipo:'cta',testo:'"Tu? Continua a seguirmi. Magari un giorno..."'},
+    {tipo:'storytelling',testo:'"Ma non trattenere il respiro. Potrebbe volerci molto."'}
+  ]}
+];
+
+// Story Planner state
+let storyPlanner=JSON.parse(localStorage.getItem(hlKey('story_planner'))||'null')||{
+  activeCycle:'promo',
+  cycles:[]
+};
+function saveStoryPlanner(){localStorage.setItem(hlKey('story_planner'),JSON.stringify(storyPlanner));}
+
+// Story type icons
+const STORY_TYPE_ICONS={volto:'🎥',screenshot:'📱',sondaggio:'📊',cta:'🎯',lifestyle:'✨',social_proof:'🏆',storytelling:'📖'};
+
 const BLOCK_PROMPTS={
   attrazione:{
     _system:'Sei un esperto di contenuti virali per social media in italiano. Crei contenuti di ATTRAZIONE: polarizzanti, catchy, aizzanti, entusiasmanti. Usi trend, brand noti, personaggi famosi, abitudini sbagliate del target, problemi del pubblico. NON sei clickbait — sei provocazione intelligente. Il picco emotivo sta all\'INIZIO. Linguaggio semplice, capibile da tutti. Tono amichevole, giovanile, ironico. L\'obiettivo e\' VIRALITA\'. Il lead deve sentirsi chiamato in causa direttamente.',
@@ -9967,19 +10276,21 @@ let currentMode='post';
 function switchMode(mode){
   currentMode=mode;
   document.querySelectorAll('.mode-tab').forEach(t=>t.classList.toggle('active',t.dataset.mode===mode));
-  const mainContent=document.querySelector('.container')||document.querySelector('.main-col');
-  // Remove any existing coming-soon overlay
+  // Remove any existing mode-specific content
   document.getElementById('modeComingSoon')?.remove();
+  document.getElementById('storiesContainer')?.remove();
   if(mode==='post'){
-    // Show all normal content
     document.querySelectorAll('.smart-filters,.section-header,.grid-nav,.game-area,.creative-hub,.fucina-standalone,.analytics-panel,.hub,.profile-card,.stats-bar,.leaderboard,.newspaper').forEach(el=>{el.style.display='';});
+  } else if(mode==='stories'){
+    document.querySelectorAll('.smart-filters,.section-header,.grid-nav,.game-area,.creative-hub,.fucina-standalone,.analytics-panel').forEach(el=>{el.style.display='none';});
+    renderStoriesMode();
   } else {
-    // Hide main content, show coming soon
+    // Workshop: still coming soon
     document.querySelectorAll('.smart-filters,.section-header,.grid-nav,.game-area,.creative-hub,.fucina-standalone,.analytics-panel').forEach(el=>{el.style.display='none';});
     const cs=document.createElement('div');cs.id='modeComingSoon';cs.className='mode-coming-soon';
-    cs.innerHTML=`<div style="font-size:2.5rem;margin-bottom:12px">${mode==='stories'?'📸':'🎓'}</div>
-      <h2>${mode==='stories'?'Stories Mode':'Workshop Mode'}</h2>
-      <p>${mode==='stories'?'Giochi e strumenti dedicati alla creazione di sequenze Story — slide builder, poll generator, CTA Stories e molto altro.':'Crea materiali per workshop, corsi e presentazioni — struttura lezioni, esercizi interattivi, slide deck e handout.'}</p>
+    cs.innerHTML=`<div style="font-size:2.5rem;margin-bottom:12px">🎓</div>
+      <h2>Workshop Mode</h2>
+      <p>Crea materiali per workshop, corsi e presentazioni — struttura lezioni, esercizi interattivi, slide deck e handout.</p>
       <p style="margin-top:12px;color:var(--a1);font-weight:700">🚀 Coming Soon</p>
       <button onclick="switchMode('post')" style="margin-top:16px;padding:8px 20px;border-radius:8px;background:var(--gf);color:#fff;border:none;cursor:pointer;font-weight:700">← Torna a Post</button>`;
     const target=document.querySelector('.main-col')||document.querySelector('.container');
@@ -9989,6 +10300,452 @@ function switchMode(mode){
       else target.appendChild(cs);
     }
   }
+}
+
+// ===== STORIES MODE =====
+function renderStoriesMode(){
+  const target=document.querySelector('.main-col')||document.querySelector('.container');
+  if(!target)return;
+  const sc=document.createElement('div');sc.id='storiesContainer';
+  const isPromo=storyPlanner.activeCycle==='promo';
+  const tmpl=isPromo?PROMO_CYCLE_TEMPLATE:OUT_PROMO_TEMPLATE;
+  const daysCount=isPromo?10:14;
+
+  // Build day columns
+  let dayCols='';
+  tmpl.forEach(d=>{
+    let storiesHtml='';
+    d.stories.forEach((s,si)=>{
+      const icon=STORY_TYPE_ICONS[s.tipo]||'📸';
+      storiesHtml+=`<div class="story-card" onclick="openStoryEditor(${d.day},${si},'${storyPlanner.activeCycle}')">
+        <div class="sc-type">${icon} ${s.tipo}</div>
+        <div class="sc-text">${s.testo.substring(0,80)}</div>
+      </div>`;
+    });
+    dayCols+=`<div class="story-day-col">
+      <div class="story-day-head">
+        <div class="story-day-num">G${d.day}</div>
+        <div class="story-day-tema">${d.tema}</div>
+      </div>
+      ${storiesHtml}
+      <div class="story-day-add" onclick="addStoryToDay(${d.day})">+ Aggiungi</div>
+    </div>`;
+  });
+
+  sc.innerHTML=`
+  <div class="story-planner">
+    <div class="story-planner-header">
+      <h2>📅 Story Planner <span style="font-size:.7rem;font-weight:400;color:var(--t2);margin-left:8px">${daysCount} giorni</span></h2>
+      <div class="story-cycle-toggle">
+        <button class="story-cycle-btn ${isPromo?'active':''}" onclick="setStoryCycle('promo')">📢 Promo Cycle</button>
+        <button class="story-cycle-btn ${!isPromo?'active':''}" onclick="setStoryCycle('out_promo')">🌱 Out of Promo</button>
+      </div>
+    </div>
+    <div class="story-board" id="storyBoard">${dayCols}</div>
+  </div>
+  <div style="max-width:920px;margin:12px auto;padding:0 4px">
+    <div style="font-size:.85rem;font-weight:800;margin-bottom:10px;display:flex;align-items:center;gap:8px">🎮 Story Games <span style="font-size:.65rem;font-weight:400;color:var(--t2)">Allena la tua creatività per le storie</span></div>
+  </div>
+  <div class="story-games-area" id="storyGamesArea">
+    <div class="story-game-card" onclick="openStorySequenceGame()">
+      <div class="sgc-icon">📸</div>
+      <div class="sgc-title">Story Sequence</div>
+      <div class="sgc-desc">Slot machine per storie: combina Tema + Tipo + Hook. Gira e scopri combinazioni uniche per le tue sequenze giornaliere.</div>
+      <span class="sgc-tag">🎰 Ispirazione</span>
+    </div>
+    <div class="story-game-card" onclick="openStoryHookGame()">
+      <div class="sgc-icon">🎯</div>
+      <div class="sgc-title">Story Hook</div>
+      <div class="sgc-desc">Genera hook ottimizzati per formato story: brevi, visivi, d'impatto. L'AI crea 3 varianti e tu scegli la migliore.</div>
+      <span class="sgc-tag">⚡ Challenge</span>
+    </div>
+    <div class="story-game-card" onclick="openStorySwipeGame()">
+      <div class="sgc-icon">🔥</div>
+      <div class="sgc-title">Swipe Stories</div>
+      <div class="sgc-desc">Hot or Not per idee storia: valuta, salva le migliori e scarta il resto. Allena il tuo occhio creativo.</div>
+      <span class="sgc-tag">🃏 Challenge</span>
+    </div>
+    <div class="story-game-card" onclick="openObiezioniGame()">
+      <div class="sgc-icon">😈</div>
+      <div class="sgc-title">Obiezioni Killer</div>
+      <div class="sgc-desc">L'AI genera le obiezioni del tuo pubblico. Tu scrivi risposte killer in formato storia. Poi l'AI giudica.</div>
+      <span class="sgc-tag">🏟️ Arena</span>
+    </div>
+    <div class="story-game-card" onclick="openSocialProofBuilder()">
+      <div class="sgc-icon">📊</div>
+      <div class="sgc-title">Social Proof Builder</div>
+      <div class="sgc-desc">Template per storie di social proof: screenshot, testimonianze, risultati. Costruisci prove irresistibili.</div>
+      <span class="sgc-tag">🛠️ Builder</span>
+    </div>
+    <div class="story-game-card" onclick="openCtaGenerator()">
+      <div class="sgc-icon">⚡</div>
+      <div class="sgc-title">CTA Generator</div>
+      <div class="sgc-desc">Crea call-to-action per storie con scarcity progressiva. Dal giorno 1 all'ultimo giorno: urgenza crescente.</div>
+      <span class="sgc-tag">🎯 Arena</span>
+    </div>
+  </div>
+  `;
+
+  const firstGame=target.querySelector('.smart-filters')||target.querySelector('.section-header');
+  if(firstGame)target.insertBefore(sc,firstGame);
+  else target.appendChild(sc);
+}
+
+function setStoryCycle(type){
+  storyPlanner.activeCycle=type;
+  saveStoryPlanner();
+  document.getElementById('storiesContainer')?.remove();
+  renderStoriesMode();
+}
+
+function openStoryEditor(day,storyIdx,cycle){
+  const tmpl=cycle==='promo'?PROMO_CYCLE_TEMPLATE:OUT_PROMO_TEMPLATE;
+  const dayData=tmpl.find(d=>d.day===day);
+  if(!dayData||!dayData.stories[storyIdx])return;
+  const story=dayData.stories[storyIdx];
+  const icon=STORY_TYPE_ICONS[story.tipo]||'📸';
+
+  const ov=document.createElement('div');ov.className='fonti-picker-overlay';
+  ov.onclick=e=>{if(e.target===ov)ov.remove();};
+  ov.innerHTML=`<div class="fonti-picker" style="max-width:500px">
+    <h3>${icon} Giorno ${day} — Storia ${storyIdx+1}</h3>
+    <div style="margin-bottom:12px">
+      <div style="font-size:.65rem;font-weight:700;color:var(--a2);text-transform:uppercase;margin-bottom:4px">${story.tipo}</div>
+      <div style="font-size:.75rem;color:var(--t2);margin-bottom:8px">Tema: ${dayData.tema}</div>
+    </div>
+    <textarea id="storyEditorText" style="width:100%;min-height:100px;background:var(--input-bg);border:1px solid var(--input-border);border-radius:8px;color:var(--t1);padding:10px;font-size:.78rem;resize:vertical;font-family:inherit">${story.testo}</textarea>
+    <div style="margin-top:8px">
+      <label style="font-size:.65rem;color:var(--t2);display:block;margin-bottom:4px">Note visive (cosa mostrare):</label>
+      <textarea id="storyEditorNote" style="width:100%;min-height:60px;background:var(--input-bg);border:1px solid var(--input-border);border-radius:8px;color:var(--t1);padding:10px;font-size:.72rem;resize:vertical;font-family:inherit" placeholder="Es: primo piano volto, screenshot sfocato, testo grande su sfondo...">${story.nota_visiva||''}</textarea>
+    </div>
+    <div class="fonti-picker-footer">
+      <button onclick="this.closest('.fonti-picker-overlay').remove()" style="padding:8px 16px;border-radius:8px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);color:var(--t2);cursor:pointer;font-size:.75rem">Chiudi</button>
+      <button onclick="storyEditorAI(${day},${storyIdx},'${cycle}')" style="padding:8px 16px;border-radius:8px;background:rgba(255,107,53,.15);border:1px solid rgba(255,107,53,.3);color:var(--a1);cursor:pointer;font-weight:700;font-size:.75rem">🤖 AI Genera</button>
+      <button onclick="storyEditorSave(${day},${storyIdx},'${cycle}')" style="padding:8px 16px;border-radius:8px;background:var(--gf);border:none;color:#fff;cursor:pointer;font-weight:700;font-size:.75rem">💾 Salva</button>
+    </div>
+  </div>`;
+  document.body.appendChild(ov);
+}
+
+function storyEditorSave(day,storyIdx,cycle){
+  const text=document.getElementById('storyEditorText')?.value||'';
+  const note=document.getElementById('storyEditorNote')?.value||'';
+  // Save to storyPlanner custom overrides
+  const key=`${cycle}_${day}_${storyIdx}`;
+  if(!storyPlanner.overrides)storyPlanner.overrides={};
+  storyPlanner.overrides[key]={testo:text,nota_visiva:note};
+  saveStoryPlanner();
+  showToast('✅ Storia salvata!');
+  document.querySelector('.fonti-picker-overlay')?.remove();
+}
+
+async function storyEditorAI(day,storyIdx,cycle){
+  const tmpl=cycle==='promo'?PROMO_CYCLE_TEMPLATE:OUT_PROMO_TEMPLATE;
+  const dayData=tmpl.find(d=>d.day===day);
+  if(!dayData)return;
+  const story=dayData.stories[storyIdx];
+  const textarea=document.getElementById('storyEditorText');
+  if(!textarea)return;
+  textarea.value='⏳ Generando...';
+  const cycleType=cycle==='promo'?'PROMO CYCLE (push verso vendita/offerta)':'OUT OF PROMO CYCLE (nurture, FOMO, esclusività)';
+  const rulesOut=cycle==='promo'?'':`\nREGOLE D'ORO OUT OF PROMO:\n- MAI promettere date di riapertura\n- SEMPRE mostrare il divario dentro/fuori\n- DARE valore gratis ma far capire che è inutile da soli\n- TESTIMONIANZE frequenti\n- GARANZIA come elemento di esclusività\n- AFFIANCAMENTO come unico vero valore\nFRASI DA USARE: "Chi è dentro, è dentro", "L'affiancamento fa la differenza", "Da solo è un altro sport", "Non so quando riaprirò"`;
+  const prompt=`Sei un esperto di Instagram Stories per business/personal brand. Scrivi il COPY per questa storia.
+
+CONTESTO: ${cycleType}
+Giorno ${day}/${cycle==='promo'?10:14} — Tema: ${dayData.tema} (${dayData.desc})
+Tipo storia: ${story.tipo}
+Indicazione originale: ${story.testo}
+${rulesOut}
+${getCtxPrompt()}
+
+Scrivi SOLO il copy della storia (max 3-4 frasi brevi, format story = pochissimo testo, diretto, emotivo).
+Se è un sondaggio, includi le opzioni.
+Se è una CTA, includi l'azione specifica.
+NON scrivere commenti o spiegazioni. Solo il copy pronto da usare.`;
+
+  try{
+    const r=await callAI(prompt);
+    textarea.value=r;
+  }catch(e){textarea.value='Errore AI: '+e.message;}
+}
+
+function addStoryToDay(day){
+  showToast('📸 Aggiungi storia — prossimamente!');
+}
+
+// ===== STORY SEQUENCE GAME =====
+function openStorySequenceGame(){
+  const ov=document.createElement('div');ov.className='fonti-picker-overlay';
+  ov.onclick=e=>{if(e.target===ov)ov.remove();};
+
+  const temiPromo=PROMO_CYCLE_TEMPLATE.map(d=>d.tema);
+  const temiOut=OUT_PROMO_TEMPLATE.map(d=>d.tema);
+  const allTemi=[...temiPromo,...temiOut];
+  const tipi=Object.keys(STORY_TYPE_ICONS);
+  const hooks=['Domanda provocatoria','Affermazione shock','Numero/statistica','Frase del pubblico','Obiezione ribaltata','Risultato impossibile','Confronto prima/dopo','Segreto rivelato','Errore comune','Deadline urgente','Testimonianza diretta','Sfida al pubblico'];
+
+  ov.innerHTML=`<div class="fonti-picker" style="max-width:560px;text-align:center">
+    <h3 style="margin-bottom:16px">📸 Story Sequence — Slot Machine</h3>
+    <p style="font-size:.72rem;color:var(--t2);margin-bottom:16px">Gira i rulli e scopri combinazioni uniche per le tue storie!</p>
+    <div class="story-slot-row">
+      <div class="story-slot-reel" id="ssReel1"><div class="ssr-label">TEMA</div><div class="ssr-value">—</div></div>
+      <div class="story-slot-reel" id="ssReel2"><div class="ssr-label">TIPO</div><div class="ssr-value">—</div></div>
+      <div class="story-slot-reel" id="ssReel3"><div class="ssr-label">HOOK</div><div class="ssr-value">—</div></div>
+    </div>
+    <button onclick="spinStorySlot()" style="margin:16px auto;padding:12px 32px;border-radius:12px;background:var(--gf);color:#fff;border:none;cursor:pointer;font-size:.9rem;font-weight:800;display:flex;align-items:center;gap:8px">🎰 GIRA!</button>
+    <div id="ssResult" style="display:none" class="story-slot-result">
+      <div id="ssResultText" style="font-size:.78rem;color:var(--t1);line-height:1.5"></div>
+      <div style="display:flex;gap:8px;margin-top:12px;justify-content:center">
+        <button onclick="ssGenAI()" style="padding:8px 16px;border-radius:8px;background:rgba(255,107,53,.15);border:1px solid rgba(255,107,53,.3);color:var(--a1);cursor:pointer;font-weight:700;font-size:.72rem">🤖 AI Componi</button>
+        <button onclick="ssSaveCombo()" style="padding:8px 16px;border-radius:8px;background:rgba(0,184,148,.15);border:1px solid rgba(0,184,148,.3);color:#00b894;cursor:pointer;font-weight:700;font-size:.72rem">⭐ Salva nel Mazzo</button>
+        <button onclick="spinStorySlot()" style="padding:8px 16px;border-radius:8px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);color:var(--t2);cursor:pointer;font-size:.72rem">🔄 Rigira</button>
+      </div>
+    </div>
+  </div>`;
+  document.body.appendChild(ov);
+
+  // Store data for spin
+  window._ssData={temi:allTemi,tipi,hooks};
+}
+
+let _ssLastCombo=null;
+function spinStorySlot(){
+  const d=window._ssData;if(!d)return;
+  const reels=[document.getElementById('ssReel1'),document.getElementById('ssReel2'),document.getElementById('ssReel3')];
+  reels.forEach(r=>r.classList.add('spinning'));
+
+  // Spin animation
+  let spins=0;
+  const spinInterval=setInterval(()=>{
+    reels[0].querySelector('.ssr-value').textContent=d.temi[Math.floor(Math.random()*d.temi.length)];
+    reels[1].querySelector('.ssr-value').textContent=(STORY_TYPE_ICONS[d.tipi[Math.floor(Math.random()*d.tipi.length)]]||'📸')+' '+d.tipi[Math.floor(Math.random()*d.tipi.length)];
+    reels[2].querySelector('.ssr-value').textContent=d.hooks[Math.floor(Math.random()*d.hooks.length)];
+    spins++;
+    if(spins>15){
+      clearInterval(spinInterval);
+      const tema=d.temi[Math.floor(Math.random()*d.temi.length)];
+      const tipo=d.tipi[Math.floor(Math.random()*d.tipi.length)];
+      const hook=d.hooks[Math.floor(Math.random()*d.hooks.length)];
+      reels[0].querySelector('.ssr-value').textContent=tema;
+      reels[1].querySelector('.ssr-value').textContent=(STORY_TYPE_ICONS[tipo]||'📸')+' '+tipo;
+      reels[2].querySelector('.ssr-value').textContent=hook;
+      reels.forEach(r=>r.classList.remove('spinning'));
+      _ssLastCombo={tema,tipo,hook};
+      const res=document.getElementById('ssResult');
+      const resTxt=document.getElementById('ssResultText');
+      if(res)res.style.display='block';
+      if(resTxt)resTxt.innerHTML=`<strong>Combinazione:</strong> Tema <em>${tema}</em> + Tipo <em>${tipo}</em> + Hook <em>${hook}</em><br><span style="color:var(--t2);font-size:.68rem">Clicca "AI Componi" per generare il copy completo!</span>`;
+      playTone(523,.08,'sine',.1);
+      if(typeof trackManualAction==='function')trackManualAction();
+    }
+  },80);
+}
+
+async function ssGenAI(){
+  if(!_ssLastCombo)return;
+  const resTxt=document.getElementById('ssResultText');
+  if(!resTxt)return;
+  resTxt.innerHTML='⏳ AI sta componendo la storia...';
+  const c=_ssLastCombo;
+  const prompt=`Sei un esperto di Instagram Stories. Genera il COPY completo per questa storia:
+TEMA: ${c.tema}
+TIPO STORIA: ${c.tipo} (${c.tipo==='volto'?'parlato a camera':c.tipo==='screenshot'?'screenshot/immagine con testo':c.tipo==='sondaggio'?'storia con sondaggio interattivo':c.tipo==='cta'?'call to action':c.tipo==='lifestyle'?'foto lifestyle con caption':c.tipo==='social_proof'?'prova sociale/testimonianza':'narrativa'})
+STILE HOOK: ${c.hook}
+${getCtxPrompt()}
+
+Scrivi:
+1. Il COPY principale (max 3 frasi, breve e d'impatto)
+2. NOTA VISIVA (cosa mostrare/inquadrare)
+3. INTERAZIONE (se applicabile: sondaggio, quiz, CTA)
+
+Formato breve e diretto, stile Instagram Story.`;
+  try{
+    const r=await callAI(prompt);
+    resTxt.innerHTML=`<strong>🎯 ${c.tema} × ${c.tipo} × ${c.hook}</strong><br><br>${r.replace(/\n/g,'<br>')}`;
+    _ssLastCombo._aiResult=r;
+  }catch(e){resTxt.innerHTML='Errore: '+e.message;}
+}
+
+function ssSaveCombo(){
+  if(!_ssLastCombo)return;
+  const text=_ssLastCombo._aiResult||`[STORY COMBO] Tema: ${_ssLastCombo.tema} | Tipo: ${_ssLastCombo.tipo} | Hook: ${_ssLastCombo.hook}`;
+  if(typeof savedItems!=='undefined'){
+    savedItems.push({text,type:'story_combo',date:Date.now(),source:'Story Sequence'});
+    if(typeof saveMazzo==='function')saveMazzo();
+  }
+  showToast('⭐ Combinazione salvata nel Mazzo!');
+}
+
+// ===== STORY HOOK GAME =====
+function openStoryHookGame(){
+  const ov=document.createElement('div');ov.className='fonti-picker-overlay';
+  ov.onclick=e=>{if(e.target===ov)ov.remove();};
+  ov.innerHTML=`<div class="fonti-picker" style="max-width:540px">
+    <h3>🎯 Story Hook Generator</h3>
+    <p style="font-size:.72rem;color:var(--t2);margin:8px 0 16px">L'AI genera 3 hook per storie. Tu scegli il migliore e lo salvi.</p>
+    <div style="display:flex;gap:8px;margin-bottom:12px;flex-wrap:wrap">
+      <select id="shCycleType" style="flex:1;min-width:120px;padding:8px;border-radius:8px;background:var(--input-bg);border:1px solid var(--input-border);color:var(--t1);font-size:.75rem">
+        <option value="promo">📢 Promo Cycle</option>
+        <option value="out_promo">🌱 Out of Promo</option>
+      </select>
+      <select id="shStoryType" style="flex:1;min-width:120px;padding:8px;border-radius:8px;background:var(--input-bg);border:1px solid var(--input-border);color:var(--t1);font-size:.75rem">
+        <option value="volto">🎥 Volto</option>
+        <option value="screenshot">📱 Screenshot</option>
+        <option value="sondaggio">📊 Sondaggio</option>
+        <option value="cta">🎯 CTA</option>
+        <option value="lifestyle">✨ Lifestyle</option>
+        <option value="social_proof">🏆 Social Proof</option>
+        <option value="storytelling">📖 Storytelling</option>
+      </select>
+    </div>
+    <div style="margin-bottom:12px">
+      <input id="shTopic" type="text" placeholder="Argomento/contesto specifico (opzionale)" style="width:100%;padding:8px;border-radius:8px;background:var(--input-bg);border:1px solid var(--input-border);color:var(--t1);font-size:.75rem">
+    </div>
+    <button onclick="generateStoryHooks()" style="width:100%;padding:10px;border-radius:10px;background:var(--gf);color:#fff;border:none;cursor:pointer;font-weight:800;font-size:.82rem">🎯 Genera 3 Hook</button>
+    <div id="shResults" style="margin-top:16px"></div>
+  </div>`;
+  document.body.appendChild(ov);
+}
+
+async function generateStoryHooks(){
+  const cycle=document.getElementById('shCycleType')?.value||'promo';
+  const tipo=document.getElementById('shStoryType')?.value||'volto';
+  const topic=document.getElementById('shTopic')?.value||'';
+  const results=document.getElementById('shResults');
+  if(!results)return;
+  results.innerHTML='<div style="text-align:center;padding:20px;color:var(--t2)">⏳ Generando hook...</div>';
+
+  const cycleDesc=cycle==='promo'?'PROMO CYCLE (push vendita, scarcity, urgenza crescente)':'OUT OF PROMO (nurture, FOMO, esclusività, divario dentro/fuori)';
+  const prompt=`Sei un esperto di Instagram Stories per business. Genera 3 HOOK diversi per una storia di tipo "${tipo}".
+
+CONTESTO: ${cycleDesc}
+TIPO STORIA: ${tipo}
+${topic?'ARGOMENTO: '+topic:''}
+${getCtxPrompt()}
+
+Per ogni hook scrivi:
+HOOK 1: [il testo dell'hook — max 2 frasi]
+NOTA: [cosa mostrare visivamente]
+
+HOOK 2: [il testo dell'hook — max 2 frasi]
+NOTA: [cosa mostrare visivamente]
+
+HOOK 3: [il testo dell'hook — max 2 frasi]
+NOTA: [cosa mostrare visivamente]
+
+Stile: diretto, emotivo, format story (pochissimo testo). Ogni hook deve essere DIVERSO per approccio (uno provocatorio, uno emotivo, uno dati/numeri).`;
+
+  try{
+    const r=await callAI(prompt);
+    // Parse hooks
+    const hookBlocks=r.split(/HOOK\s*\d+\s*:/i).filter(h=>h.trim());
+    let html='';
+    hookBlocks.forEach((block,i)=>{
+      const clean=block.trim();
+      html+=`<div style="background:var(--card2);border-radius:10px;padding:12px;margin-bottom:8px;border:1px solid rgba(255,255,255,.06)">
+        <div style="font-size:.65rem;font-weight:700;color:var(--a2);margin-bottom:4px">HOOK ${i+1}</div>
+        <div style="font-size:.78rem;color:var(--t1);line-height:1.5;white-space:pre-line">${clean.replace(/</g,'&lt;')}</div>
+        <div style="display:flex;gap:6px;margin-top:8px">
+          <button onclick="saveStoryHook(this)" style="padding:5px 12px;border-radius:6px;background:rgba(0,184,148,.12);border:1px solid rgba(0,184,148,.25);color:#00b894;cursor:pointer;font-size:.65rem;font-weight:700">⭐ Salva</button>
+          <button onclick="copyStoryHook(this)" style="padding:5px 12px;border-radius:6px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);color:var(--t2);cursor:pointer;font-size:.65rem">📋 Copia</button>
+        </div>
+      </div>`;
+    });
+    results.innerHTML=html||'<div style="padding:12px;color:var(--t2)">'+r.replace(/\n/g,'<br>')+'</div>';
+    if(typeof trackManualAction==='function')trackManualAction();
+  }catch(e){results.innerHTML='<div style="color:#e74c3c;padding:12px">Errore: '+e.message+'</div>';}
+}
+
+function saveStoryHook(btn){
+  const text=btn.closest('div[style]').parentElement.querySelector('div[style*="pre-line"]')?.textContent||'';
+  if(text&&typeof savedItems!=='undefined'){
+    savedItems.push({text:'[STORY HOOK] '+text.substring(0,300),type:'story_hook',date:Date.now(),source:'Story Hook Game'});
+    if(typeof saveMazzo==='function')saveMazzo();
+    showToast('⭐ Hook salvato nel Mazzo!');
+  }
+}
+function copyStoryHook(btn){
+  const text=btn.closest('div[style]').parentElement.querySelector('div[style*="pre-line"]')?.textContent||'';
+  navigator.clipboard.writeText(text);showToast('📋 Copiato!');
+}
+
+// Placeholder games (coming soon)
+function openStorySwipeGame(){showToast('🔥 Swipe Stories — Coming Soon!');}
+function openObiezioniGame(){showToast('😈 Obiezioni Killer — Coming Soon!');}
+function openSocialProofBuilder(){showToast('📊 Social Proof Builder — Coming Soon!');}
+function openCtaGenerator(){showToast('⚡ CTA Generator — Coming Soon!');}
+
+// ===== FONTI INTERACTIVE PICKERS =====
+let chatSelectedFonti={mazzo:[],hub:[]};
+
+function openFontiPicker(src){
+  const items=src==='mazzo'?(typeof savedItems!=='undefined'?savedItems:[]):(typeof hubItems!=='undefined'?hubItems:[]);
+  if(!items.length){showToast('Nessun elemento in '+(src==='mazzo'?'Mazzo':'Hub'));return;}
+
+  const ov=document.createElement('div');ov.className='fonti-picker-overlay';
+  ov.onclick=e=>{if(e.target===ov)ov.remove();};
+
+  const alreadySelected=chatSelectedFonti[src]||[];
+  let itemsHtml='';
+  items.forEach((it,i)=>{
+    const text=(it.text||it.hook||'').substring(0,120).replace(/</g,'&lt;');
+    const isSel=alreadySelected.includes(i);
+    itemsHtml+=`<div class="fonti-picker-item ${isSel?'selected':''}" data-idx="${i}" onclick="this.classList.toggle('selected')">
+      <div class="fpi-check">${isSel?'✓':''}</div>
+      <div class="fpi-text">${text}</div>
+    </div>`;
+  });
+
+  ov.innerHTML=`<div class="fonti-picker">
+    <h3>${src==='mazzo'?'🃏 Seleziona dal Mazzo':'🧩 Seleziona dall\'Hub'}</h3>
+    <div class="fonti-picker-counter">${items.length} elementi disponibili · <span id="fontiSelCount">0</span> selezionati</div>
+    <div style="max-height:45vh;overflow-y:auto;margin:10px 0">${itemsHtml}</div>
+    <div class="fonti-picker-footer">
+      <button onclick="fontiSelectAll('${src}',this.closest('.fonti-picker-overlay'))" style="padding:6px 12px;border-radius:8px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);color:var(--t2);cursor:pointer;font-size:.7rem;margin-right:auto">Tutti</button>
+      <button onclick="this.closest('.fonti-picker-overlay').remove()" style="padding:6px 12px;border-radius:8px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);color:var(--t2);cursor:pointer;font-size:.72rem">Annulla</button>
+      <button onclick="confirmFontiPicker('${src}',this.closest('.fonti-picker-overlay'))" style="padding:6px 16px;border-radius:8px;background:var(--gf);border:none;color:#fff;cursor:pointer;font-weight:700;font-size:.72rem">✓ Conferma</button>
+    </div>
+  </div>`;
+  document.body.appendChild(ov);
+
+  // Update counter on click
+  ov.addEventListener('click',()=>{
+    const cnt=ov.querySelectorAll('.fonti-picker-item.selected').length;
+    const counter=ov.querySelector('#fontiSelCount');
+    if(counter)counter.textContent=cnt;
+    ov.querySelectorAll('.fonti-picker-item').forEach(el=>{
+      const check=el.querySelector('.fpi-check');
+      if(check)check.textContent=el.classList.contains('selected')?'✓':'';
+    });
+  });
+}
+
+function fontiSelectAll(src,overlay){
+  overlay.querySelectorAll('.fonti-picker-item').forEach(el=>el.classList.add('selected'));
+  const cnt=overlay.querySelectorAll('.fonti-picker-item.selected').length;
+  const counter=overlay.querySelector('#fontiSelCount');
+  if(counter)counter.textContent=cnt;
+  overlay.querySelectorAll('.fpi-check').forEach(c=>c.textContent='✓');
+}
+
+function confirmFontiPicker(src,overlay){
+  const selected=[];
+  overlay.querySelectorAll('.fonti-picker-item.selected').forEach(el=>{
+    selected.push(parseInt(el.dataset.idx));
+  });
+  chatSelectedFonti[src]=selected;
+  overlay.remove();
+
+  // Update chip visual to show count
+  const chip=document.querySelector(`#chatKnowledgeBar .ck-chip[data-src="${src}"]`);
+  if(chip){
+    chip.dataset.active='true';
+    chip.classList.add('active');
+    const emoji=src==='mazzo'?'🃏':'🧩';
+    const label=src==='mazzo'?'Mazzo':'Hub';
+    chip.textContent=`${emoji} ${label} (${selected.length})`;
+  }
+  showToast(`✅ ${selected.length} elementi selezionati da ${src==='mazzo'?'Mazzo':'Hub'}`);
 }
 
 // ===== SIDEBAR LAYOUT =====

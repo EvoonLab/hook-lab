@@ -125,12 +125,29 @@ body::after{content:'';position:fixed;inset:0;background:radial-gradient(circle 
 [data-theme="light"] .hub-workspace{border-color:rgba(0,0,0,.1)}
 [data-theme="light"] .hub-card{background:rgba(0,0,0,.02);border-color:rgba(0,0,0,.08)}
 [data-theme="light"] .hub-action-btn{background:rgba(0,0,0,.03);border-color:rgba(0,0,0,.1);color:var(--t1)}
+[data-theme="light"] .profile-field input,[data-theme="light"] .profile-field textarea{background:rgba(0,0,0,.03);border:1px solid rgba(0,0,0,.1)}
+[data-theme="light"] .mondo-input{background:rgba(0,0,0,.03)!important;border:1px solid rgba(0,0,0,.1)!important}
+[data-theme="light"] .voice-card{background:#fff;border:1px solid rgba(0,0,0,.08);box-shadow:0 1px 4px rgba(0,0,0,.04)}
+[data-theme="light"] .mondo-card{background:#fff;border:1px solid rgba(0,0,0,.08);box-shadow:0 1px 4px rgba(0,0,0,.04)}
+[data-theme="light"] .hub-card{border:1px solid rgba(0,0,0,.08)}
+[data-theme="light"] .block-fb-tag{background:rgba(0,0,0,.03);border-color:rgba(0,0,0,.1)}
+[data-theme="light"] .fucina-block{border:1px solid rgba(0,0,0,.08)}
+[data-theme="light"] .voice-sep{color:var(--t2);background:rgba(0,0,0,.02)}
+[data-theme="light"] .xp-bar-c{background:rgba(0,0,0,.06)}
+[data-theme="light"] .stats-bar-inner{background:rgba(255,107,53,.06);border-color:rgba(255,107,53,.15)}
+[data-theme="light"] .profile-card-main{border-color:rgba(0,0,0,.08)}
+[data-theme="light"] .chat-knowledge-bar{background:rgba(0,0,0,.02);border-color:rgba(0,0,0,.06)}
+[data-theme="light"] .ck-chip{background:rgba(0,0,0,.03);border-color:rgba(0,0,0,.08);color:var(--t2)}
+[data-theme="light"] .ck-chip.active{background:rgba(0,180,216,.06);border-color:rgba(0,180,216,.2);color:var(--t1)}
+[data-theme="light"] .notes-help{color:var(--t2)}
+[data-theme="light"] .profile-ai-btn{background:rgba(0,0,0,.03);border-color:rgba(0,0,0,.1);color:var(--t1)}
 @keyframes ambientShift{0%{opacity:.7}50%{opacity:1}100%{opacity:.8}}
 @keyframes ambientPulse{0%,100%{opacity:0}50%{opacity:1}}
 
 .header{position:relative;z-index:10;text-align:center;padding:32px 24px 12px;background:linear-gradient(180deg,rgba(255,107,53,.06) 0%,rgba(232,147,12,.03) 40%,transparent 100%),url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 44 44'%3E%3Cpath d='M8 8v28M8 22h12M20 8v28' stroke='%23ff6b35' stroke-width='3' stroke-linecap='round' fill='none' opacity='.03'/%3E%3Cpath d='M32 8c0 0-8 0-8 8s8 8 8 8' stroke='%23ff6b35' stroke-width='2.5' stroke-linecap='round' fill='none' opacity='.03'/%3E%3Ccircle cx='32' cy='26' r='2' fill='%23ff6b35' opacity='.03'/%3E%3C/svg%3E") repeat;background-size:auto,80px 80px}
 [data-theme="light"] .header{background:linear-gradient(180deg,rgba(255,107,53,.08) 0%,rgba(232,147,12,.04) 40%,transparent 100%),url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 44 44'%3E%3Cpath d='M8 8v28M8 22h12M20 8v28' stroke='%23ff6b35' stroke-width='3' stroke-linecap='round' fill='none' opacity='.04'/%3E%3Cpath d='M32 8c0 0-8 0-8 8s8 8 8 8' stroke='%23ff6b35' stroke-width='2.5' stroke-linecap='round' fill='none' opacity='.04'/%3E%3Ccircle cx='32' cy='26' r='2' fill='%23ff6b35' opacity='.04'/%3E%3C/svg%3E") repeat;background-size:auto,80px 80px}
-.hero-gradient{height:60px;background:linear-gradient(180deg,rgba(255,107,53,.04) 0%,rgba(232,147,12,.02) 50%,transparent 100%);pointer-events:none;margin-top:-5px}
+.hero-gradient{height:160px;background:linear-gradient(180deg,rgba(255,107,53,.05) 0%,rgba(232,147,12,.03) 30%,rgba(255,107,53,.01) 60%,transparent 100%);pointer-events:none;margin-top:-5px;position:relative}
+.hero-gradient::before{content:'';position:absolute;inset:0;background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 44 44'%3E%3Cpath d='M8 8v28M8 22h12M20 8v28' stroke='%23ff6b35' stroke-width='3' stroke-linecap='round' fill='none' opacity='.02'/%3E%3Cpath d='M32 8c0 0-8 0-8 8s8 8 8 8' stroke='%23ff6b35' stroke-width='2.5' stroke-linecap='round' fill='none' opacity='.02'/%3E%3Ccircle cx='32' cy='26' r='2' fill='%23ff6b35' opacity='.02'/%3E%3C/svg%3E") repeat;background-size:80px 80px;-webkit-mask:linear-gradient(180deg,rgba(0,0,0,.6) 0%,transparent 100%);mask:linear-gradient(180deg,rgba(0,0,0,.6) 0%,transparent 100%)}
 .logo-wrap{display:flex;align-items:center;justify-content:center;gap:10px}
 .logo-icon{filter:drop-shadow(0 2px 8px rgba(255,107,53,.4));animation:logoFloat 4s ease-in-out infinite}
 @keyframes logoFloat{0%,100%{transform:translateY(0) rotate(0deg)}50%{transform:translateY(-4px) rotate(3deg)}}
@@ -142,17 +159,17 @@ body::after{content:'';position:fixed;inset:0;background:radial-gradient(circle 
 
 /* STATS */
 .stats-bar{position:relative;z-index:10;max-width:900px;margin:10px auto 0;padding:0 20px}
-.stats-bar-inner{display:flex;align-items:center;gap:14px;padding:10px 16px;background:rgba(255,107,53,.1);border:1px solid rgba(255,107,53,.2);border-radius:var(--rs);overflow-x:auto}
+.stats-bar-inner{display:flex;align-items:center;gap:14px;padding:12px 20px;background:linear-gradient(135deg,rgba(255,107,53,.08),rgba(232,147,12,.05));border:1px solid rgba(255,107,53,.2);border-radius:var(--r);overflow-x:auto;box-shadow:0 2px 12px rgba(255,107,53,.08)}
 .stat-item{display:flex;flex-direction:column;align-items:center;min-width:55px}
 .stat-item .sv{font-size:1.1rem;font-weight:800;background:var(--gf);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
 .stat-item .sl{font-size:.6rem;color:var(--t2);text-transform:uppercase;letter-spacing:1px;margin-top:1px}
 .level-badge{padding:5px 12px;background:var(--gh);border-radius:20px;font-weight:700;font-size:.8rem;color:white;white-space:nowrap;animation:lvGlow 3s ease-in-out infinite}
 @keyframes lvGlow{0%,100%{box-shadow:0 0 0 0 rgba(255,107,53,0)}50%{box-shadow:0 0 12px 2px rgba(255,107,53,.25)}}
-.xp-bar-c{flex:1;min-width:80px;height:7px;background:rgba(255,255,255,.08);border-radius:4px;overflow:hidden}
-.xp-bar-f{height:100%;background:var(--gf);border-radius:4px;transition:width .5s}
+.xp-bar-c{flex:1;min-width:80px;height:8px;background:rgba(255,255,255,.08);border-radius:4px;overflow:hidden}
+.xp-bar-f{height:100%;background:var(--gf);border-radius:4px;transition:width .6s;box-shadow:0 0 8px rgba(255,107,53,.3)}
 
 /* PROFILE CARD */
-.profile-card{position:relative;z-index:10;max-width:700px;margin:10px auto;padding:0 20px}
+.profile-card{position:relative;z-index:10;max-width:900px;margin:10px auto;padding:0 20px}
 .profile-card-main{background:var(--card);border:1px solid rgba(255,255,255,.08);border-radius:var(--r);padding:16px 18px;position:relative}
 .profile-header{display:flex;align-items:center;gap:12px;margin-bottom:12px}
 .profile-avatar{width:42px;height:42px;border-radius:50%;background:var(--gh);display:flex;align-items:center;justify-content:center;font-size:1rem;font-weight:800;color:#fff;flex-shrink:0;text-transform:uppercase}
@@ -181,6 +198,25 @@ body::after{content:'';position:fixed;inset:0;background:radial-gradient(circle 
 .profile-toggle:hover{border-color:var(--a4);color:var(--t1)}
 .profile-card-main.collapsed .profile-field,.profile-card-main.collapsed .profile-chips-row,.profile-card-main.collapsed .profile-completion,.profile-card-main.collapsed .profile-actions{display:none}
 .profile-card-main.collapsed{padding-bottom:6px}
+.profile-field{position:relative}
+.profile-ai-btn{position:absolute;right:4px;top:28px;padding:4px 10px;border-radius:8px;font-size:.65rem;font-weight:600;background:rgba(0,180,216,.08);border:1px solid rgba(0,180,216,.2);color:#00b4d8;cursor:pointer;transition:var(--tr);z-index:1}
+.profile-ai-btn:hover{background:rgba(0,180,216,.15)}
+.profile-quality{margin-top:6px;padding:8px 12px;background:rgba(0,180,216,.04);border:1px solid rgba(0,180,216,.1);border-radius:var(--rs);font-size:.7rem;color:var(--t2);display:none}
+.profile-quality.visible{display:block}
+
+/* Chat Knowledge Bar */
+.chat-knowledge-bar{display:flex;align-items:center;gap:6px;padding:6px 10px;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.06);border-radius:var(--rs);margin-bottom:8px;flex-wrap:wrap}
+.ck-label{font-size:.6rem;font-weight:700;color:var(--t2);text-transform:uppercase;letter-spacing:1px;margin-right:2px}
+.ck-chip{display:flex;align-items:center;gap:4px;padding:4px 10px;border-radius:14px;font-size:.65rem;font-weight:600;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);color:var(--t2);cursor:pointer;transition:var(--tr);user-select:none}
+.ck-chip:hover{border-color:rgba(0,180,216,.3)}
+.ck-chip.active{background:rgba(0,180,216,.1);border-color:rgba(0,180,216,.3);color:#00b4d8}
+.ck-chip input{display:none}
+
+/* Notes Help */
+.notes-help{font-size:.68rem;color:rgba(255,255,255,.4);margin-bottom:8px;line-height:1.4;padding:6px 10px;background:rgba(255,255,255,.02);border-radius:var(--rs);border-left:3px solid rgba(0,180,216,.2)}
+.notes-action-tooltip{background:var(--card);border:1px solid rgba(0,180,216,.3);border-radius:8px;padding:6px;display:flex;gap:4px;z-index:50;box-shadow:0 4px 16px rgba(0,0,0,.3);justify-content:center;margin-top:-4px}
+.notes-action-tooltip button{padding:4px 8px;border-radius:6px;font-size:.6rem;font-weight:600;border:1px solid rgba(255,255,255,.1);background:rgba(255,255,255,.04);color:var(--t1);cursor:pointer;white-space:nowrap;transition:var(--tr)}
+.notes-action-tooltip button:hover{background:rgba(0,180,216,.1);border-color:rgba(0,180,216,.3)}
 
 /* GRID */
 .app-layout{display:flex;gap:20px;max-width:1200px;margin:0 auto;padding:0 20px;position:relative;z-index:10}
@@ -884,6 +920,11 @@ body::after{content:'';position:fixed;inset:0;background:radial-gradient(circle 
 .np-item-tag.news{background:rgba(100,149,237,.1);color:#6495ed}
 .np-item-tag.idea{background:rgba(168,85,247,.1);color:#a855f7}
 .np-item-tag.hook{background:rgba(232,147,12,.1);color:var(--a2)}
+.np-item-why{font-size:.7rem;color:rgba(255,255,255,.6);margin-top:4px;padding:4px 6px;background:rgba(255,255,255,.03);border-radius:6px;border-left:2px solid var(--a1);line-height:1.3}
+.np-item-hook{font-size:.72rem;color:var(--a2);margin-top:5px;padding:5px 7px;background:rgba(232,147,12,.06);border-radius:6px;line-height:1.3}
+.np-item-format{display:inline-block;font-size:.6rem;padding:2px 7px;border-radius:8px;background:rgba(168,85,247,.1);color:#a855f7;margin-top:3px;font-weight:600}
+[data-theme="light"] .np-item-why{color:rgba(0,0,0,.55);background:rgba(0,0,0,.03)}
+[data-theme="light"] .np-item-hook{background:rgba(232,147,12,.08)}
 .np-item.expanded{background:rgba(255,107,53,.04);border:1px solid rgba(255,107,53,.12);border-radius:var(--rs);margin:4px 0;padding:12px 14px}
 .np-detail{margin-top:10px;padding:10px;background:rgba(255,255,255,.03);border-radius:var(--rs);font-size:.75rem;color:var(--t1);line-height:1.5}
 .np-detail.loading{color:var(--t2);font-style:italic}
@@ -1806,13 +1847,13 @@ body.light .shimmer::after{background:linear-gradient(90deg,transparent 0%,rgba(
 
 <div class="stats-bar">
   <div class="stats-bar-inner">
-    <div class="level-badge" id="lvBadge">LV 1</div>
-    <div class="xp-bar-c"><div class="xp-bar-f" id="xpBar" style="width:0%"></div></div>
-    <div class="stat-item"><div class="sv" id="sXP">0</div><div class="sl">XP</div></div>
-    <div class="stat-item"><div class="sv" id="sGames">0</div><div class="sl">Giocate</div></div>
-    <div class="stat-item"><div class="sv" id="sHooks">0</div><div class="sl">Hook</div></div>
-    <div class="stat-item"><div class="sv" id="sBest">0</div><div class="sl">Best</div></div>
-    <div class="stat-item"><div class="sv" id="sStreak">0</div><div class="sl">Streak</div></div>
+    <div class="level-badge" id="lvBadge" title="Il tuo livello — gioca per salire!">LV 1</div>
+    <div class="xp-bar-c" title="Punti esperienza — ogni gioco ne dà"><div class="xp-bar-f" id="xpBar" style="width:0%"></div></div>
+    <div class="stat-item" title="Punti esperienza totali accumulati"><div class="sv" id="sXP">0</div><div class="sl">XP</div></div>
+    <div class="stat-item" title="Partite giocate in tutti i giochi"><div class="sv" id="sGames">0</div><div class="sl">Giocate</div></div>
+    <div class="stat-item" title="Hook totali generati e salvati"><div class="sv" id="sHooks">0</div><div class="sl">Hook</div></div>
+    <div class="stat-item" title="Il tuo punteggio migliore"><div class="sv" id="sBest">0</div><div class="sl">Best</div></div>
+    <div class="stat-item" title="Giorni consecutivi di gioco"><div class="sv" id="sStreak">0</div><div class="sl">Streak</div></div>
   </div>
 </div>
 
@@ -1831,14 +1872,17 @@ body.light .shimmer::after{background:linear-gradient(90deg,transparent 0%,rgba(
     <div class="profile-field">
       <div class="profile-field-label">&#127919; La tua nicchia</div>
       <input type="text" id="ctxWho" placeholder="Es: Fitness coach, Imprenditore digitale, Food blogger..." />
+      <button class="profile-ai-btn" onclick="aiImproveField('ctxWho')" title="Migliora con AI">🤖</button>
     </div>
     <div class="profile-field">
       <div class="profile-field-label">&#128188; Cosa offri</div>
       <input type="text" id="ctxWhat" placeholder="Es: Percorso di coaching 1:1, Corso online di cucina vegana..." />
+      <button class="profile-ai-btn" onclick="aiImproveField('ctxWhat')" title="Migliora con AI">🤖</button>
     </div>
     <div class="profile-field">
       <div class="profile-field-label">&#128101; Il tuo pubblico</div>
       <input type="text" id="ctxAud" placeholder="Es: Donne 30-45 che vogliono rimettersi in forma dopo la gravidanza" />
+      <button class="profile-ai-btn" onclick="aiImproveField('ctxAud')" title="Migliora con AI">🤖</button>
     </div>
     <div class="profile-completion" id="profileCompletion">
       <div class="profile-completion-text"><span id="profilePct">0%</span> profilo completato</div>
@@ -1878,11 +1922,17 @@ body.light .shimmer::after{background:linear-gradient(90deg,transparent 0%,rgba(
       <div id="calGrid"></div>
     </div>
     <div class="hub-panel" id="hubNote">
+      <div class="notes-help">📝 Le tue note alimentano il contesto AI. Scrivi idee, bozze, appunti — l'AI li userà per risposte più intelligenti. <strong>Seleziona del testo</strong> per azioni rapide.</div>
       <div class="notes-bar">
         <span class="nb-info" id="notesInfo"></span>
         <span class="nb-saved" id="notesSaved">&#10003; Salvato</span>
       </div>
-      <textarea class="notes-area" id="notesArea" placeholder="Scrivi qui le tue idee, appunti, bozze di contenuti...&#10;&#10;Tutto viene salvato automaticamente."></textarea>
+      <textarea class="notes-area" id="notesArea" placeholder="Scrivi qui le tue idee, appunti, bozze di contenuti...&#10;&#10;Seleziona del testo per mandarlo alla Fucina, all'Hub o creare un hook.&#10;&#10;Tutto viene salvato automaticamente."></textarea>
+      <div class="notes-action-tooltip" id="notesActionTooltip" style="display:none">
+        <button onclick="notesActionTo('fucina')">🔥 Fucina</button>
+        <button onclick="notesActionTo('hub')">🧩 Hub</button>
+        <button onclick="notesActionTo('hook')">🪝 Crea Hook</button>
+      </div>
       <button class="mic-btn" onclick="startDictation('notesArea')" style="margin:8px 0;display:block">&#127908; Dettatura</button>
     </div>
     <div class="hub-panel" id="hubMondo">
@@ -1915,13 +1965,17 @@ body.light .shimmer::after{background:linear-gradient(90deg,transparent 0%,rgba(
           <div id="mondoBTags"></div>
         </div>
         <div class="voice-sep"><span>&#129516; Voice DNA — Insegna all'AI come parli</span></div>
+        <div class="voice-card" style="background:rgba(0,180,216,.04);border:1px solid rgba(0,180,216,.15);margin-bottom:12px">
+          <div style="font-size:.72rem;color:rgba(255,255,255,.6);line-height:1.4">💡 <strong>Suggerimento:</strong> Puoi esportare tutto il tuo Voice DNA in un file .md, modificarlo e ricaricarlo. L'AI avrà un contesto completo su di te.</div>
+          <button class="profile-ai-btn" onclick="generateKnowledgeFile()" style="margin-top:6px;width:auto;padding:4px 12px">📥 Scarica Knowledge .md</button>
+        </div>
         <div class="voice-card">
-          <h3>&#127917; Tono di Voce</h3>
+          <h3>&#127917; Tono di Voce <button class="profile-ai-btn" onclick="aiSuggestVoice('tone')" title="AI suggerisce toni">🤖</button></h3>
           <div class="vc-help">Seleziona max 3 toni. L'AI scriver&#224; con questo stile.</div>
           <div class="tone-grid" id="voiceToneGrid"></div>
         </div>
         <div class="voice-card">
-          <h3>&#128221; Lessico</h3>
+          <h3>&#128221; Lessico <button class="profile-ai-btn" onclick="aiSuggestVoice('lexicon')" title="AI suggerisce parole">🤖</button></h3>
           <div class="vc-help">Parole che vuoi usare e parole da evitare.</div>
           <div class="lex-section">
             <div class="lex-label">&#9989; Parole che USO</div>
@@ -1935,7 +1989,7 @@ body.light .shimmer::after{background:linear-gradient(90deg,transparent 0%,rgba(
           </div>
         </div>
         <div class="voice-card">
-          <h3>&#128101; Pubblico Profondo</h3>
+          <h3>&#128101; Pubblico Profondo <button class="profile-ai-btn" onclick="aiSuggestVoice('audience')" title="AI suggerisce paure/desideri">🤖</button></h3>
           <div class="vc-help">Paure, desideri e obiezioni del tuo pubblico.</div>
           <div class="aud-tabs">
             <div class="aud-tab active" onclick="switchAudTab('fears')">&#128552; Paure</div>
@@ -2050,6 +2104,13 @@ body.light .shimmer::after{background:linear-gradient(90deg,transparent 0%,rgba(
           <p>Chiedimi qualsiasi cosa sul tuo contenuto</p>
           <div class="chat-suggestions" id="chatSuggestions"></div>
         </div>
+      </div>
+      <div class="chat-knowledge-bar" id="chatKnowledgeBar">
+        <span class="ck-label">Fonti AI:</span>
+        <label class="ck-chip active" onclick="this.classList.toggle('active')"><input type="checkbox" checked data-src="brain"> 🧠 Brain</label>
+        <label class="ck-chip active" onclick="this.classList.toggle('active')"><input type="checkbox" checked data-src="mazzo"> 🃏 Mazzo</label>
+        <label class="ck-chip" onclick="this.classList.toggle('active')"><input type="checkbox" data-src="hub"> 🧩 Hub</label>
+        <label class="ck-chip" onclick="this.classList.toggle('active')"><input type="checkbox" data-src="resources"> 📎 Risorse</label>
       </div>
       <div class="chat-input-area">
         <textarea class="chat-input" id="chatInput" placeholder="Scrivi un messaggio..." rows="1"></textarea>
@@ -2737,11 +2798,34 @@ async function chatAiCall(chatMsgs){
   const s=aiSettings.primary;
   const p=AI_PROVIDERS[s.provider]||AI_PROVIDERS.openai;
   const url=getAiUrl('primary'),model=getAiModel('primary');
-  let mazzoCtx='';
+  // Build knowledge context from selected sources
+  const sources={};
+  document.querySelectorAll('#chatKnowledgeBar input[type="checkbox"]').forEach(cb=>{sources[cb.dataset.src]=cb.checked;});
+  let knowledgeCtx='';
+  // Mazzo context (from float picker OR always if source active)
   if(chatMazzoContext.length){
-    mazzoCtx='\n\nHOOK DAL MAZZO DELL\'UTENTE (analizzali, ragionaci sopra, migliorali o usali come base):\n'+chatMazzoContext.map((h,i)=>(i+1)+'. "'+h+'"').join('\n')+'\n\nQuando l\'utente ti manda un hook dal mazzo: analizzalo in profondità, spiega perché funziona o no, suggerisci varianti migliori, e proponi come usarlo in uno script. NON limitarti a dire "bello" — sii specifico e utile.';
+    knowledgeCtx+='\n\nHOOK DAL MAZZO (analizzali in profondità):\n'+chatMazzoContext.map((h,i)=>(i+1)+'. "'+h+'"').join('\n');
+  } else if(sources.mazzo&&savedItems&&savedItems.length){
+    knowledgeCtx+='\n\nHOOK SALVATI NEL MAZZO ('+savedItems.length+' totali, ecco i migliori):\n'+savedItems.slice(0,8).map((s,i)=>(i+1)+'. "'+s.text.substring(0,100)+'"').join('\n');
   }
-  const sysContent='Sei un coach esperto di social media, copywriting e content creation in italiano. Parli in modo diretto e colloquiale. Sei concreto e specifico — mai generico. Quando analizzi un hook: (1) identifica la leva psicologica usata, (2) spiega perché funziona o fallisce, (3) dai 2-3 varianti migliori, (4) suggerisci il contesto ideale (reel, carosello, storia). Quando generi: usa il contesto dell\'utente (nicchia, tono, pubblico) per personalizzare.\n\n'+getCtxPrompt()+mazzoCtx;
+  if(sources.hub&&typeof hubItems!=='undefined'&&hubItems&&hubItems.length){
+    knowledgeCtx+='\n\nCONTENUTI HUB CREATIVI:\n'+hubItems.slice(0,6).map((h,i)=>(i+1)+'. '+h.text.substring(0,120)).join('\n');
+  }
+  if(sources.resources){
+    const res=JSON.parse(localStorage.getItem(hlKey('resources'))||'{}');
+    if(res.texts&&res.texts.length){
+      knowledgeCtx+='\n\nRISORSE CARICATE:\n'+res.texts.slice(0,3).map(t=>t.name+': '+t.content.substring(0,300)).join('\n');
+    }
+  }
+  const sourceCount=Object.values(sources).filter(Boolean).length;
+  const sysContent=`Sei un CONSULENTE STRATEGICO esperto di social media, copywriting e content creation in italiano. Hai accesso COMPLETO ai dati dell'utente — usi TUTTO per dare risposte personalizzate e potenti. Parli in modo diretto e colloquiale. Sei concreto e specifico — MAI generico. MAI risposte superficiali.
+
+Quando analizzi un hook: (1) identifica la leva psicologica, (2) spiega perché funziona o fallisce con motivi TECNICI, (3) dai 2-3 varianti migliori, (4) suggerisci formato ideale.
+Quando generi: usa TUTTI i dati dell'utente per personalizzare.
+Quando consigli: ragiona come un direttore creativo con 15 anni di esperienza.
+${sourceCount>=3?'HAI MOLTI DATI: ragiona in profondità prima di rispondere. La qualità conta più della velocità.':''}
+
+${getCtxPrompt()}${knowledgeCtx}`;
   const recent=chatMsgs.slice(-20).map(m=>({role:m.role==='assistant'?'assistant':'user',content:m.content}));
   if(p.format==='anthropic'){
     return await aiCallAnthropic(url,model,sysContent,recent,800,0.8,s.apiKey);
@@ -3698,6 +3782,52 @@ function saveVoiceExamples(){
   const exCnt=document.getElementById('voiceExCount');
   if(exCnt)exCnt.textContent=`${lines.length}/10`;
 }
+function aiSuggestVoice(type){
+  if(!isAI()){showToast('Connetti l\'AI nelle impostazioni');return;}
+  const ctx=JSON.parse(localStorage.getItem(hlKey('ctx'))||'{}');
+  if(!ctx.who){showToast('Compila prima la nicchia nel profilo');return;}
+  showToast('🤖 Analizzo il tuo profilo...');
+  let prompt='';
+  if(type==='tone'){
+    const current=voice.tone?.length?`Toni attuali: ${voice.tone.join(', ')}.`:'Nessun tono selezionato.';
+    prompt=`Sei un brand strategist. Nicchia: "${ctx.who}". ${ctx.what?'Offerta: '+ctx.what+'.':''} ${ctx.aud?'Target: '+ctx.aud+'.':''} ${current}
+Suggerisci 3 combinazioni di toni di voce (tra: diretto, provocatorio, ironico, empatico, tecnico, storyteller, motivazionale, scanzonato, autorevole, poetico, crudo, sarcastico) che funzionerebbero per questa nicchia. Per ogni combinazione spiega PERCHÉ in 1 riga.
+Formato: "1. [tono1, tono2, tono3] — perché..." (3 righe, nient'altro)`;
+  } else if(type==='lexicon'){
+    prompt=`Sei un copywriter esperto. Nicchia: "${ctx.who}". ${ctx.what?'Offerta: '+ctx.what+'.':''} ${ctx.aud?'Target: '+ctx.aud+'.':''}
+Suggerisci:
+- 8 parole/espressioni potenti DA USARE (che risuonano col target)
+- 5 parole/espressioni DA EVITARE (inflazionate, generiche, respingenti)
+Formato:
+✅ USA: parola1, parola2, ...
+❌ EVITA: parola1, parola2, ...
+(solo la lista, nient'altro)`;
+  } else if(type==='audience'){
+    prompt=`Sei un esperto di psicologia del consumatore. Nicchia: "${ctx.who}". ${ctx.what?'Offerta: '+ctx.what+'.':''} ${ctx.aud?'Target: '+ctx.aud+'.':''}
+Analizza il pubblico target e suggerisci:
+- 4 PAURE profonde (non ovvie, quelle che non dicono ad alta voce)
+- 4 DESIDERI profondi (la trasformazione che vogliono davvero)
+- 3 OBIEZIONI comuni (perché non comprerebbero/seguirebbero)
+Formato:
+😨 PAURE: paura1 | paura2 | ...
+💖 DESIDERI: desiderio1 | desiderio2 | ...
+✋ OBIEZIONI: obiezione1 | obiezione2 | ...
+(solo la lista, nient'altro)`;
+  }
+  callAI(prompt,300).then(r=>{
+    showToast('✅ Suggerimenti pronti!');
+    const overlay=document.createElement('div');
+    overlay.className='modal-overlay';
+    overlay.style.cssText='position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:9999;display:flex;align-items:center;justify-content:center';
+    overlay.innerHTML=`<div style="background:var(--card);border-radius:var(--r);padding:24px;max-width:500px;width:90%;max-height:70vh;overflow-y:auto;border:1px solid rgba(255,107,53,.2)">
+      <h3 style="margin:0 0 12px;font-size:1rem">🤖 Suggerimenti AI — ${type==='tone'?'Tono di Voce':type==='lexicon'?'Lessico':'Pubblico'}</h3>
+      <div style="font-size:.8rem;line-height:1.5;white-space:pre-wrap;color:var(--t1)">${r.replace(/</g,'&lt;')}</div>
+      <div style="margin-top:16px;text-align:right"><button onclick="this.closest('.modal-overlay').remove()" style="padding:8px 16px;border-radius:8px;background:var(--gf);color:#fff;border:none;cursor:pointer;font-weight:600">Chiudi</button></div>
+    </div>`;
+    overlay.addEventListener('click',(e)=>{if(e.target===overlay)overlay.remove();});
+    document.body.appendChild(overlay);
+  }).catch(()=>showToast('Errore AI'));
+}
 function renderLearnStats(){
   const el=document.getElementById('learnStats');
   if(!el)return;
@@ -3812,7 +3942,9 @@ function submitBlockFb(i){
   if(milestones.includes(fbCount)){
     showToast(`🧠 L'AI ha assimilato ${fbCount} pattern! I suggerimenti saranno sempre più precisi.`);
   } else {
-    showToast(st.vote==='up'?'✅ Feedback salvato — l\'AI impara il tuo stile!':'✅ Capito! L\'AI eviterà questo pattern nei prossimi suggerimenti.');
+    const tagLabels={troppo_generico:'generico',tono_sbagliato:'tono',troppo_lungo:'lungo',non_specifico:'vago',poco_emotivo:'freddo',troppo_formale:'formale'};
+    const tagNames=(st.tags||[]).map(t=>tagLabels[t]||t).join(', ');
+    showToast(st.vote==='up'?`✅ Per "${block.label}" — perfetto! (${fbCount} pattern appresi)`:`✅ Per "${block.label}" eviterò: ${tagNames||'questo stile'}. (${fbCount} pattern appresi)`);
   }
   addXP(5);
   if(typeof renderLearnStats==='function')renderLearnStats();
@@ -4204,7 +4336,7 @@ document.addEventListener('DOMContentLoaded',()=>{
   if(ctx.what)document.getElementById('ctxWhat').value=ctx.what;
   if(ctx.aud)document.getElementById('ctxAud').value=ctx.aud;
   calcProfileCompletion();updateApiDot();initProfileCollapse();renderArenaProgress();renderFightProgress();
-  updateSavedCount();updateStats();renderMondo();renderVoice();renderCalendar();initNotes();
+  updateSavedCount();updateStats();renderMondo();renderVoice();renderCalendar();initNotes();initNotesSelection();
   ['ctxWho','ctxWhat','ctxAud'].forEach(id=>{
     document.getElementById(id).addEventListener('keydown',e=>{if(e.key==='Enter')saveProfile();});
     document.getElementById(id).addEventListener('input',()=>calcProfileCompletion());
@@ -6071,7 +6203,6 @@ function getAutorunGameSequence(goal,count){
 }
 
 function openAutorun(){
-  if(!isAI()){showToast('⚠️ Connetti l\'AI prima di usare Autorun!');return;}
   autorunState={active:true,phase:'setup',cancelled:false,settings:{topic:'',goal:'attrazione',tone:[],hookLength:'medio',constraints:'',gameCount:5,temperature:0.85},pipeline:[],result:{winningHook:'',alternatives:[],script:{type:'',blocks:[]}},chatHistory:[],id:Date.now().toString(36)};
   // Pre-fill from context
   const ctx=JSON.parse(localStorage.getItem(hlKey('ctx'))||'{}');
@@ -6136,7 +6267,12 @@ function renderAutorunSetup(){
           </div>
         </details>
       </div>
-      <button class="autorun-launch-btn" onclick="launchAutorun()">⚡ Lancia Autorun</button>
+      ${isAI()?'<button class="autorun-launch-btn" onclick="launchAutorun()">⚡ Lancia Autorun</button>':`
+        <div class="autorun-setup-card" style="text-align:center;border-color:rgba(239,68,68,.2)">
+          <h3><span>🔌</span> AI Non Connessa</h3>
+          <p style="font-size:.8rem;color:rgba(255,255,255,.6);margin:8px 0 14px">L'Autorun AI simula una sessione creativa completa: gioca ai giochi HOOKA in sequenza, genera hook, li confronta, e produce uno script finale con alternative. Per usarlo, connetti un provider AI (OpenRouter, OpenAI, o Anthropic) nelle impostazioni.</p>
+          <button class="autorun-launch-btn" onclick="closeAutorun();toggleAi()" style="background:linear-gradient(135deg,#ef4444,#f97316)">⚙️ Vai alle Impostazioni AI</button>
+        </div>`}
     </div>`;
 }
 
@@ -6436,6 +6572,8 @@ function renderAutorunResult(){
           <button class="ar-btn-save" onclick="autorunSaveHook()">💾 Salva nel Mazzo</button>
           <button class="ar-btn-copy" onclick="autorunCopyHook()">📋 Copia</button>
           <button class="ar-btn-discuss" onclick="document.getElementById('arDiscuss').style.display='block';document.getElementById('arDiscussInput').focus()">💬 Discuti</button>
+          <button class="ar-btn-copy" onclick="autorunRetry()">🔄 Riprova</button>
+          <button class="ar-btn-save" onclick="autorunToFucinaSmart()" style="background:linear-gradient(135deg,#a855f7,#ec4899)">🔥 Script in Fucina</button>
         </div>
       </div>
       ${res.alternatives.length?`
@@ -6596,6 +6734,105 @@ Se proponi un blocco modificato, scrivi: NEWBLOCK|${autorunState.result.script.b
     msgs.innerHTML+=`<div class="autorun-discuss-msg ai">Errore: ${e.message}</div>`;
   }
   msgs.scrollTop=msgs.scrollHeight;
+}
+
+function autorunRetry(){
+  autorunState.phase='setup';
+  autorunState.pipeline=[];
+  autorunState.result={winningHook:'',alternatives:[],script:{type:'',blocks:[]}};
+  autorunState.chatHistory=[];
+  autorunState.cancelled=false;
+  renderAutorunSetup();
+  showToast('🔄 Pronto per un nuovo tentativo!');
+}
+
+async function autorunToFucinaSmart(){
+  const res=autorunState.result;
+  if(!res.winningHook&&!res.script.blocks.length){showToast('Nessun risultato da convertire!');return;}
+  const scriptType=res.script.type||autorunState.settings.goal;
+  const stType=scriptType==='conversione'?'vendita':scriptType==='intrattenimento'?'attrazione':scriptType;
+  const st=SCRIPT_TYPES[stType]||SCRIPT_TYPES.attrazione;
+
+  const newScript={id:Date.now().toString(36),type:stType,title:'Autorun — '+(autorunState.settings.topic||'').substring(0,30),
+    blocks:st.blocks.map(bDef=>{
+      const match=res.script.blocks.find(b=>b.key===bDef.key);
+      return{key:bDef.key,label:bDef.label,text:match?.text||''};
+    }),
+    hookText:res.winningHook,createdAt:Date.now(),updatedAt:Date.now()};
+  // Pre-fill hook block if empty
+  if(!newScript.blocks[0].text&&res.winningHook)newScript.blocks[0].text=res.winningHook;
+  fucinaScripts.unshift(newScript);
+  saveFucinaScripts();
+  closeAutorun();
+  openFucinaStandalone();
+  setTimeout(()=>openFucinaEditor(0),300);
+  showToast('🔥 Script creato in Fucina dall\'Autorun!');
+}
+
+// ===== HUB → FUCINA SMART =====
+async function hubAnalyzeAndCreateScript(){
+  if(!isAI()){showToast('Connetti l\'AI prima');return;}
+  if(!hubItems||!hubItems.length){showToast('Hub vuoto! Aggiungi contenuti prima.');return;}
+  showToast('🔥 Analizzo i contenuti dell\'Hub...');
+  const hubTexts=hubItems.slice(0,10).map((h,i)=>(i+1)+'. '+h.text.substring(0,200)).join('\n');
+  const ctx=getCtxPrompt();
+  try{
+    const r=await callAI(`${ctx}\nAnalizza questi contenuti e distribuiscili in uno script strutturato per social media.\n\nCONTENUTI HUB:\n${hubTexts}\n\nISTRUZIONI:\n1. Identifica il tipo di script migliore: "attrazione", "educazione", o "vendita"\n2. Distribuisci e RIELABORA i contenuti nei blocchi appropriati\n3. Mantieni il tono dell'utente\n\nFORMATO RISPOSTA (JSON puro):\n{"type":"attrazione","blocks":[{"key":"hook","text":"..."},{"key":"amplifica","text":"..."},{"key":"valore","text":"..."},{"key":"identifica","text":"..."},{"key":"cta","text":"..."}]}\nSolo JSON, nient'altro.`,700);
+    const clean=r.replace(/```json?|```/g,'').trim();
+    const data=JSON.parse(clean);
+    const stType=data.type||'attrazione';
+    const st=SCRIPT_TYPES[stType]||SCRIPT_TYPES.attrazione;
+    const newScript={id:Date.now().toString(36),type:stType,title:'Da Hub — '+new Date().toLocaleDateString('it-IT'),
+      blocks:st.blocks.map(bDef=>{const match=(data.blocks||[]).find(b=>b.key===bDef.key);return{key:bDef.key,label:bDef.label,text:match?.text||''};}),
+      createdAt:Date.now(),updatedAt:Date.now()};
+    fucinaScripts.unshift(newScript);
+    saveFucinaScripts();
+    openFucinaStandalone();
+    setTimeout(()=>openFucinaEditor(0),300);
+    showToast('🔥 Script creato dall\'Hub!');
+  }catch(e){showToast('Errore: riprova. '+e.message);}
+}
+
+// ===== RACCOLTA → FUCINA SMART =====
+async function savedToFucinaSmart(idx){
+  const items=savedItems||[];
+  const item=items[idx];
+  if(!item){showToast('Item non trovato');return;}
+  if(!isAI()){
+    // Fallback: just open Fucina with hook text
+    fucinaSetup={type:null,hookSource:'new',hookText:item.text};fucinaView='setup';openFucinaStandalone();renderFucinaSetup();return;
+  }
+  showToast('🔥 Creo script dall\'hook...');
+  try{
+    const r=await callAI(`${getCtxPrompt()}\nHai questo hook salvato: "${item.text}"\n\nCrea uno script completo partendo da questo hook.\n1. Identifica il tipo migliore: "attrazione", "educazione", o "vendita"\n2. Sviluppa ogni blocco in modo coerente con l'hook\n\nJSON: {"type":"attrazione","blocks":[{"key":"hook","text":"..."},{"key":"amplifica","text":"..."},...]}\nSolo JSON.`,600);
+    const clean=r.replace(/```json?|```/g,'').trim();
+    const data=JSON.parse(clean);
+    const stType=data.type||'attrazione';
+    const st=SCRIPT_TYPES[stType]||SCRIPT_TYPES.attrazione;
+    const newScript={id:Date.now().toString(36),type:stType,title:(item.text||'').substring(0,30)+'...',hookText:item.text,
+      blocks:st.blocks.map(bDef=>{const match=(data.blocks||[]).find(b=>b.key===bDef.key);return{key:bDef.key,label:bDef.label,text:match?.text||''};}),
+      createdAt:Date.now(),updatedAt:Date.now()};
+    if(!newScript.blocks[0].text)newScript.blocks[0].text=item.text;
+    fucinaScripts.unshift(newScript);saveFucinaScripts();
+    openFucinaStandalone();setTimeout(()=>openFucinaEditor(0),300);
+    showToast('🔥 Script completo creato!');
+  }catch(e){showToast('Errore: '+e.message);}
+}
+
+// ===== AI PROFILE ASSIST =====
+async function aiImproveField(fieldId){
+  if(!isAI()){showToast('Connetti l\'AI');return;}
+  const input=document.getElementById(fieldId);
+  const val=input?.value?.trim();
+  if(!val||val.length<5){showToast('Scrivi qualcosa prima!');return;}
+  const labels={ctxWho:'nicchia/chi sei',ctxWhat:'cosa offri',ctxAud:'pubblico target'};
+  const btn=input.parentElement?.querySelector('.profile-ai-btn');
+  if(btn){btn.textContent='⏳';btn.disabled=true;}
+  try{
+    const r=await callAI(`L'utente ha descritto la sua ${labels[fieldId]||'info'} così: "${val}"\n\nMiglioralo: rendilo più SPECIFICO, dettagliato e utile. Aggiungi dettagli concreti (numeri, nomi, caratteristiche specifiche). La descrizione deve aiutare un'AI a generare contenuti precisi per questa persona.\nRispondi SOLO con la versione migliorata, max 2 frasi. Nient'altro.`,150);
+    if(r){input.value=r.trim();showToast('✅ Migliorato!');}
+  }catch(e){showToast('Errore');}
+  if(btn){btn.textContent='🤖';btn.disabled=false;}
 }
 
 // ===== ANALYTICS DASHBOARD =====
@@ -6964,6 +7201,7 @@ function renderHub(){
       return count||s==='all'?`<span class="hub-filter-chip${hubFilter===s?' active':''}" onclick="hubFilter='${s}';renderHub()">${sourceLabels[s]} (${count})</span>`:'';
     }).join('')}
     <span class="hub-counter">${filtered.length} card</span>
+    <button onclick="hubAnalyzeAndCreateScript()" style="margin-left:auto;padding:4px 10px;border-radius:8px;background:linear-gradient(135deg,#a855f7,#ec4899);color:#fff;border:none;cursor:pointer;font-size:.65rem;font-weight:700;white-space:nowrap" title="AI analizza tutto l'Hub e crea uno script Fucina">🔥 Fucina Smart</button>
   </div>`:'';
   // Cards
   const cardsHTML=filtered.map((item,i)=>{
@@ -7386,6 +7624,42 @@ function updateNotesInfo(){
   const lc=notes.split('\n').length;
   el.textContent=`${wc} parole · ${lc} righe`;
 }
+// Notes text selection → action tooltip
+function initNotesSelection(){
+  const area=document.getElementById('notesArea');if(!area)return;
+  let selTimeout;
+  area.addEventListener('mouseup',()=>{clearTimeout(selTimeout);selTimeout=setTimeout(showNotesActionTooltip,200);});
+  area.addEventListener('keyup',(e)=>{if(e.shiftKey){clearTimeout(selTimeout);selTimeout=setTimeout(showNotesActionTooltip,200);}});
+  document.addEventListener('mousedown',(e)=>{const tt=document.getElementById('notesActionTooltip');if(tt&&!tt.contains(e.target)&&e.target!==area)tt.style.display='none';});
+}
+function showNotesActionTooltip(){
+  const area=document.getElementById('notesArea');const tt=document.getElementById('notesActionTooltip');
+  if(!area||!tt)return;
+  const sel=area.value.substring(area.selectionStart,area.selectionEnd).trim();
+  if(!sel||sel.length<3){tt.style.display='none';return;}
+  tt.style.display='flex';
+  tt.dataset.text=sel;
+}
+function notesActionTo(action){
+  const tt=document.getElementById('notesActionTooltip');
+  const text=tt?.dataset.text||'';tt.style.display='none';
+  if(!text)return;
+  if(action==='fucina'){
+    sendHookToFucina(text);showToast('Testo inviato alla Fucina!');
+  } else if(action==='hub'){
+    sendHookToHub(text,'manual');showToast('Aggiunto all\'Hub!');
+  } else if(action==='hook'){
+    if(isAI()){
+      showToast('Genero un hook dal tuo testo...');
+      const ctx=JSON.parse(localStorage.getItem(hlKey('ctx'))||'{}');
+      callAI(`Sei un copywriter. Trasforma questo appunto in un HOOK potente per social media. Nicchia: ${ctx.who||'content creation'}. Appunto: "${text}". Rispondi SOLO con l'hook, niente altro.`,100).then(r=>{
+        saveItem('NoteHook',r.trim());showToast('🪝 Hook creato e salvato nel mazzo!');sCorrect();
+      }).catch(()=>showToast('Errore generazione hook'));
+    } else {
+      saveItem('NoteHook',text);showToast('Salvato nel mazzo come hook!');
+    }
+  }
+}
 
 // ===== SAVED =====
 function toggleSaved(){document.getElementById('savedDrawer').classList.toggle('open');document.getElementById('savedOverlay').classList.toggle('open');if(document.getElementById('savedDrawer').classList.contains('open'))renderSaved();}
@@ -7473,7 +7747,7 @@ function renderSaved(){
   list.innerHTML=working.map(it=>{
     const stars=Array.from({length:5},(_,s)=>`<span class="s${(it.rating||0)>s?' on':''}" onclick="event.stopPropagation();rateItem(${it.idx},${s+1})">★</span>`).join('');
     const badge=it._cat==='script'?`<div class="script-badge">${SCRIPT_TYPES[it.scriptRef?.type]?.icon||'📝'} ${(it.scriptRef?.title||'Script').substring(0,30)} · ${it.scriptRef?.blockCount||'?'} blocchi</div>`:it._cat==='blocco'?`<div class="block-badge">🧩 ${it.blockMeta?.blockLabel||'Blocco'} · ${it.blockMeta?.scriptType||''}</div>`:'';
-    return`<div class="saved-item"><div class="st">${it.type}</div><div class="sx">${it.text.replace(/\n/g,'<br>').substring(0,300)}</div>${badge}<div class="saved-stars">${stars}</div><div class="saved-actions"><button class="exp-btn" onclick="transformToPost(savedItems[${it.idx}].text)" title="Trasforma in Post">📱</button><button class="exp-btn" onclick="showExportPanel(${it.idx})" title="Esporta">📤</button><button class="cal-btn" onclick="quickAddCal(${it.idx})" title="Aggiungi al piano">📅</button><button class="del" onclick="deleteItem(${it.idx})">✕</button></div></div>`;
+    return`<div class="saved-item"><div class="st">${it.type}</div><div class="sx">${it.text.replace(/\n/g,'<br>').substring(0,300)}</div>${badge}<div class="saved-stars">${stars}</div><div class="saved-actions"><button class="exp-btn" onclick="savedToFucinaSmart(${it.idx})" title="Crea Script Smart in Fucina" style="background:linear-gradient(135deg,rgba(168,85,247,.15),rgba(236,72,153,.15))">🔥</button><button class="exp-btn" onclick="transformToPost(savedItems[${it.idx}].text)" title="Trasforma in Post">📱</button><button class="exp-btn" onclick="showExportPanel(${it.idx})" title="Esporta">📤</button><button class="cal-btn" onclick="quickAddCal(${it.idx})" title="Aggiungi al piano">📅</button><button class="del" onclick="deleteItem(${it.idx})">✕</button></div></div>`;
   }).join('')+'<button class="saved-clear" onclick="clearAllSaved()">Svuota mazzo</button>';
 }
 function setSavedFilter(f){savedFilter=f;renderSaved();}
@@ -7980,28 +8254,51 @@ function loadNewspaper(){
     </div>`;
     return;
   }
-  el.innerHTML='<div class="np-loading">📡 Ricerco trend e notizie<span class="qw-dots"></span></div>';
+  el.innerHTML='<div class="np-loading">🕵️ Agente di ricerca attivo — analizzo trend, filtro dati, costruisco il tuo feed<span class="qw-dots"></span></div>';
   const savedSample=savedItems.slice(0,5).map(s=>s.type+': '+s.text.substring(0,50)).join(' | ');
-  const voiceInfo=voice?.tone?.length?`Tono: ${voice.tone.join(', ')}.`:'';
+  const voiceInfo=voice?.tone?.length?`Tono dell'utente: ${voice.tone.join(', ')}. SCRIVI ogni elemento con QUESTO tono.`:'';
+  const voiceStyle=voice?.style?`Stile comunicativo: ${voice.style}.`:'';
   const npTopics=JSON.parse(localStorage.getItem(hlKey('np_topics'))||'[]');
-  const topicsStr=npTopics.length?`\nTemi di ricerca specifici dell'utente: ${npTopics.join(', ')}. INCLUDI almeno 2 elementi su questi temi.`:'';
-  const prompt=`Sei un trend analyst e content strategist italiano. Il tuo compito è creare un FEED PERSONALIZZATO.
-${nicchia?`Nicchia dell'utente: ${nicchia}.`:'Nicchia: content creation e social media.'}${topicsStr}
-${ctx.what?`Offerta: ${ctx.what}.`:''}
-${ctx.aud?`Target: ${ctx.aud}.`:''}
-${savedSample?`Contenuti recenti dell'utente: ${savedSample}`:''}
+  const topicsStr=npTopics.length?`\nTEMI DI RICERCA PRIORITARI dell'utente: ${npTopics.join(', ')}. ALMENO 3 elementi devono riguardare questi temi.`:'';
+  const prompt=`Sei un AGENTE DI RICERCA CREATIVO — non un semplice generatore di liste. Ragiona come un trend analyst che ha passato ore su Reddit, X, TikTok, YouTube, newsletter di settore e forum di nicchia.
+
+IL TUO PROCESSO MENTALE (seguilo davvero):
+1. ANALIZZA la nicchia dell'utente e il suo pubblico target
+2. RAGIONA su cosa sta succedendo ORA nel settore (trend emergenti, cambi algoritmo, nuovi formati virali, controversie, opportunità)
+3. FILTRA solo ciò che è AZIONABILE — niente fuffa generica tipo "usa i Reel". Sii specifico, concreto, sorprendente
+4. CONNETTI ogni trend a un'azione concreta che il creator può fare OGGI
+5. SCRIVI tutto con il tono dell'utente — non con tono da articolo corporate
+
+${nicchia?`NICCHIA: ${nicchia}`:'NICCHIA: content creation e social media'}${topicsStr}
+${ctx.what?`OFFERTA/PRODOTTO: ${ctx.what}`:''}
+${ctx.aud?`PUBBLICO TARGET: ${ctx.aud}`:''}
+${savedSample?`CONTENUTI RECENTI (per capire il suo stile): ${savedSample}`:''}
 ${voiceInfo}
+${voiceStyle}
 
-Genera un feed con ESATTAMENTE 8 elementi divisi in 2 colonne:
-COLONNA 1 - "Trend & Notizie" (4 elementi): notizie recenti, trend di settore, cambiamenti di piattaforme social, nuovi formati che funzionano. Ogni elemento deve essere collegabile alla nicchia dell'utente.
-COLONNA 2 - "Idee per Te" (4 elementi): idee di contenuto concrete basate sui trend. Angoli specifici, hook pronti, formati suggeriti. Personalizzate sulla nicchia e sui contenuti dell'utente.
+GENERA un feed con ESATTAMENTE 8 elementi in 2 colonne:
 
-Per ogni elemento: un titolo breve (max 10 parole) e una descrizione di 1 riga.
-Aggiungi un CONSIGLIO FINALE di 1-2 frasi su come l'utente dovrebbe muoversi oggi.
+COLONNA 1 — "🔍 Radar Trend" (4 elementi):
+Trend reali e specifici, non generici. Per OGNI trend includi:
+- title: titolo incisivo (max 10 parole) che faccia capire subito il punto
+- desc: 1 riga di contesto fattuale
+- why: 1-2 frasi che spiegano PERCHÉ questo trend conta per la nicchia dell'utente e come impatta il suo business/contenuti
+- tag: "trend" o "news"
 
-Formato JSON:
-{"trends":[{"title":"...","desc":"...","tag":"trend|news"},{"title":"...","desc":"...","tag":"trend|news"},{"title":"...","desc":"...","tag":"trend|news"},{"title":"...","desc":"...","tag":"trend|news"}],"ideas":[{"title":"...","desc":"...","tag":"idea|hook"},{"title":"...","desc":"...","tag":"idea|hook"},{"title":"...","desc":"...","tag":"idea|hook"},{"title":"...","desc":"...","tag":"idea|hook"}],"tip":"..."}
-Solo JSON, nessun testo extra.`;
+COLONNA 2 — "⚡ Idee Pronte" (4 elementi):
+Idee di contenuto CONCRETE e ORIGINALI basate sui trend. Per OGNI idea includi:
+- title: titolo dell'idea di contenuto
+- desc: angolo specifico e perché funzionerebbe
+- hook: un hook PRONTO da usare (scritto col tono dell'utente)
+- format: formato consigliato (Reel, Carosello, Story, Video lungo, Thread, ecc.)
+- tag: "idea" o "hook"
+
+Infine aggiungi:
+- tip: un CONSIGLIO STRATEGICO di 2-3 frasi — non generico, ma basato sulla situazione specifica dell'utente. Come se fossi il suo consulente che gli dice "oggi fai QUESTO perché..."
+
+Formato JSON ESATTO:
+{"trends":[{"title":"","desc":"","why":"","tag":"trend|news"}],"ideas":[{"title":"","desc":"","hook":"","format":"","tag":"idea|hook"}],"tip":""}
+Solo JSON valido, nessun testo extra.`;
   callAI(prompt).then(r=>{
     try{
       const data=JSON.parse(r.replace(/```json?|```/g,'').trim());
@@ -8021,22 +8318,25 @@ function renderNewspaper(data){
   const ideas=(data.ideas||[]).slice(0,4);
   const allItems=[...trends.map(t=>({...t,col:'trend'})),...ideas.map(t=>({...t,col:'idea'}))];
   el.innerHTML=`<div class="np-grid">
-    <div class="np-col"><div class="np-col-title">📊 Trend & Notizie</div>
+    <div class="np-col"><div class="np-col-title">🔍 Radar Trend</div>
       ${trends.map((t,i)=>`<div class="np-item" data-np-idx="${i}">
         <div class="np-item-title">${(t.title||'').replace(/</g,'&lt;')}</div>
         <div class="np-item-desc">${(t.desc||'').replace(/</g,'&lt;')}</div>
+        ${t.why?`<div class="np-item-why">💡 <em>${(t.why||'').replace(/</g,'&lt;')}</em></div>`:''}
         <span class="np-item-tag ${t.tag||'trend'}">${t.tag==='news'?'📰 News':'📈 Trend'}</span>
       </div>`).join('')}
     </div>
-    <div class="np-col"><div class="np-col-title">💡 Idee per Te</div>
+    <div class="np-col"><div class="np-col-title">⚡ Idee Pronte</div>
       ${ideas.map((t,i)=>`<div class="np-item" data-np-idx="${trends.length+i}">
         <div class="np-item-title">${(t.title||'').replace(/</g,'&lt;')}</div>
         <div class="np-item-desc">${(t.desc||'').replace(/</g,'&lt;')}</div>
+        ${t.hook?`<div class="np-item-hook">🪝 <strong>"${(t.hook||'').replace(/</g,'&lt;')}"</strong></div>`:''}
+        ${t.format?`<span class="np-item-format">📐 ${(t.format||'').replace(/</g,'&lt;')}</span>`:''}
         <span class="np-item-tag ${t.tag||'idea'}">${t.tag==='hook'?'🪝 Hook':'💡 Idea'}</span>
       </div>`).join('')}
     </div>
   </div>
-  ${data.tip?`<div class="np-banner"><strong>💡 Consiglio del giorno:</strong> ${data.tip.replace(/</g,'&lt;')}</div>`:''}`;
+  ${data.tip?`<div class="np-banner"><strong>🎯 Consiglio strategico:</strong> ${data.tip.replace(/</g,'&lt;')}</div>`:''}`;
   // Store items for event delegation
   el.dataset.npItems=JSON.stringify(allItems);
   el.onclick=function(e){
@@ -8535,10 +8835,21 @@ async function aiSuggestBlock(i){
     const lastNote=relFb.filter(f=>f.note).slice(-1)[0];
     if(lastNote)blockHints+=`Nota dell'utente: "${lastNote.note}"\n`;
   }
-  const systemPrompt=(bp?._system||'Sei un copywriter italiano esperto di social media e content marketing.')+' '+ctx;
+  // CASCADE: extract hook text for continuity
+  const hookText=script.blocks[0]?.text?.trim()||'';
+  const cascadeRule=hookText&&i>0?`
+REGOLA DI CONTINUITÀ NARRATIVA:
+L'HOOK ORIGINALE (la promessa al lettore): "${hookText}"
+Lo script DEVE sviluppare la PROMESSA fatta nell'hook. Ogni blocco è il passo successivo di UN'UNICA narrazione coerente.
+Rileggi ATTENTAMENTE i blocchi precedenti. Il tuo blocco deve CONTINUARE il filo narrativo, non iniziarne uno nuovo.
+NON ripetere concetti già trattati nei blocchi precedenti. NON introdurre temi nuovi scollegati dall'hook.
+Il lettore deve sentire che ogni blocco lo avvicina alla conclusione promessa dall'hook.
+`:'';
+
+  const systemPrompt=(bp?._system||'Sei un copywriter italiano esperto di social media e content marketing.')+' Ogni blocco che scrivi è parte di UNA SOLA narrazione coerente dall\'hook al CTA. '+ctx;
   const prompt=`${ctx}
 Stai scrivendo uno script di tipo "${type.name}" (${type.desc}).
-${context?`Ecco i blocchi precedenti dello script:\n${context}\n`:''}
+${cascadeRule}${context?`Ecco i blocchi precedenti dello script:\n${context}\n`:''}
 ${blockHints}${userDraftHint}${optsHint}
 ISTRUZIONE PER QUESTO BLOCCO — "${block.label}":
 ${blockInstruction}
@@ -8768,6 +9079,7 @@ function renderRaccolta(){
             <span class="raccolta-action" onclick="raccoltaAddToCal(${origIdx})">&#128197; Calendario</span>
             <span class="raccolta-action" onclick="raccoltaCopy(${origIdx})">&#128203; Copia</span>
             <span class="raccolta-action" onclick="raccoltaToFucina(${origIdx})">&#128295; Fucina</span>
+            <span class="raccolta-action" onclick="raccoltaToFucinaSmart(${origIdx})" style="color:#a855f7">🔥 Smart</span>
           </div>
         </div>
       </div>`;
@@ -8809,6 +9121,38 @@ function raccoltaToFucina(idx){
   openFucinaStandalone();
   renderFucinaSetup();
   sClick();
+}
+async function raccoltaToFucinaSmart(idx){
+  const h=gameHistory.hooks[idx];
+  if(!h){showToast('Hook non trovato');return;}
+  if(!isAI()){raccoltaToFucina(idx);return;}
+  showToast('🔥 AI sta creando lo script...');
+  const ctx=JSON.parse(localStorage.getItem(hlKey('ctx'))||'{}');
+  const voiceInfo=voice?.tone?.length?`Tono: ${voice.tone.join(', ')}.`:'';
+  try{
+    const r=await callAI(`Sei un copywriter e script strategist. Analizza questo hook e crea uno script completo.
+Hook: "${h.text}"
+${ctx.who?'Nicchia: '+ctx.who+'.':''}${ctx.what?'Offerta: '+ctx.what+'.':''}${ctx.aud?'Target: '+ctx.aud+'.':''}${voiceInfo}
+
+Decidi il tipo più adatto tra: "attrazione" (5 blocchi: hook, amplifica, valore, svolta, cta), "educazione" (6 blocchi: hook, problema, analisi, metodo, prova, cta), "vendita" (7 blocchi: hook, dolore, agita, soluzione, prova, offerta, cta).
+
+Rispondi SOLO in JSON:
+{"type":"attrazione|educazione|vendita","blocks":[{"key":"nome_blocco","text":"testo del blocco"}]}
+Ogni blocco deve continuare la narrazione dell'hook. JSON valido, niente altro.`,600);
+    const data=JSON.parse(r.replace(/```json?|```/g,'').trim());
+    const sType=SCRIPT_TYPES[data.type]?data.type:'attrazione';
+    const tpl=SCRIPT_TYPES[sType];
+    const script={id:Date.now(),type:sType,title:h.text.substring(0,40)+'...',blocks:tpl.blocks.map(b=>{
+      const match=data.blocks?.find(db=>db.key===b.key);
+      return{...b,text:match?.text||''};
+    }),created:Date.now(),modified:Date.now()};
+    fucinaScripts.push(script);saveFucinaScripts();
+    fucinaCurrentScript=fucinaScripts.length-1;fucinaView='editor';
+    openFucinaStandalone();renderFucinaEditor();
+    showToast('🔥 Script Smart creato in Fucina!');sCorrect();
+  }catch(e){
+    showToast('Errore — apro Fucina standard');raccoltaToFucina(idx);
+  }
 }
 
 // Hook into recordSession to check daily challenge + update records (patched at init)

@@ -287,7 +287,7 @@ body::after{content:'';position:fixed;inset:0;background:radial-gradient(circle 
 .focus-exit:hover{background:rgba(255,107,53,.1);color:var(--a1)}
 .focus-hidden{display:none !important}
 .section-label{display:none}
-.section-header{display:flex;align-items:center;gap:12px;margin:10px 0 6px;padding:12px 16px;background:var(--card);border-radius:var(--r);border-left:4px solid var(--a2)}
+.section-header{display:flex;align-items:center;gap:12px;margin:10px auto 6px;padding:12px 16px;background:var(--card);border-radius:var(--r);border-left:4px solid var(--a2);max-width:900px}
 .section-header .sh-icon{font-size:1.8rem;line-height:1}
 .section-header .sh-text h3{font-size:1rem;font-weight:800;color:var(--t1);margin:0;letter-spacing:.5px}
 .section-header .sh-text p{font-size:.7rem;color:var(--t2);margin:2px 0 0;font-weight:400}
@@ -962,7 +962,7 @@ body::after{content:'';position:fixed;inset:0;background:radial-gradient(circle 
 .np-gen-hook-actions button{padding:4px 10px;border-radius:10px;font-size:.65rem;font-weight:600;border:1px solid rgba(255,255,255,.1);background:rgba(255,255,255,.05);cursor:pointer;transition:var(--tr);color:var(--t1)}
 .np-gen-hook-actions button:hover{background:rgba(255,107,53,.15);border-color:rgba(255,107,53,.3)}
 /* Creative Hub */
-.creative-hub{background:var(--card);border-radius:var(--r);padding:20px;margin:12px 0;border-left:4px solid #00b894;display:none}
+.creative-hub{background:var(--card);border-radius:var(--r);padding:16px;margin:12px auto;border-left:4px solid #00b894;display:none;max-width:900px}
 .creative-hub.visible{display:block}
 .hub-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px}
 .hub-title{font-size:1.1rem;font-weight:800;display:flex;align-items:center;gap:8px}
@@ -2107,6 +2107,15 @@ body.light .shimmer::after{background:linear-gradient(90deg,transparent 0%,rgba(
     <button class="s-btn secondary" onclick="saveAiSettings()">&#128190; Salva</button>
   </div>
   <div id="aiTestResult" style="margin-top:8px;font-size:.8rem;color:var(--t2)"></div>
+  <div class="settings-section" style="margin-top:18px;padding-top:14px;border-top:1px solid rgba(255,255,255,.06)">
+    <div class="ss-label">🏋️ Severità Coach Creativo</div>
+    <div style="display:flex;gap:6px;margin:8px 0" id="coachSevChips">
+      <span class="autorun-chip" data-sev="rilassato" onclick="setCoachSeverity('rilassato')" style="font-size:.7rem;padding:6px 12px;cursor:pointer">😌 Rilassato</span>
+      <span class="autorun-chip active" data-sev="bilanciato" onclick="setCoachSeverity('bilanciato')" style="font-size:.7rem;padding:6px 12px;cursor:pointer">⚖️ Bilanciato</span>
+      <span class="autorun-chip" data-sev="spartano" onclick="setCoachSeverity('spartano')" style="font-size:.7rem;padding:6px 12px;cursor:pointer">🔥 Spartano</span>
+    </div>
+    <p id="coachSevDesc" style="font-size:.62rem;color:var(--t2);line-height:1.4;margin:0">L'AI ti aiuta ma devi allenarti. Se usi troppo l'AI senza giocare, le funzioni generative vengono sospese.</p>
+  </div>
 </div>
 
 <div class="fucina-entry" id="fucinaEntryWrap"></div>
@@ -3541,7 +3550,139 @@ function allMondoB(){return[...DB.mondoB,...mondo.mondoB];}
 let gameHistory=JSON.parse(localStorage.getItem(hlKey('history'))||'{"hooks":[],"sessions":[]}');
 function saveHistory(){if(gameHistory.hooks.length>300)gameHistory.hooks=gameHistory.hooks.slice(-300);if(gameHistory.sessions.length>150)gameHistory.sessions=gameHistory.sessions.slice(-150);localStorage.setItem(hlKey('history'),JSON.stringify(gameHistory));}
 function recordHook(text,game,rating){gameHistory.hooks.push({text,game,rating,ts:Date.now()});saveHistory();}
-function recordSession(game,score,hookCount,extra){gameHistory.sessions.push({game,score,hookCount:hookCount||0,extra:extra||{},ts:Date.now()});saveHistory();}
+function recordSession(game,score,hookCount,extra){gameHistory.sessions.push({game,score,hookCount:hookCount||0,extra:extra||{},ts:Date.now()});saveHistory();if(game!=='autorun')trackManualAction();}
+
+// ===== AI DEPENDENCY GUARD =====
+let aiGuard=JSON.parse(localStorage.getItem(hlKey('ai_guard'))||'{"aiActions":0,"manualActions":0,"warningLevel":0,"suspended":false,"severity":"bilanciato","gamesForUnlock":3}');
+function saveAiGuard(){localStorage.setItem(hlKey('ai_guard'),JSON.stringify(aiGuard));}
+
+const AI_GUARD_THRESHOLDS={
+  rilassato:{w1:0.8,w2:0.9,suspend:null},
+  bilanciato:{w1:0.6,w2:0.75,suspend:0.85},
+  spartano:{w1:0.4,w2:0.55,suspend:0.7}
+};
+
+function getAiRatio(){
+  const total=aiGuard.aiActions+aiGuard.manualActions;
+  if(total<4)return 0; // Not enough data yet
+  return aiGuard.aiActions/total;
+}
+
+function trackAiAction(){
+  aiGuard.aiActions++;
+  saveAiGuard();
+  updateAiGuard();
+}
+
+function trackManualAction(){
+  aiGuard.manualActions++;
+  if(aiGuard.suspended){
+    aiGuard.gamesForUnlock--;
+    if(aiGuard.gamesForUnlock<=0){
+      aiGuard.suspended=false;aiGuard.warningLevel=0;aiGuard.gamesForUnlock=3;
+      saveAiGuard();
+      removeAiGuardBanner();
+      showToast('🟢 Funzioni AI sbloccate! Ottimo allenamento!',4000);
+      return;
+    }
+    saveAiGuard();
+    updateAiGuardBanner();
+    return;
+  }
+  saveAiGuard();
+  updateAiGuard();
+}
+
+function updateAiGuard(){
+  const ratio=getAiRatio();
+  const th=AI_GUARD_THRESHOLDS[aiGuard.severity]||AI_GUARD_THRESHOLDS.bilanciato;
+  const oldLevel=aiGuard.warningLevel;
+
+  if(th.suspend!==null&&ratio>=th.suspend){
+    aiGuard.warningLevel=3;aiGuard.suspended=true;aiGuard.gamesForUnlock=3;
+  }else if(ratio>=th.w2){
+    aiGuard.warningLevel=2;
+  }else if(ratio>=th.w1){
+    aiGuard.warningLevel=1;
+  }else{
+    aiGuard.warningLevel=0;
+  }
+  saveAiGuard();
+
+  // Show UI based on level change
+  if(aiGuard.warningLevel>oldLevel){
+    if(aiGuard.warningLevel===1){
+      showToast('⚠️ Stai usando molto l\'AI senza allenarti. Gioca qualche partita per crescere davvero!',5000);
+    }else if(aiGuard.warningLevel===2){
+      showAiGuardBanner('warning');
+    }else if(aiGuard.warningLevel===3){
+      showAiGuardBanner('suspended');
+    }
+  }
+}
+
+function checkAiGuard(){
+  if(!aiGuard.suspended)return true;
+  showAiGuardSuspendedModal();
+  return false;
+}
+
+function showAiGuardBanner(type){
+  removeAiGuardBanner();
+  const bn=document.createElement('div');bn.id='aiGuardBanner';
+  if(type==='warning'){
+    const ratio=Math.round(getAiRatio()*100);
+    bn.style.cssText='position:sticky;top:0;z-index:999;padding:10px 20px;text-align:center;font-size:.8rem;font-weight:600;display:flex;align-items:center;justify-content:center;gap:8px;flex-wrap:wrap';
+    bn.style.background='linear-gradient(135deg,rgba(249,115,22,.15),rgba(234,179,8,.15))';
+    bn.style.borderBottom='2px solid rgba(249,115,22,.3)';bn.style.color='var(--t1)';
+    bn.innerHTML=`🔶 <strong>Creatività in calo</strong> — hai usato l'AI ${aiGuard.aiActions}x ma giocato solo ${aiGuard.manualActions} partite (${ratio}% AI). Allenati di più o le funzioni AI generative verranno sospese! <button onclick="removeAiGuardBanner()" style="background:none;border:1px solid rgba(255,255,255,.2);color:var(--t1);padding:3px 10px;border-radius:8px;cursor:pointer;font-size:.7rem;margin-left:6px">OK</button>`;
+  }else if(type==='suspended'){
+    bn.style.cssText='position:sticky;top:0;z-index:999;padding:12px 20px;text-align:center;font-size:.8rem;font-weight:600;display:flex;align-items:center;justify-content:center;gap:8px;flex-wrap:wrap';
+    bn.style.background='linear-gradient(135deg,rgba(239,68,68,.15),rgba(234,88,12,.15))';
+    bn.style.borderBottom='2px solid rgba(239,68,68,.3)';bn.style.color='var(--t1)';
+    bn.innerHTML=`🔒 <strong>Funzioni AI generative sospese.</strong> Completa ${aiGuard.gamesForUnlock} giochi per sbloccare. <span style="font-size:.7rem;opacity:.7">L'AI nei giochi e la Chat restano attive.</span>`;
+  }
+  document.body.prepend(bn);
+}
+
+function updateAiGuardBanner(){
+  const bn=document.getElementById('aiGuardBanner');
+  if(!bn)return;
+  if(aiGuard.suspended){
+    bn.innerHTML=`🔒 <strong>Funzioni AI sospese.</strong> Completa ancora ${aiGuard.gamesForUnlock} ${aiGuard.gamesForUnlock===1?'gioco':'giochi'} per sbloccare! 💪`;
+  }
+}
+
+function removeAiGuardBanner(){const b=document.getElementById('aiGuardBanner');if(b)b.remove();}
+
+function showAiGuardSuspendedModal(){
+  const existing=document.querySelector('.ai-guard-modal-ov');if(existing)existing.remove();
+  // Pick 3 random games
+  const allGames=['slot','flip','collision','devil','emotion','speed','bridge','hotornot','chain','freestyle'];
+  const shuffled=allGames.sort(()=>Math.random()-0.5).slice(0,3);
+  const gameInfo={slot:{icon:'🎰',name:'La Slot'},flip:{icon:'🔄',name:'Ribaltamento'},collision:{icon:'💥',name:'Collisione'},devil:{icon:'😈',name:'Avv. Diavolo'},emotion:{icon:'🎯',name:'Emozione x Tema'},speed:{icon:'⚡',name:'Speed Hook'},bridge:{icon:'🌉',name:'Il Ponte'},hotornot:{icon:'🔥',name:'Hot or Not'},chain:{icon:'⛓️',name:'La Catena'},freestyle:{icon:'✍️',name:'Freestyle'}};
+  const ov=document.createElement('div');ov.className='ai-guard-modal-ov';
+  ov.style.cssText='position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:10000;display:flex;align-items:center;justify-content:center;padding:20px';
+  ov.innerHTML=`<div style="background:var(--card);border-radius:20px;padding:28px;max-width:440px;width:100%;text-align:center;border:2px solid rgba(239,68,68,.2)">
+    <div style="font-size:2.5rem;margin-bottom:8px">🏋️</div>
+    <h3 style="margin:0 0 6px;font-size:1.1rem;color:var(--t1)">Tempo di Allenarsi!</h3>
+    <p style="font-size:.8rem;color:var(--t2);margin:0 0 16px;line-height:1.5">Hai usato troppo l'AI senza allenarti. Le funzioni AI generative sono sospese. Completa <strong>${aiGuard.gamesForUnlock} giochi</strong> per sbloccarle.</p>
+    <div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-bottom:16px">${shuffled.map(g=>{
+      const gi=gameInfo[g];
+      return `<button onclick="this.closest('.ai-guard-modal-ov').remove();openGame('${g}')" style="padding:14px 18px;border-radius:14px;background:rgba(255,107,53,.08);border:1px solid rgba(255,107,53,.2);color:var(--t1);cursor:pointer;font-size:.85rem;font-weight:600;display:flex;flex-direction:column;align-items:center;gap:4px;min-width:100px;transition:all .2s"><span style="font-size:1.6rem">${gi.icon}</span>${gi.name}</button>`;
+    }).join('')}</div>
+    <button onclick="this.closest('.ai-guard-modal-ov').remove()" style="background:none;border:none;color:var(--t2);cursor:pointer;font-size:.75rem;text-decoration:underline">Chiudi</button>
+  </div>`;
+  document.body.appendChild(ov);
+}
+
+function setCoachSeverity(sev){
+  aiGuard.severity=sev;saveAiGuard();
+  document.querySelectorAll('#coachSevChips .autorun-chip').forEach(c=>c.classList.toggle('active',c.dataset.sev===sev));
+  const desc={rilassato:'L\'AI ti assiste liberamente. Pochissime restrizioni.',bilanciato:'L\'AI ti aiuta ma devi allenarti. Se usi troppo l\'AI senza giocare, le funzioni generative vengono sospese.',spartano:'Allenamento prima di tutto. L\'AI generativa viene sospesa velocemente se non giochi abbastanza.'};
+  const d=document.getElementById('coachSevDesc');if(d)d.textContent=desc[sev]||'';
+  showToast('Coach: '+sev.charAt(0).toUpperCase()+sev.slice(1));
+}
 
 // ===== CROSS-GAME INTELLIGENCE =====
 function getSavedTemi(){const t=new Set();savedItems.forEach(it=>{if(it.type==='Slot'){const m=it.text.match(/\[TEMA\] (.+)/);if(m)t.add(m[1]);}if(it.type==='Collisione'){const p=it.text.split(' × ');if(p[0])t.add(p[0]);}if(it.type==='Emozione'){const p=it.text.split('\n');if(p[0]){const mm=p[0].split(' × ');if(mm[1])t.add(mm[1].trim());}}});return[...t];}
@@ -6531,6 +6672,8 @@ function arSelectLen(l){
 }
 
 async function launchAutorun(){
+  if(!checkAiGuard())return;
+  trackAiAction();
   // Read settings from DOM
   const s=autorunState.settings;
   s.topic=document.getElementById('arTopic').value.trim();
@@ -7015,6 +7158,8 @@ async function autorunToFucinaSmart(){
 // ===== HUB → FUCINA SMART =====
 async function hubAnalyzeAndCreateScript(){
   if(!isAI()){showToast('Connetti l\'AI prima');return;}
+  if(!checkAiGuard())return;
+  trackAiAction();
   if(!hubItems||!hubItems.length){showToast('Hub vuoto! Aggiungi contenuti prima.');return;}
   showToast('🔥 Analizzo i contenuti dell\'Hub...');
   const hubTexts=hubItems.slice(0,10).map((h,i)=>(i+1)+'. '+h.text.substring(0,200)).join('\n');
@@ -7041,6 +7186,8 @@ async function savedToFucinaSmart(idx){
   const items=savedItems||[];
   const item=items[idx];
   if(!item){showToast('Item non trovato');return;}
+  if(isAI()&&!checkAiGuard())return;
+  if(isAI())trackAiAction();
   if(!isAI()){
     // Fallback: just open Fucina with hook text
     fucinaSetup={type:null,hookSource:'new',hookText:item.text};fucinaView='setup';openFucinaStandalone();renderFucinaSetup();return;
@@ -8610,14 +8757,23 @@ Infine aggiungi:
 
 Formato JSON ESATTO:
 {"trends":[{"title":"","desc":"","why":"","tag":"trend|news"}],"ideas":[{"title":"","desc":"","hook":"","format":"","tag":"idea|hook"}],"tip":""}
-Solo JSON valido, nessun testo extra.`;
+IMPORTANTE: Rispondi SOLO con il JSON. NESSUN testo prima o dopo. NESSUN commento. NESSUN markdown. Solo il JSON puro.`;
   callAI(prompt).then(r=>{
     try{
-      const data=JSON.parse(r.replace(/```json?|```/g,'').trim());
+      let clean=r.replace(/```json?|```/g,'').trim();
+      let data;
+      try{data=JSON.parse(clean);}catch(e1){
+        // Fallback: extract JSON object from mixed text
+        const m=clean.match(/\{[\s\S]*\}/);
+        if(m)data=JSON.parse(m[0]);
+        else throw e1;
+      }
+      if(!data.trends&&!data.ideas)throw new Error('Formato non valido');
       newspaperData=data;newspaperLastLoad=Date.now();
       localStorage.setItem(hlKey('feed_ts'),String(Date.now()));
       renderNewspaper(data);
     }catch(e){
+      console.warn('Feed parse error:',e,r?.substring(0,200));
       el.innerHTML=`<div class="np-empty"><div class="np-empty-title">Errore nel parsing</div><div class="np-empty-desc">L'AI ha risposto in un formato inatteso. Riprova!</div><button class="np-refresh" onclick="loadNewspaper()">🔄 Riprova</button></div>`;
     }
   }).catch(e=>{
@@ -9438,6 +9594,8 @@ async function raccoltaToFucinaSmart(idx){
   const h=gameHistory.hooks[idx];
   if(!h){showToast('Hook non trovato');return;}
   if(!isAI()){raccoltaToFucina(idx);return;}
+  if(!checkAiGuard())return;
+  trackAiAction();
   showToast('🔥 AI sta creando lo script...');
   const ctx=JSON.parse(localStorage.getItem(hlKey('ctx'))||'{}');
   const voiceInfo=voice?.tone?.length?`Tono: ${voice.tone.join(', ')}.`:'';
@@ -10076,6 +10234,13 @@ document.addEventListener('DOMContentLoaded',()=>{
   setTimeout(()=>{initScrollReveal();},100);
   setTimeout(showOnboarding,300);
   setTimeout(checkSmartTips,2000);
+  // Restore AI Guard state
+  setTimeout(()=>{
+    if(aiGuard.suspended)showAiGuardBanner('suspended');
+    else if(aiGuard.warningLevel>=2)showAiGuardBanner('warning');
+    // Sync coach severity UI
+    document.querySelectorAll('#coachSevChips .autorun-chip').forEach(c=>c.classList.toggle('active',c.dataset.sev===aiGuard.severity));
+  },500);
   // PWA Service Worker
   if('serviceWorker' in navigator)navigator.serviceWorker.register('./sw.js').catch(()=>{});
 });

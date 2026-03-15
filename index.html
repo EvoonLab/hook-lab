@@ -251,6 +251,19 @@ body::after{content:'';position:fixed;inset:0;background:radial-gradient(circle 
 .fonti-picker-item .fpi-text{font-size:.72rem;color:var(--t1);line-height:1.3;flex:1}
 .fonti-picker-footer{display:flex;gap:8px;margin-top:12px;justify-content:flex-end}
 .fonti-picker-counter{font-size:.65rem;color:var(--t2);margin-top:6px}
+/* Confirm Modal */
+.confirm-modal{background:var(--card);border-radius:var(--r);padding:28px 24px;max-width:380px;width:90%;text-align:center;border:1px solid rgba(255,255,255,.12);box-shadow:0 20px 60px rgba(0,0,0,.5)}
+.cm-icon{font-size:2.2rem;margin-bottom:10px}
+.cm-title{font-size:.95rem;font-weight:800;margin-bottom:6px;color:var(--t1)}
+.cm-msg{font-size:.78rem;color:var(--t2);line-height:1.5;margin-bottom:18px}
+.cm-actions{display:flex;gap:10px;justify-content:center}
+.cm-cancel{padding:9px 22px;border-radius:10px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);color:var(--t2);cursor:pointer;font-size:.78rem;font-weight:600;transition:var(--tr)}
+.cm-cancel:hover{background:rgba(255,255,255,.1)}
+.cm-confirm{padding:9px 22px;border-radius:10px;background:var(--gf);border:none;color:#fff;cursor:pointer;font-weight:700;font-size:.78rem;transition:var(--tr)}
+.cm-confirm:hover{transform:scale(1.03);box-shadow:0 4px 15px rgba(255,107,53,.3)}
+.cm-confirm.danger{background:linear-gradient(135deg,#e74c3c,#c0392b)}
+.cm-confirm.danger:hover{box-shadow:0 4px 15px rgba(231,76,60,.3)}
+[data-theme="light"] .confirm-modal{border-color:rgba(0,0,0,.1);box-shadow:0 20px 60px rgba(0,0,0,.15)}
 .profile-actions{display:flex;gap:6px;margin-top:10px;align-items:center}
 .ctx-saved{font-size:.7rem;color:var(--a2);opacity:0;transition:opacity .4s;margin-left:auto}
 .ctx-saved.show{opacity:1}
@@ -2227,6 +2240,11 @@ body.light .shimmer::after{background:linear-gradient(90deg,transparent 0%,rgba(
         <span class="ck-chip" data-cta="link" onclick="setChatCta(this)">🔗 Clicca il link</span>
         <span class="ck-chip" data-cta="seguimi" onclick="setChatCta(this)">➕ Seguimi per...</span>
       </div>
+      <div class="chat-knowledge-bar" id="chatModelBar" style="margin-top:4px">
+        <span class="ck-label">AI:</span>
+        <span class="ck-chip active" data-ai="primary" onclick="setChatAiSlot('primary')">🤖 Primaria</span>
+        <span class="ck-chip" data-ai="secondary" onclick="setChatAiSlot('secondary')">🥊 Secondaria</span>
+      </div>
       <div class="chat-input-area">
         <textarea class="chat-input" id="chatInput" placeholder="Scrivi un messaggio..." rows="1"></textarea>
         <button class="chat-send" id="chatSendBtn" onclick="sendChatMessage()">➤</button>
@@ -2909,9 +2927,16 @@ async function aiCall(systemPrompt,userPrompt,maxTokens=300,temperature=0.9,slot
 }
 async function chatAiCall(chatMsgs){
   if(!isAI())return null;
-  const s=aiSettings.primary;
-  const p=AI_PROVIDERS[s.provider]||AI_PROVIDERS.openai;
-  const url=getAiUrl('primary'),model=getAiModel('primary');
+  const slot=chatAiSlot||'primary';
+  const s=aiSettings[slot]||aiSettings.primary;
+  if(!s||!s.key){// fallback to primary if secondary not configured
+    if(slot==='secondary'){showToast('⚠️ AI Secondaria non configurata — uso Primaria');
+      const s2=aiSettings.primary;if(!s2||!s2.key)return null;
+    }
+  }
+  const activeSlot=(s&&s.key)?slot:'primary';
+  const p=AI_PROVIDERS[(aiSettings[activeSlot]||{}).provider]||AI_PROVIDERS.openai;
+  const url=getAiUrl(activeSlot),model=getAiModel(activeSlot);
   // Build knowledge context from selected sources
   const sources={};
   document.querySelectorAll('#chatKnowledgeBar .ck-chip[data-src]').forEach(ch=>{sources[ch.dataset.src]=ch.dataset.active==='true';});
@@ -2946,7 +2971,11 @@ async function chatAiCall(chatMsgs){
   // Chat lessons (memory from past conversations)
   const chatLessons=(voice&&voice.chatLessons)||[];
   if(chatLessons.length){
-    knowledgeCtx+='\n\nLEZIONI DA CONVERSAZIONI PRECEDENTI:\n'+chatLessons.slice(-10).map((l,i)=>(i+1)+'. '+l).join('\n');
+    const lessonsFormatted=chatLessons.slice(-15).map((l,i)=>{
+      if(typeof l==='string')return (i+1)+'. '+l; // legacy format
+      return (i+1)+'. ['+((l.goal||'').toUpperCase())+'] "'+l.topic+'" → '+l.insight;
+    }).join('\n');
+    knowledgeCtx+='\n\nMEMORIA CONVERSAZIONI (usa per personalizzare risposte):\n'+lessonsFormatted;
   }
   const sourceCount=Object.values(sources).filter(Boolean).length;
   // Goal + CTA context
@@ -3061,6 +3090,7 @@ function addChatBubble(role,content){
   div.className='chat-bubble '+(role==='user'?'user':'ai');
   const time=new Date().toLocaleTimeString('it-IT',{hour:'2-digit',minute:'2-digit'});
   const speakBtn=role==='assistant'?'<button onclick="speakAI(this.closest(\'.chat-bubble\').textContent)" style="background:none;border:none;cursor:pointer;font-size:.7rem;opacity:.5;padding:2px" title="Ascolta">🔊</button>':'';
+  div.dataset.rawContent=content; // Store raw content for clean extraction
   div.innerHTML=(role==='user'?content.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/\n/g,'<br>'):formatChatContent(content))+'<span class="cb-time">'+time+' '+speakBtn+'</span>';
   // Detect script-like content and add action buttons
   if(role==='assistant'&&/\[(HOOK|APERTURA|PROBLEMA|SOLUZIONE|CTA|AMPLIFICA|OBIEZIONE|CHIUSURA|STORIA|TRANSIZIONE|VALORE|SCENA|INTRO|FINALE)\]/i.test(content)){
@@ -3071,18 +3101,18 @@ function addChatBubble(role,content){
 }
 function chatSendToFucina(btn){
   const bubble=btn.closest('.chat-bubble');if(!bubble)return;
-  const text=bubble.textContent.replace(/🔥 → Fucina|📋 Copia|⭐ Salva|🔊/g,'').trim();
+  const text=bubble.dataset.rawContent||bubble.textContent.replace(/🔥 → Fucina|📋 Copia|⭐ Salva|🔊/g,'').trim();
   sendHookToFucina(text);
 }
 function chatCopyBubble(btn){
   const bubble=btn.closest('.chat-bubble');if(!bubble)return;
-  const text=bubble.textContent.replace(/🔥 → Fucina|📋 Copia|⭐ Salva|🔊/g,'').trim();
+  const text=bubble.dataset.rawContent||bubble.textContent.replace(/🔥 → Fucina|📋 Copia|⭐ Salva|🔊/g,'').trim();
   navigator.clipboard.writeText(text).then(()=>showToast('📋 Copiato!'));
 }
 function chatSaveBubble(btn){
   const bubble=btn.closest('.chat-bubble');if(!bubble)return;
-  const text=bubble.textContent.replace(/🔥 → Fucina|📋 Copia|⭐ Salva|🔊/g,'').trim();
-  saveItem('Chat AI',text);showToast('⭐ Salvato nel Mazzo!');
+  const text=bubble.dataset.rawContent||bubble.textContent.replace(/🔥 → Fucina|📋 Copia|⭐ Salva|🔊/g,'').trim();
+  saveItem('Chat AI Script',text);showToast('⭐ Salvato nel Mazzo!');
 }
 function showChatTyping(){
   const el=document.getElementById('chatMessages');if(!el)return;
@@ -3122,9 +3152,8 @@ async function sendChatMessage(overrideText){
     // Save lesson from this exchange (memory for future chats)
     if(response.length>50){
       if(!voice.chatLessons)voice.chatLessons=[];
-      const lesson=(text.substring(0,40)+'→'+response.substring(0,80)).replace(/\n/g,' ');
-      voice.chatLessons.push(lesson);
-      if(voice.chatLessons.length>20)voice.chatLessons.shift();
+      voice.chatLessons.push({topic:text.substring(0,80).replace(/\n/g,' '),insight:response.substring(0,250).replace(/\n/g,' '),goal:chatGoal||'attrazione',date:Date.now()});
+      if(voice.chatLessons.length>30)voice.chatLessons.shift();
       saveVoice();
     }
   }catch(e){
@@ -3137,8 +3166,9 @@ async function sendChatMessage(overrideText){
   if(sendBtn)sendBtn.disabled=false;
 }
 function clearChatHistory(){
-  if(!confirm('Cancellare tutta la chat?'))return;
-  chatHistory=[];saveChatHistory();renderChatHistory();showToast('Chat cancellata');
+  showConfirmModal('🗑️ Reset Chat','Vuoi cancellare tutta la cronologia chat? Questa azione è irreversibile.',()=>{
+    chatHistory=[];saveChatHistory();renderChatHistory();showToast('Chat cancellata');
+  },{icon:'🗑️',confirmText:'Cancella tutto',danger:true});
 }
 function chatFastMazzo(){
   if(!savedItems.length){showToast('Mazzo vuoto! Salva qualche hook prima.');return;}
@@ -3211,6 +3241,16 @@ function chatInsertHub(overlay){
 }
 let chatGoal='attrazione';
 let chatCta='commenta';
+let chatAiSlot='primary';
+function setChatAiSlot(slot){
+  chatAiSlot=slot;
+  document.querySelectorAll('#chatModelBar .ck-chip').forEach(c=>c.classList.toggle('active',c.dataset.ai===slot));
+  // Update chip labels with provider names
+  const pChip=document.querySelector('#chatModelBar .ck-chip[data-ai="primary"]');
+  const sChip=document.querySelector('#chatModelBar .ck-chip[data-ai="secondary"]');
+  if(pChip){const p=AI_PROVIDERS[aiSettings.primary?.provider];pChip.textContent='🤖 '+(p?.label||'Primaria').split(' ')[0];}
+  if(sChip){const s=AI_PROVIDERS[aiSettings.secondary?.provider];sChip.textContent='🥊 '+(s?.label||'Secondaria').split(' ')[0];}
+}
 function setChatGoal(goal){
   chatGoal=goal;
   document.querySelectorAll('#chatGoalBar .ck-chip').forEach(c=>c.classList.toggle('active',c.dataset.goal===goal));
@@ -3642,6 +3682,23 @@ let resources=JSON.parse(localStorage.getItem(hlKey('resources'))||'{"links":[],
 if(!resources.links)resources.links=[];if(!resources.texts)resources.texts=[];if(!resources.notes)resources.notes=[];
 
 function saveVoice(){localStorage.setItem(hlKey('voice'),JSON.stringify(voice));}
+function saveMazzo(){localStorage.setItem(hlKey('saved'),JSON.stringify(savedItems));updateSavedCount();}
+function showConfirmModal(title,message,onConfirm,opts){
+  opts=opts||{};
+  const ov=document.createElement('div');ov.className='fonti-picker-overlay';
+  ov.innerHTML=`<div class="confirm-modal">
+    <div class="cm-icon">${opts.icon||'⚠️'}</div>
+    <h3 class="cm-title">${title}</h3>
+    <p class="cm-msg">${message}</p>
+    <div class="cm-actions">
+      <button class="cm-cancel" onclick="this.closest('.fonti-picker-overlay').remove()">${opts.cancelText||'Annulla'}</button>
+      <button class="cm-confirm ${opts.danger?'danger':''}" id="cmConfirmBtn">${opts.confirmText||'Conferma'}</button>
+    </div>
+  </div>`;
+  document.body.appendChild(ov);
+  ov.querySelector('#cmConfirmBtn').onclick=()=>{ov.remove();onConfirm();};
+  ov.onclick=e=>{if(e.target===ov)ov.remove();};
+}
 function saveResources(){localStorage.setItem(hlKey('resources'),JSON.stringify(resources));}
 
 let _lastLevelUpTime=0;
@@ -4255,8 +4312,9 @@ function renderLearnStats(){
   }
 }
 function resetVoiceLearning(){
-  if(!confirm('Vuoi cancellare tutte le correzioni e il feedback AI?'))return;
-  voice.lessons=[];voice.feedback=[];voice.blockFeedback=[];saveVoice();renderLearnStats();showToast('Apprendimento resettato');
+  showConfirmModal('🧹 Reset Apprendimento','Vuoi cancellare tutte le correzioni e il feedback AI? L\'AI dimenticherà tutto.',()=>{
+    voice.lessons=[];voice.feedback=[];voice.blockFeedback=[];saveVoice();renderLearnStats();showToast('Apprendimento resettato');
+  },{icon:'🧹',confirmText:'Reset',danger:true});
 }
 
 // Voice feedback helpers
@@ -6676,8 +6734,12 @@ function openAutorun(){
 
 function closeAutorun(){
   if(autorunState.phase==='pipeline'&&!autorunState.cancelled){
-    if(!confirm('Pipeline in corso. Vuoi davvero uscire?'))return;
-    autorunState.cancelled=true;
+    showConfirmModal('⚡ Pipeline Attiva','La pipeline Autorun è ancora in corso. Vuoi davvero uscire?',()=>{
+      autorunState.cancelled=true;
+      autorunState.active=false;
+      document.getElementById('autorunOverlay').style.display='none';
+    },{icon:'⚡',confirmText:'Esci',danger:true});
+    return;
   }
   autorunState.active=false;
   document.getElementById('autorunOverlay').style.display='none';
@@ -6745,6 +6807,11 @@ function renderAutorunSetup(){
       <div class="autorun-setup-card" style="animation-delay:.25s">
         <details class="autorun-advanced">
           <summary>⚙️ Impostazioni Avanzate</summary>
+          <label style="margin-top:12px">AI DA USARE</label>
+          <div class="autorun-chips" id="arAiSlotChips">
+            <div class="autorun-chip active" onclick="document.querySelectorAll('#arAiSlotChips .autorun-chip').forEach(c=>c.classList.remove('active'));this.classList.add('active');window._arAiSlot='primary'">🤖 Primaria</div>
+            <div class="autorun-chip" onclick="document.querySelectorAll('#arAiSlotChips .autorun-chip').forEach(c=>c.classList.remove('active'));this.classList.add('active');window._arAiSlot='secondary'">🥊 Secondaria</div>
+          </div>
           <label style="margin-top:12px">VINCOLI SPECIALI</label>
           <textarea id="arConstraints" rows="2" placeholder="Es: Non usare domande, solo affermazioni...">${s.constraints}</textarea>
           <div class="autorun-slider-row">
@@ -7151,8 +7218,11 @@ function autorunSaveScript(){
   const res=autorunState.result;
   const fullText=res.script.blocks.filter(b=>b.text).map(b=>'['+b.label+']\n'+b.text).join('\n\n');
   if(!fullText.trim()){showToast('Script vuoto!');return;}
-  saveItem('Autorun Script',fullText);
-  showToast('📝 Script salvato nel Mazzo!');
+  if(savedItems.some(i=>i.text===fullText)){showToast('Script già nel Mazzo!');return;}
+  savedItems.unshift({type:'Autorun Script',text:fullText,timestamp:Date.now(),category:'script',rating:0,
+    scriptRef:{id:'ar_'+Date.now(),type:res.script.type||'attrazione',title:(res.winningHook||'Autorun').substring(0,50),blockCount:res.script.blocks.filter(b=>b.text).length}
+  });
+  saveMazzo();showToast('📝 Script salvato nel Mazzo!');sSave();
 }
 
 function autorunSaveBlock(idx){
@@ -7216,27 +7286,33 @@ Se proponi un blocco modificato, scrivi: NEWBLOCK|${autorunState.result.script.b
     document.getElementById('arTyping')?.remove();
 
     if(r){
-      // Parse for NEWHOOK/NEWBLOCK
+      // Parse for NEWHOOK/NEWBLOCK — handle multiples
       let displayText=r;
       const newHookMatch=r.match(/NEWHOOK\|(.+)/);
       if(newHookMatch){
-        autorunState.result.winningHook=newHookMatch[1].trim();
+        autorunState.result.winningHook=newHookMatch[1].trim().replace(/"/g,'');
         const hookEl=document.getElementById('arWinningHook');
         if(hookEl)hookEl.textContent=autorunState.result.winningHook;
-        displayText=r.replace(/NEWHOOK\|.+/,'').trim();
-        if(!displayText)displayText='✅ Hook aggiornato!';
       }
-      const newBlockMatch=r.match(/NEWBLOCK\|(\w+)\|(.+)/);
-      if(newBlockMatch){
-        const bKey=newBlockMatch[1];
-        const bText=newBlockMatch[2].trim();
+      // Handle multiple NEWBLOCK entries
+      const newBlockMatches=[...r.matchAll(/NEWBLOCK\|(\w+)\|([^\n]+)/g)];
+      let updatedBlocks=0;
+      newBlockMatches.forEach(m=>{
+        const bKey=m[1];
+        const bText=m[2].trim().replace(/^"|"$/g,'');
         const block=autorunState.result.script.blocks.find(b=>b.key===bKey);
-        if(block){block.text=bText;}
-        displayText=r.replace(/NEWBLOCK\|.+/,'').trim();
-        if(!displayText)displayText='✅ Blocco "'+bKey+'" aggiornato!';
+        if(block){block.text=bText;updatedBlocks++;}
+      });
+      // Clean display text — remove all NEWHOOK/NEWBLOCK markers
+      displayText=r.replace(/NEWHOOK\|[^\n]+/g,'').replace(/NEWBLOCK\|[^\n]+/g,'').trim();
+      if(!displayText){
+        const parts=[];
+        if(newHookMatch)parts.push('Hook aggiornato');
+        if(updatedBlocks)parts.push(updatedBlocks+' blocco/i aggiornato/i');
+        displayText='✅ '+(parts.join(' + ')||'Risposta ricevuta');
       }
 
-      msgs.innerHTML+=`<div class="autorun-discuss-msg ai">${displayText}</div>`;
+      msgs.innerHTML+=`<div class="autorun-discuss-msg ai">${displayText.replace(/</g,'&lt;').replace(/\n/g,'<br>')}</div>`;
       autorunState.chatHistory.push({role:'assistant',content:r});
     }
   }catch(e){
@@ -7886,8 +7962,9 @@ function removeHubCard(i){
 
 function hubClearAll(){
   if(!hubItems.length)return;
-  if(!confirm('Svuotare l\'Hub?'))return;
-  hubItems=[];saveHubItems();renderHub();
+  showConfirmModal('🧩 Svuota Hub','Vuoi svuotare tutti i contenuti del Creative Hub?',()=>{
+    hubItems=[];saveHubItems();renderHub();
+  },{icon:'🧩',confirmText:'Svuota',danger:true});
 }
 
 function hubCompareSelected(){
@@ -9870,9 +9947,8 @@ function raccoltaSaveToMazzo(idx){
   const h=gameHistory.hooks[idx];
   if(!h)return;
   if(savedItems.some(s=>s.text===h.text)){showToast('Gia nel Mazzo!');return;}
-  savedItems.push({type:h.game||'raccolta',text:h.text,timestamp:Date.now()});
-  localStorage.setItem(hlKey('saved'),JSON.stringify(savedItems));
-  updateSavedCount();renderRaccolta();showToast('Aggiunto al Mazzo!');sClick();
+  savedItems.push({type:h.game||'raccolta',text:h.text,timestamp:Date.now(),category:'hook',rating:0});
+  saveMazzo();renderRaccolta();showToast('Aggiunto al Mazzo!');sClick();
 }
 
 function raccoltaAddToCal(idx){
@@ -10569,11 +10645,9 @@ Formato breve e diretto, stile Instagram Story.`;
 function ssSaveCombo(){
   if(!_ssLastCombo)return;
   const text=_ssLastCombo._aiResult||`[STORY COMBO] Tema: ${_ssLastCombo.tema} | Tipo: ${_ssLastCombo.tipo} | Hook: ${_ssLastCombo.hook}`;
-  if(typeof savedItems!=='undefined'){
-    savedItems.push({text,type:'story_combo',date:Date.now(),source:'Story Sequence'});
-    if(typeof saveMazzo==='function')saveMazzo();
-  }
-  showToast('⭐ Combinazione salvata nel Mazzo!');
+  if(savedItems.some(i=>i.text===text)){showToast('Già nel Mazzo!');return;}
+  savedItems.unshift({text,type:'story_combo',timestamp:Date.now(),category:'hook',rating:0,source:'Story Sequence'});
+  saveMazzo();showToast('⭐ Combinazione salvata nel Mazzo!');sSave();
 }
 
 // ===== STORY HOOK GAME =====
@@ -10658,11 +10732,11 @@ Stile: diretto, emotivo, format story (pochissimo testo). Ogni hook deve essere 
 
 function saveStoryHook(btn){
   const text=btn.closest('div[style]').parentElement.querySelector('div[style*="pre-line"]')?.textContent||'';
-  if(text&&typeof savedItems!=='undefined'){
-    savedItems.push({text:'[STORY HOOK] '+text.substring(0,300),type:'story_hook',date:Date.now(),source:'Story Hook Game'});
-    if(typeof saveMazzo==='function')saveMazzo();
-    showToast('⭐ Hook salvato nel Mazzo!');
-  }
+  if(!text)return;
+  const fullText='[STORY HOOK] '+text.substring(0,300);
+  if(savedItems.some(i=>i.text===fullText)){showToast('Già nel Mazzo!');return;}
+  savedItems.unshift({text:fullText,type:'story_hook',timestamp:Date.now(),category:'hook',rating:0,source:'Story Hook Game'});
+  saveMazzo();showToast('⭐ Hook salvato nel Mazzo!');sSave();
 }
 function copyStoryHook(btn){
   const text=btn.closest('div[style]').parentElement.querySelector('div[style*="pre-line"]')?.textContent||'';

@@ -2066,6 +2066,7 @@ body.light .shimmer::after{background:linear-gradient(90deg,transparent 0%,rgba(
   <span class="badge">DSS Edition</span>
   <button class="sound-toggle" id="soundToggle" onclick="toggleSound()">🔊</button>
   <button class="theme-toggle-btn" id="themeToggle" onclick="toggleTheme()" title="Cambia tema">🌙 <span class="tt-label">Tema</span></button>
+  <button id="adminDashBtn" onclick="openAdminDashboard()" title="Admin Dashboard" style="display:none;position:absolute;top:12px;right:220px;padding:6px 12px;border-radius:8px;background:rgba(251,191,36,.12);border:1px solid rgba(251,191,36,.3);color:#fbbf24;cursor:pointer;font-weight:700;font-size:.72rem;z-index:10">👑 Admin</button>
   <button onclick="openConnectionsPanel()" title="Connessioni AI" style="position:absolute;top:12px;right:120px;padding:6px 12px;border-radius:8px;background:rgba(102,187,106,.1);border:1px solid rgba(102,187,106,.25);color:#66bb6a;cursor:pointer;font-weight:700;font-size:.72rem;z-index:10">🔌 AI</button>
   <button class="auth-btn" id="authBtn" onclick="openAuthModal()" title="Login / Registrati" style="position:absolute;top:12px;right:12px;padding:6px 12px;border-radius:8px;background:rgba(255,107,53,.15);border:1px solid rgba(255,107,53,.3);color:var(--a1);cursor:pointer;font-weight:700;font-size:.72rem;z-index:10">🔐 Accedi</button>
 </header>
@@ -2737,7 +2738,7 @@ async function doGateAuth(){
     if(result.error)throw result.error;
     if(_gateMode==='signup'&&result.data?.user&&!result.data.session){
       errDiv.style.display='block';errDiv.style.background='rgba(0,184,148,.12)';errDiv.style.color='#00b894';
-      errDiv.textContent='✅ Controlla la tua email per confermare!';
+      errDiv.innerHTML='✅ Email inviata a <b>'+email+'</b>! Controlla la posta (anche spam).<br><button onclick="resendConfirmation(\''+email+'\')" style="margin-top:6px;padding:4px 12px;border-radius:6px;background:rgba(0,184,148,.15);border:1px solid rgba(0,184,148,.3);color:#00b894;cursor:pointer;font-size:.68rem">📧 Reinvia email di conferma</button>';
       btn.disabled=false;btn.textContent='🚀 Registrati';return;
     }
     // Auth success handled by onAuthStateChange
@@ -2785,15 +2786,19 @@ try{
 function updateAuthUI(){
   const btn=document.getElementById('authBtn');
   if(!btn)return;
+  const adminBtn=document.getElementById('adminDashBtn');
   if(supaUser){
     const dn=getUserDisplayName();
     btn.innerHTML=`<span style="font-size:.7rem">👤 ${dn}</span>`;
     btn.title='Account: '+supaUser.email;
     btn.onclick=()=>openAccountPanel();
+    // Show admin button only for admin emails
+    if(adminBtn)adminBtn.style.display=isAdminEmail(supaUser.email)?'block':'none';
   }else{
     btn.innerHTML='🔐 Accedi';
     btn.title='Login / Registrati';
     btn.onclick=()=>openAuthModal();
+    if(adminBtn)adminBtn.style.display='none';
   }
 }
 
@@ -2887,24 +2892,42 @@ async function doAuth(){
   }
 }
 
+async function resendConfirmation(email){
+  if(!supabaseClient)return;
+  try{
+    await supabaseClient.auth.resend({type:'signup',email});
+    showToast('📧 Email di conferma reinviata a '+email);
+  }catch(e){showToast('Errore: '+e.message);}
+}
+
+function getOAuthRedirect(){
+  if(window.location.protocol==='file:'){
+    showToast('⚠️ OAuth funziona solo dal sito online (non in locale). Usa email/password oppure apri il sito su GitHub Pages.');
+    return null;
+  }
+  return window.location.origin+window.location.pathname;
+}
 async function doGoogleAuth(){
   if(!supabaseClient){showToast('Supabase non disponibile');return;}
+  const redir=getOAuthRedirect();if(!redir)return;
   try{
-    const{error}=await supabaseClient.auth.signInWithOAuth({provider:'google',options:{redirectTo:window.location.origin+window.location.pathname}});
+    const{error}=await supabaseClient.auth.signInWithOAuth({provider:'google',options:{redirectTo:redir}});
     if(error)throw error;
   }catch(e){showToast('Errore Google: '+e.message);}
 }
 async function doGithubAuth(){
   if(!supabaseClient){showToast('Supabase non disponibile');return;}
+  const redir=getOAuthRedirect();if(!redir)return;
   try{
-    const{error}=await supabaseClient.auth.signInWithOAuth({provider:'github',options:{redirectTo:window.location.origin+window.location.pathname}});
+    const{error}=await supabaseClient.auth.signInWithOAuth({provider:'github',options:{redirectTo:redir}});
     if(error)throw error;
   }catch(e){showToast('Errore GitHub: '+e.message);}
 }
 async function doDiscordAuth(){
   if(!supabaseClient){showToast('Supabase non disponibile');return;}
+  const redir=getOAuthRedirect();if(!redir)return;
   try{
-    const{error}=await supabaseClient.auth.signInWithOAuth({provider:'discord',options:{redirectTo:window.location.origin+window.location.pathname}});
+    const{error}=await supabaseClient.auth.signInWithOAuth({provider:'discord',options:{redirectTo:redir}});
     if(error)throw error;
   }catch(e){showToast('Errore Discord: '+e.message);}
 }
@@ -3172,29 +3195,55 @@ const TEAMS=[
 let currentTeamId=localStorage.getItem('hl_lastTeam')||null;
 function hlKey(k){return currentTeamId?'hl_'+currentTeamId+'_'+k:'hl_'+k;}
 
-function showTeamSelector(){
-const overlay=document.getElementById('teamOverlay');
-const grid=document.getElementById('teamGrid');
-const userEmail=supaUser?.email||'';
-const canAdmin=isAdminEmail(userEmail);
-const displayName=getUserDisplayName();
-grid.innerHTML=TEAMS.map(t=>{
-  if(t.isAdmin&&!canAdmin){
-    return `<div class="team-card admin" style="opacity:.45;cursor:not-allowed;pointer-events:none">
-      <div class="tc-emoji">🔒</div>
-      <div class="tc-name">Admin</div>
-      <div class="tc-role" style="color:#ff5555">Solo amministratori</div>
-    </div>`;
+let _supaProfile=null; // cached Supabase profile for role checks
+async function showTeamSelector(){
+  // Wait for Supabase session if not ready
+  if(!supaUser&&supabaseClient){
+    try{
+      const{data:{session}}=await supabaseClient.auth.getSession();
+      if(session)supaUser=session.user;
+    }catch(e){console.warn('[HOOKA] Session check failed:',e);}
   }
-  const name=t.isAdmin?displayName+' (Admin)':t.role==='Manager'?displayName:t.name;
-  return `<div class="team-card${t.isAdmin?' admin':''}" onclick="selectTeam('${t.id}')">
-    <div class="tc-emoji">${t.emoji}</div>
-    <div class="tc-name">${name}</div>
-    <div class="tc-role">${t.isAdmin?'Amministratore':t.role||'Team Member'}</div>
-  </div>`;
-}).join('');
-overlay.style.display='flex';
-document.body.style.overflow='hidden';
+  // Fetch profile role from Supabase (for manager check)
+  if(supaUser&&supabaseClient&&!_supaProfile){
+    try{
+      const{data}=await supabaseClient.from('profiles').select('role').eq('id',supaUser.id).single();
+      if(data)_supaProfile=data;
+    }catch(e){}
+  }
+  const overlay=document.getElementById('teamOverlay');
+  const grid=document.getElementById('teamGrid');
+  const userEmail=supaUser?.email||'';
+  const canAdmin=isAdminEmail(userEmail);
+  const canManager=canAdmin||(_supaProfile?.role==='manager');
+  const displayName=getUserDisplayName();
+  console.log('[HOOKA] Team selector — email:',userEmail,'canAdmin:',canAdmin,'canManager:',canManager);
+  grid.innerHTML=TEAMS.map(t=>{
+    // Admin: only admin emails
+    if(t.isAdmin&&!canAdmin){
+      return `<div class="team-card admin" style="opacity:.35;cursor:not-allowed;pointer-events:none">
+        <div class="tc-emoji">🔒</div>
+        <div class="tc-name">Admin</div>
+        <div class="tc-role" style="color:#ef4444;font-size:.65rem">Solo amministratori</div>
+      </div>`;
+    }
+    // Manager: only if admin or assigned manager role
+    if(t.role==='Manager'&&!canManager){
+      return `<div class="team-card" style="opacity:.35;cursor:not-allowed;pointer-events:none">
+        <div class="tc-emoji">🔒</div>
+        <div class="tc-name">Manager</div>
+        <div class="tc-role" style="color:#f59e0b;font-size:.65rem">Su invito dell'Admin</div>
+      </div>`;
+    }
+    const name=t.isAdmin?displayName+' (Admin)':t.role==='Manager'?displayName+' (Manager)':t.name;
+    return `<div class="team-card${t.isAdmin?' admin':''}" onclick="selectTeam('${t.id}')">
+      <div class="tc-emoji">${t.emoji}</div>
+      <div class="tc-name">${name}</div>
+      <div class="tc-role">${t.isAdmin?'Amministratore':t.role||'Team Member'}</div>
+    </div>`;
+  }).join('');
+  overlay.style.display='flex';
+  document.body.style.overflow='hidden';
 }
 
 function selectTeam(teamId){
@@ -13361,6 +13410,185 @@ function gdriveImportDoc(){
   inp.click();
 }
 
+// ===== ADMIN ANALYTICS DASHBOARD =====
+async function openAdminDashboard(){
+  if(!isAdminEmail(supaUser?.email)){showToast('Accesso non autorizzato');return;}
+  if(!supabaseClient){showToast('Supabase non connesso');return;}
+  const existing=document.getElementById('adminDashOverlay');if(existing)existing.remove();
+
+  const ov=document.createElement('div');ov.id='adminDashOverlay';
+  ov.style.cssText='position:fixed;inset:0;z-index:99999;background:rgba(0,0,0,.92);overflow-y:auto;padding:20px';
+  ov.innerHTML='<div style="max-width:900px;margin:0 auto;padding:20px"><h2 style="text-align:center;color:#fbbf24">👑 Admin Dashboard</h2><p style="text-align:center;color:var(--t2);font-size:.75rem">Caricamento dati...</p></div>';
+  document.body.appendChild(ov);
+
+  try{
+    // Fetch all profiles
+    const{data:allProfiles,error:profErr}=await supabaseClient.from('profiles').select('*').order('xp',{ascending:false});
+    if(profErr)throw profErr;
+    const users=allProfiles||[];
+
+    // Fetch leaderboard
+    const{data:lbData}=await supabaseClient.from('leaderboard').select('*').order('score',{ascending:false}).limit(20);
+    const lb=lbData||[];
+
+    // Stats
+    const totalUsers=users.length;
+    const totalXP=users.reduce((s,u)=>s+(u.xp||0),0);
+    const totalHooks=users.reduce((s,u)=>s+(u.hooks_salvati||0),0);
+    const totalGames=users.reduce((s,u)=>s+(u.giocate||0),0);
+    const avgStreak=totalUsers?Math.round(users.reduce((s,u)=>s+(u.streak||0),0)/totalUsers):0;
+    const activeToday=users.filter(u=>{const d=u.updated_at;return d&&(Date.now()-new Date(d).getTime())<86400000;}).length;
+
+    // Render dashboard
+    const container=ov.querySelector('div');
+    container.innerHTML=`
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px">
+        <h2 style="color:#fbbf24;margin:0">👑 Admin Dashboard</h2>
+        <button onclick="document.getElementById('adminDashOverlay')?.remove()" style="background:none;border:1px solid rgba(255,255,255,.15);color:var(--t2);padding:6px 14px;border-radius:8px;cursor:pointer;font-size:.75rem">✕ Chiudi</button>
+      </div>
+
+      <!-- Summary Cards -->
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:10px;margin-bottom:20px">
+        <div style="background:rgba(251,191,36,.08);border:1px solid rgba(251,191,36,.2);border-radius:12px;padding:14px;text-align:center">
+          <div style="font-size:1.6rem;font-weight:800;color:#fbbf24">${totalUsers}</div>
+          <div style="font-size:.65rem;color:var(--t2);text-transform:uppercase;letter-spacing:1px">Utenti Totali</div>
+        </div>
+        <div style="background:rgba(34,197,94,.08);border:1px solid rgba(34,197,94,.2);border-radius:12px;padding:14px;text-align:center">
+          <div style="font-size:1.6rem;font-weight:800;color:#22c55e">${activeToday}</div>
+          <div style="font-size:.65rem;color:var(--t2);text-transform:uppercase;letter-spacing:1px">Attivi Oggi</div>
+        </div>
+        <div style="background:rgba(139,92,246,.08);border:1px solid rgba(139,92,246,.2);border-radius:12px;padding:14px;text-align:center">
+          <div style="font-size:1.6rem;font-weight:800;color:#8b5cf6">${totalXP.toLocaleString()}</div>
+          <div style="font-size:.65rem;color:var(--t2);text-transform:uppercase;letter-spacing:1px">XP Totale</div>
+        </div>
+        <div style="background:rgba(255,107,53,.08);border:1px solid rgba(255,107,53,.2);border-radius:12px;padding:14px;text-align:center">
+          <div style="font-size:1.6rem;font-weight:800;color:var(--a1)">${totalHooks}</div>
+          <div style="font-size:.65rem;color:var(--t2);text-transform:uppercase;letter-spacing:1px">Hooks Salvati</div>
+        </div>
+        <div style="background:rgba(6,182,212,.08);border:1px solid rgba(6,182,212,.2);border-radius:12px;padding:14px;text-align:center">
+          <div style="font-size:1.6rem;font-weight:800;color:#06b6d4">${totalGames}</div>
+          <div style="font-size:.65rem;color:var(--t2);text-transform:uppercase;letter-spacing:1px">Giocate Totali</div>
+        </div>
+        <div style="background:rgba(236,72,153,.08);border:1px solid rgba(236,72,153,.2);border-radius:12px;padding:14px;text-align:center">
+          <div style="font-size:1.6rem;font-weight:800;color:#ec4899">🔥 ${avgStreak}</div>
+          <div style="font-size:.65rem;color:var(--t2);text-transform:uppercase;letter-spacing:1px">Streak Media</div>
+        </div>
+      </div>
+
+      <!-- Users Table -->
+      <div style="margin-bottom:20px">
+        <h3 style="font-size:.85rem;color:var(--t1);margin-bottom:10px">📊 Tutti gli Utenti (${totalUsers})</h3>
+        <div style="overflow-x:auto;border-radius:10px;border:1px solid rgba(255,255,255,.08)">
+          <table style="width:100%;border-collapse:collapse;font-size:.72rem">
+            <thead>
+              <tr style="background:rgba(255,255,255,.04)">
+                <th style="padding:10px 8px;text-align:left;color:var(--a1);font-weight:700;border-bottom:1px solid rgba(255,255,255,.1)">#</th>
+                <th style="padding:10px 8px;text-align:left;color:var(--a1);font-weight:700;border-bottom:1px solid rgba(255,255,255,.1)">Utente</th>
+                <th style="padding:10px 8px;text-align:left;color:var(--a1);font-weight:700;border-bottom:1px solid rgba(255,255,255,.1)">Email</th>
+                <th style="padding:10px 8px;text-align:center;color:var(--a1);font-weight:700;border-bottom:1px solid rgba(255,255,255,.1)">XP</th>
+                <th style="padding:10px 8px;text-align:center;color:var(--a1);font-weight:700;border-bottom:1px solid rgba(255,255,255,.1)">LV</th>
+                <th style="padding:10px 8px;text-align:center;color:var(--a1);font-weight:700;border-bottom:1px solid rgba(255,255,255,.1)">Giocate</th>
+                <th style="padding:10px 8px;text-align:center;color:var(--a1);font-weight:700;border-bottom:1px solid rgba(255,255,255,.1)">Hooks</th>
+                <th style="padding:10px 8px;text-align:center;color:var(--a1);font-weight:700;border-bottom:1px solid rgba(255,255,255,.1)">Streak</th>
+                <th style="padding:10px 8px;text-align:center;color:var(--a1);font-weight:700;border-bottom:1px solid rgba(255,255,255,.1)">Ruolo</th>
+                <th style="padding:10px 8px;text-align:center;color:var(--a1);font-weight:700;border-bottom:1px solid rgba(255,255,255,.1)">Ultimo</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${users.map((u,i)=>{
+                const isAdmin=ADMIN_EMAILS.includes(u.email?.toLowerCase());
+                const roleLabel=isAdmin?'👑 Admin':u.role==='manager'?'📋 Manager':'👤 Team';
+                const lastAct=u.updated_at?new Date(u.updated_at).toLocaleDateString('it-IT',{day:'2-digit',month:'short'}):'—';
+                const rowBg=i===0?'rgba(251,191,36,.06)':i%2===0?'rgba(255,255,255,.02)':'transparent';
+                return `<tr style="background:${rowBg}">
+                  <td style="padding:8px;border-bottom:1px solid rgba(255,255,255,.04);color:var(--t2)">${i+1}</td>
+                  <td style="padding:8px;border-bottom:1px solid rgba(255,255,255,.04);font-weight:600">${i===0?'🏆 ':''}${u.username||'Anonimo'}</td>
+                  <td style="padding:8px;border-bottom:1px solid rgba(255,255,255,.04);color:var(--t2);font-size:.65rem">${u.email||'—'}</td>
+                  <td style="padding:8px;border-bottom:1px solid rgba(255,255,255,.04);text-align:center;font-weight:700;color:#8b5cf6">${(u.xp||0).toLocaleString()}</td>
+                  <td style="padding:8px;border-bottom:1px solid rgba(255,255,255,.04);text-align:center">${u.livello||1}</td>
+                  <td style="padding:8px;border-bottom:1px solid rgba(255,255,255,.04);text-align:center">${u.giocate||0}</td>
+                  <td style="padding:8px;border-bottom:1px solid rgba(255,255,255,.04);text-align:center">${u.hooks_salvati||0}</td>
+                  <td style="padding:8px;border-bottom:1px solid rgba(255,255,255,.04);text-align:center">${u.streak||0}🔥</td>
+                  <td style="padding:8px;border-bottom:1px solid rgba(255,255,255,.04);text-align:center">
+                    ${isAdmin?'<span style="color:#fbbf24;font-weight:700">👑 Admin</span>':`<select onchange="adminSetRole('${u.id}',this.value)" style="background:var(--card);border:1px solid rgba(255,255,255,.1);color:var(--t1);padding:3px 6px;border-radius:6px;font-size:.65rem;cursor:pointer">
+                      <option value="team"${u.role!=='manager'?' selected':''}>👤 Team</option>
+                      <option value="manager"${u.role==='manager'?' selected':''}>📋 Manager</option>
+                    </select>`}
+                  </td>
+                  <td style="padding:8px;border-bottom:1px solid rgba(255,255,255,.04);text-align:center;font-size:.6rem;color:var(--t2)">${lastAct}</td>
+                </tr>`;
+              }).join('')}
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Leaderboard -->
+      ${lb.length?`
+      <div style="margin-bottom:20px">
+        <h3 style="font-size:.85rem;color:var(--t1);margin-bottom:10px">🏆 Leaderboard Top ${Math.min(lb.length,10)}</h3>
+        <div style="display:grid;gap:6px">
+          ${lb.slice(0,10).map((e,i)=>`
+            <div style="display:flex;align-items:center;gap:10px;padding:8px 12px;background:rgba(255,255,255,.03);border-radius:8px;border:1px solid rgba(255,255,255,.06)">
+              <span style="font-size:1rem;min-width:28px;text-align:center">${i===0?'🥇':i===1?'🥈':i===2?'🥉':i+1}</span>
+              <span style="flex:1;font-weight:600;font-size:.78rem">${e.username||'Anonimo'}</span>
+              <span style="font-weight:700;color:#fbbf24;font-size:.8rem">${(e.score||0).toLocaleString()} XP</span>
+            </div>
+          `).join('')}
+        </div>
+      </div>`:''}
+
+      <!-- Quick Actions -->
+      <div style="margin-bottom:20px">
+        <h3 style="font-size:.85rem;color:var(--t1);margin-bottom:10px">⚡ Azioni Rapide</h3>
+        <div style="display:flex;flex-wrap:wrap;gap:8px">
+          <button onclick="adminExportAllUsers()" style="padding:8px 14px;border-radius:8px;background:rgba(34,197,94,.1);border:1px solid rgba(34,197,94,.2);color:#22c55e;cursor:pointer;font-size:.72rem;font-weight:600">📥 Esporta Utenti CSV</button>
+          <button onclick="adminRefreshDash()" style="padding:8px 14px;border-radius:8px;background:rgba(6,182,212,.1);border:1px solid rgba(6,182,212,.2);color:#06b6d4;cursor:pointer;font-size:.72rem;font-weight:600">🔄 Aggiorna Dati</button>
+        </div>
+      </div>
+
+      <!-- RLS Notice -->
+      <div style="padding:12px;background:rgba(251,191,36,.06);border:1px solid rgba(251,191,36,.15);border-radius:10px;margin-bottom:20px">
+        <p style="font-size:.65rem;color:#fbbf24;margin:0"><b>⚠️ Nota RLS:</b> Se la tabella non mostra tutti gli utenti, esegui questo SQL su Supabase → SQL Editor:</p>
+        <code style="display:block;background:rgba(0,0,0,.3);padding:8px;border-radius:6px;font-size:.6rem;color:var(--t2);margin-top:6px;word-break:break-all">CREATE POLICY "Admin can read all profiles" ON profiles FOR SELECT USING (auth.jwt() ->> 'email' = 'evoonconsulting@gmail.com');</code>
+      </div>
+    `;
+  }catch(err){
+    ov.querySelector('div').innerHTML=`<h3 style="color:#ef4444">Errore</h3><p style="color:var(--t2);font-size:.75rem">${err.message}</p><button onclick="document.getElementById('adminDashOverlay')?.remove()" style="margin-top:12px;padding:8px 16px;border-radius:8px;background:none;border:1px solid rgba(255,255,255,.1);color:var(--t2);cursor:pointer">Chiudi</button>`;
+  }
+}
+
+async function adminSetRole(userId,role){
+  if(!supabaseClient||!isAdminEmail(supaUser?.email))return;
+  try{
+    const{error}=await supabaseClient.from('profiles').update({role:role}).eq('id',userId);
+    if(error)throw error;
+    showToast(`Ruolo aggiornato a ${role==='manager'?'📋 Manager':'👤 Team'}`);
+  }catch(e){showToast('Errore: '+e.message);}
+}
+
+function adminExportAllUsers(){
+  const table=document.querySelector('#adminDashOverlay table');
+  if(!table)return;
+  const rows=table.querySelectorAll('tr');
+  let csv='#,Utente,Email,XP,LV,Giocate,Hooks,Streak,Ruolo,Ultimo\n';
+  rows.forEach((r,i)=>{
+    if(i===0)return; // skip header
+    const cells=[...r.querySelectorAll('td')].map(c=>c.textContent.trim().replace(/,/g,';'));
+    csv+=cells.join(',')+'\n';
+  });
+  const blob=new Blob([csv],{type:'text/csv'});
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement('a');a.href=url;a.download='hooka-users-'+new Date().toISOString().slice(0,10)+'.csv';
+  a.click();URL.revokeObjectURL(url);
+  showToast('📥 CSV esportato!');
+}
+
+function adminRefreshDash(){
+  document.getElementById('adminDashOverlay')?.remove();
+  openAdminDashboard();
+}
+
 // ===== CONNECTIONS PANEL =====
 function openConnectionsPanel(){
   const existing=document.getElementById('connectionsPanel');if(existing)existing.remove();
@@ -13391,7 +13619,10 @@ function openConnectionsPanel(){
           <span style="font-size:.65rem;color:var(--t2)">${secConn?sec.model||'Connesso':'Opzionale →'}</span>
         </div>
       </div>
-      <p style="font-size:.6rem;color:var(--t2);margin-top:6px">Consigliato: <b>OpenRouter</b> per accesso a GPT-4o, Claude, Gemini, Llama con una sola key</p>
+      <div style="display:flex;align-items:center;gap:8px;margin-top:6px">
+        <p style="font-size:.6rem;color:var(--t2);margin:0">Consigliato: <b>OpenRouter</b> per accesso a GPT-4o, Claude, Gemini, Llama con una sola key</p>
+        <button onclick="event.stopPropagation();showConnectionGuide('ai')" style="flex-shrink:0;width:22px;height:22px;border-radius:50%;background:rgba(255,107,53,.12);border:1px solid rgba(255,107,53,.3);color:var(--a1);cursor:pointer;font-size:.65rem;font-weight:800;line-height:1" title="Guida setup">?</button>
+      </div>
     </div>
 
     <!-- IMMAGINI AI -->
@@ -13403,7 +13634,10 @@ function openConnectionsPanel(){
           <span style="font-size:.65rem;color:var(--t2)">${dalleOk?'Attivo':'Configura →'}</span>
         </div>
       </div>
-      <p style="font-size:.6rem;color:var(--t2);margin-top:6px">Usato in Sketch Hook 2.0 per generare illustrazioni AI. Serve OpenAI API key ($0.04/immagine)</p>
+      <div style="display:flex;align-items:center;gap:8px;margin-top:6px">
+        <p style="font-size:.6rem;color:var(--t2);margin:0">Usato in Sketch Hook 2.0 per generare illustrazioni AI. Serve OpenAI API key ($0.04/immagine)</p>
+        <button onclick="event.stopPropagation();showConnectionGuide('dalle')" style="flex-shrink:0;width:22px;height:22px;border-radius:50%;background:rgba(139,92,246,.12);border:1px solid rgba(139,92,246,.3);color:#8b5cf6;cursor:pointer;font-size:.65rem;font-weight:800;line-height:1" title="Guida setup">?</button>
+      </div>
     </div>
 
     <!-- AUDIO AI -->
@@ -13446,6 +13680,83 @@ function openConnectionsPanel(){
     </div>
 
     <button onclick="document.getElementById('connectionsPanel')?.remove()" style="width:100%;padding:10px;border-radius:10px;background:none;border:1px solid rgba(255,255,255,.1);color:var(--t2);cursor:pointer;font-size:.78rem;margin-top:4px">✕ Chiudi</button>
+  </div>`;
+  document.body.appendChild(ov);
+  ov.addEventListener('click',e=>{if(e.target===ov)ov.remove();});
+}
+
+// ===== CONNECTION GUIDES =====
+function showConnectionGuide(type){
+  const guides={
+    ai:{
+      title:'🤖 Come configurare l\'AI (Testo)',
+      color:'#ff6b35',
+      steps:[
+        {icon:'1️⃣',text:'Vai su <a href="https://openrouter.ai" target="_blank" style="color:#ff6b35;text-decoration:underline">openrouter.ai</a> e crea un account gratuito'},
+        {icon:'2️⃣',text:'Clicca su <b>"Keys"</b> nel menu e poi <b>"Create Key"</b>'},
+        {icon:'3️⃣',text:'Copia la key (inizia con <code style="background:rgba(255,255,255,.1);padding:2px 6px;border-radius:4px">sk-or-...</code>)'},
+        {icon:'4️⃣',text:'Torna in HOOKA → clicca <b>🔌 AI</b> nella header'},
+        {icon:'5️⃣',text:'Clicca <b>🤖 AI Primaria</b> → seleziona <b>OpenRouter</b> come provider'},
+        {icon:'6️⃣',text:'Incolla la key nel campo API Key'},
+        {icon:'7️⃣',text:'Scegli il modello (consigliato: <b>Claude Sonnet</b> o <b>GPT-4o</b>)'},
+        {icon:'8️⃣',text:'Clicca <b>"Testa"</b> per verificare la connessione'},
+        {icon:'💡',text:'<b>Pro tip:</b> Configura anche l\'AI Secondaria per i giochi <b>AI Fight</b> — usa un provider diverso per scontri più interessanti!'}
+      ]
+    },
+    dalle:{
+      title:'🎨 Come configurare DALL-E (Immagini)',
+      color:'#8b5cf6',
+      steps:[
+        {icon:'1️⃣',text:'Vai su <a href="https://platform.openai.com" target="_blank" style="color:#8b5cf6;text-decoration:underline">platform.openai.com</a>'},
+        {icon:'2️⃣',text:'Crea un account OpenAI se non ne hai uno'},
+        {icon:'3️⃣',text:'Vai su <b>Settings → Billing</b> e aggiungi credito (minimo $5)'},
+        {icon:'4️⃣',text:'Vai su <b>API Keys</b> e clicca <b>"Create new secret key"</b>'},
+        {icon:'5️⃣',text:'Copia la key (inizia con <code style="background:rgba(255,255,255,.1);padding:2px 6px;border-radius:4px">sk-...</code>)'},
+        {icon:'6️⃣',text:'In HOOKA → apri le <b>⚙️ Impostazioni AI</b>'},
+        {icon:'7️⃣',text:'Scorri in basso e trova la sezione <b>DALL-E</b>'},
+        {icon:'8️⃣',text:'Incolla la key e clicca <b>"Testa DALL-E"</b>'},
+        {icon:'💰',text:'<b>Costo:</b> ~$0.04 per immagine con DALL-E 3. Ottimo per Sketch Hook 2.0!'}
+      ]
+    },
+    clickup:{
+      title:'📋 Come connettere ClickUp',
+      color:'#7c3aed',
+      steps:[
+        {icon:'1️⃣',text:'Vai su <a href="https://app.clickup.com/settings/apps" target="_blank" style="color:#7c3aed;text-decoration:underline">app.clickup.com/settings/apps</a>'},
+        {icon:'2️⃣',text:'Scorri fino a <b>"API Token"</b> e generane uno'},
+        {icon:'3️⃣',text:'Copia il token'},
+        {icon:'4️⃣',text:'In HOOKA → clicca 🔌 AI → <b>📋 ClickUp</b>'},
+        {icon:'5️⃣',text:'Incolla il token e clicca <b>"Testa Connessione"</b>'},
+        {icon:'✅',text:'Ora puoi inviare i tuoi script direttamente come task su ClickUp!'}
+      ]
+    },
+    gdrive:{
+      title:'📁 Come usare Google Drive',
+      color:'#22c55e',
+      steps:[
+        {icon:'1️⃣',text:'Fai login in HOOKA con <b>Google</b> (usa il bottone "Continua con Google")'},
+        {icon:'2️⃣',text:'Clicca 🔌 AI → <b>📁 Google Drive</b>'},
+        {icon:'3️⃣',text:'Clicca <b>"Esporta su Drive"</b> per salvare hook, script e profili'},
+        {icon:'4️⃣',text:'Usa <b>"Importa da file"</b> per caricare JSON, TXT o MD'},
+        {icon:'💡',text:'<b>Nota:</b> Il login Google deve essere fatto con lo stesso account del tuo Drive'}
+      ]
+    }
+  };
+  const g=guides[type];if(!g)return;
+  const existing=document.getElementById('connectionGuideOverlay');if(existing)existing.remove();
+  const ov=document.createElement('div');ov.id='connectionGuideOverlay';
+  ov.style.cssText='position:fixed;inset:0;z-index:999999;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,.85)';
+  ov.innerHTML=`<div style="background:var(--card);border-radius:16px;padding:24px;width:92%;max-width:440px;border:1px solid ${g.color}33;max-height:85vh;overflow-y:auto">
+    <h3 style="text-align:center;margin-bottom:16px;font-size:.95rem;color:${g.color}">${g.title}</h3>
+    <div style="display:flex;flex-direction:column;gap:10px">
+      ${g.steps.map(s=>`
+        <div style="display:flex;gap:10px;padding:10px 12px;background:rgba(255,255,255,.03);border-radius:10px;border:1px solid rgba(255,255,255,.06)">
+          <span style="font-size:1rem;flex-shrink:0">${s.icon}</span>
+          <span style="font-size:.75rem;color:var(--t1);line-height:1.5">${s.text}</span>
+        </div>
+      `).join('')}
+    </div>
+    <button onclick="document.getElementById('connectionGuideOverlay')?.remove()" style="width:100%;padding:10px;border-radius:10px;background:${g.color}15;border:1px solid ${g.color}30;color:${g.color};cursor:pointer;font-size:.78rem;font-weight:600;margin-top:16px">✓ Ho capito!</button>
   </div>`;
   document.body.appendChild(ov);
   ov.addEventListener('click',e=>{if(e.target===ov)ov.remove();});

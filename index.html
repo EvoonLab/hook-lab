@@ -1514,7 +1514,7 @@ body.light .shimmer::after{background:linear-gradient(90deg,transparent 0%,rgba(
 .kb-hint kbd{padding:2px 7px;background:rgba(255,107,53,.1);border:1px solid rgba(255,107,53,.25);border-radius:4px;font-family:inherit;font-size:.6rem;color:var(--a3);font-weight:600}
 
 /* ===== LA FUCINA (Script Studio) ===== */
-.fucina-entry{max-width:900px;margin:0 auto 10px;padding:0 20px}
+.fucina-entry{max-width:900px;margin:0 auto 16px;padding:0 20px}
 .fucina-entry-card{background:linear-gradient(135deg,rgba(168,85,247,.08),rgba(236,72,153,.08));border:1px solid rgba(168,85,247,.25);border-radius:var(--r);padding:14px 18px;cursor:pointer;transition:var(--tr);display:flex;align-items:center;gap:14px}
 .fucina-entry-card:hover{background:linear-gradient(135deg,rgba(168,85,247,.14),rgba(236,72,153,.14));transform:translateY(-2px);box-shadow:0 4px 20px rgba(168,85,247,.2)}
 .fucina-entry-icon{font-size:1.6rem;flex-shrink:0}
@@ -1522,7 +1522,7 @@ body.light .shimmer::after{background:linear-gradient(90deg,transparent 0%,rgba(
 .fucina-entry-title{font-size:.85rem;font-weight:800;color:#a855f7}
 .fucina-entry-desc{font-size:.73rem;color:var(--t2);margin-top:3px;line-height:1.4}
 .fucina-entry-count{padding:4px 12px;background:rgba(168,85,247,.15);border-radius:20px;font-size:.7rem;font-weight:700;color:#c084fc;white-space:nowrap}
-.fucina-standalone{display:none;margin:18px 0}
+.fucina-standalone{display:none;margin:18px 0;padding:0 4px}
 .fucina-standalone.visible{display:block}
 .fucina-standalone-header{background:linear-gradient(135deg,rgba(168,85,247,.12),rgba(236,72,153,.08));border:1px solid rgba(168,85,247,.2);border-radius:var(--r) var(--r) 0 0;padding:16px 20px;border-bottom:3px solid;border-image:linear-gradient(135deg,#a855f7,#ec4899) 1}
 .fucina-standalone-top{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
@@ -1577,7 +1577,7 @@ body.light .shimmer::after{background:linear-gradient(90deg,transparent 0%,rgba(
 .script-list-empty{text-align:center;padding:40px 20px;color:var(--t2)}
 .script-list-empty .sle-icon{font-size:2.5rem;margin-bottom:12px}
 .script-list-empty .sle-text{font-size:.9rem;margin-bottom:16px}
-.script-item{display:flex;align-items:center;gap:12px;padding:14px;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.06);border-radius:var(--rs);margin-bottom:8px;cursor:pointer;transition:var(--tr)}
+.script-item{display:flex;align-items:center;gap:14px;padding:16px 18px;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.1);border-radius:var(--r);margin-bottom:10px;cursor:pointer;transition:var(--tr)}
 .script-item:hover{background:rgba(168,85,247,.06);border-color:rgba(168,85,247,.2);transform:translateX(3px)}
 .script-item .si-icon{font-size:1.3rem;flex-shrink:0}
 .script-item .si-body{flex:1;min-width:0}
@@ -2067,8 +2067,9 @@ body.light .shimmer::after{background:linear-gradient(90deg,transparent 0%,rgba(
   <span class="badge">DSS Edition</span>
   <button class="sound-toggle" id="soundToggle" onclick="toggleSound()">🔊</button>
   <button class="theme-toggle-btn" id="themeToggle" onclick="toggleTheme()" title="Cambia tema">🌙 <span class="tt-label">Tema</span></button>
-  <button id="adminDashBtn" onclick="openAdminDashboard()" title="Admin Dashboard" style="display:none;position:absolute;top:12px;right:220px;padding:6px 12px;border-radius:8px;background:rgba(251,191,36,.12);border:1px solid rgba(251,191,36,.3);color:#fbbf24;cursor:pointer;font-weight:700;font-size:.72rem;z-index:10">👑 Admin</button>
-  <button onclick="openConnectionsPanel()" title="Connessioni AI" style="position:absolute;top:12px;right:120px;padding:6px 12px;border-radius:8px;background:rgba(102,187,106,.1);border:1px solid rgba(102,187,106,.25);color:#66bb6a;cursor:pointer;font-weight:700;font-size:.72rem;z-index:10">🔌 AI</button>
+  <button id="adminDashBtn" onclick="openAdminDashboard()" title="Admin Dashboard" style="display:none;position:absolute;top:12px;right:340px;padding:6px 12px;border-radius:8px;background:rgba(251,191,36,.12);border:1px solid rgba(251,191,36,.3);color:#fbbf24;cursor:pointer;font-weight:700;font-size:.72rem;z-index:10">👑 Admin</button>
+  <button onclick="openMicroVideoCreator()" title="Micro-Video AI" style="position:absolute;top:12px;right:230px;padding:6px 12px;border-radius:8px;background:rgba(139,92,246,.1);border:1px solid rgba(139,92,246,.25);color:#8b5cf6;cursor:pointer;font-weight:700;font-size:.72rem;z-index:10">🎬 Video</button>
+  <button onclick="openConnectionsPanel()" title="Connessioni AI" style="position:absolute;top:12px;right:145px;padding:6px 12px;border-radius:8px;background:rgba(102,187,106,.1);border:1px solid rgba(102,187,106,.25);color:#66bb6a;cursor:pointer;font-weight:700;font-size:.72rem;z-index:10">🔌 AI</button>
   <button class="auth-btn" id="authBtn" onclick="openAuthModal()" title="Login / Registrati" style="position:absolute;top:12px;right:12px;padding:6px 12px;border-radius:8px;background:rgba(255,107,53,.15);border:1px solid rgba(255,107,53,.3);color:var(--a1);cursor:pointer;font-weight:700;font-size:.72rem;z-index:10">🔐 Accedi</button>
 </header>
 <div class="mode-switcher">
@@ -2170,8 +2171,13 @@ body.light .shimmer::after{background:linear-gradient(90deg,transparent 0%,rgba(
       <button class="mic-btn" onclick="startDictation('notesArea')" style="margin:8px 0;display:block">&#127908; Dettatura</button>
     </div>
     <div class="hub-panel" id="hubMondo">
-      <div class="mondo-intro">
-        <strong>Come funziona:</strong> Aggiungi i TUOI temi, parole e credenze. I giochi useranno il tuo materiale per generare combo personalizzate.
+      <div class="mondo-intro" style="background:linear-gradient(135deg,rgba(255,107,53,.06),rgba(232,147,12,.06));border:1px solid rgba(255,107,53,.2);border-radius:12px;padding:14px 16px;margin-bottom:12px">
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px">
+          <span style="font-size:1.1rem">🧠</span>
+          <strong style="color:var(--a1);font-size:.8rem">Questo è il TUO DNA creativo</strong>
+        </div>
+        <p style="font-size:.72rem;color:var(--t1);line-height:1.5;margin:0 0 8px 0">Tutto ciò che aggiungi qui <b>si riflette direttamente sull'AI</b>. I temi, le parole, le credenze e il Voice DNA personalizzano ogni hook, script e suggerimento che l'AI genera per te. <b>Più completi = AI più precisa e "tua".</b></p>
+        <div id="mondoProgressBar" style="margin-top:4px"></div>
       </div>
       <div class="mondo-section" id="mondoSection">
         <div class="mondo-card">
@@ -2446,13 +2452,18 @@ body.light .shimmer::after{background:linear-gradient(90deg,transparent 0%,rgba(
 </div>
 
 <!-- STUDIO: Hub + Fucina -->
-<div class="section-header sh-studio" style="border-color:#00b894">
-  <div class="sh-icon">🧩</div>
-  <div class="sh-text"><h3>Studio Creativo</h3><p>Hub di analisi, confronto e scrittura script</p></div>
-  <span class="sh-count" style="display:flex;gap:6px">
-    <button class="hub-action-btn" onclick="openHub()" style="font-size:.7rem">🧩 Hub</button>
-    <button class="hub-action-btn" onclick="openFucinaStandalone()" style="font-size:.7rem;border-color:rgba(255,107,53,.3);background:rgba(255,107,53,.06)">🔥 Fucina</button>
-  </span>
+<div class="section-header sh-studio" style="border-color:#00b894;flex-wrap:wrap">
+  <div style="display:flex;align-items:center;gap:12px;flex:1;min-width:200px">
+    <div class="sh-icon">🧩</div>
+    <div class="sh-text">
+      <h3 style="white-space:nowrap">Studio Creativo</h3>
+      <p style="font-size:.65rem;line-height:1.3">Raccogli i tuoi migliori hook nell'<b>Hub</b>, poi trasformali in script completi nella <b>Fucina</b></p>
+    </div>
+  </div>
+  <div style="display:flex;gap:8px;flex-shrink:0">
+    <button class="hub-action-btn" onclick="openHub()" style="font-size:.72rem;padding:8px 16px;white-space:nowrap">🧩 Hub <span style="font-size:.55rem;opacity:.7">Raccogli</span></button>
+    <button class="hub-action-btn" onclick="openFucinaStandalone()" style="font-size:.72rem;padding:8px 16px;border-color:rgba(255,107,53,.3);background:rgba(255,107,53,.06);white-space:nowrap">🔥 Fucina <span style="font-size:.55rem;opacity:.7">Scrivi Script</span></button>
+  </div>
 </div>
 
 <!-- CREATIVE HUB -->
@@ -2680,6 +2691,8 @@ body.light .shimmer::after{background:linear-gradient(90deg,transparent 0%,rgba(
     <details class="help-item"><summary><span class="hi-icon">👥</span><span class="hi-text">Team e Profili</span></summary><div class="help-body">Ogni membro del team ha il suo <b>spazio separato</b>: mazzo, profilo, statistiche e script. Gli <b>Admin</b> (Loris e Mirko) vedono tutto. Cambia profilo dal bottone in alto a destra.</div></details>
   </div>
   <button class="help-review-btn" onclick="localStorage.removeItem('hl_onboarded');toggleHelp();setTimeout(showOnboarding,300);">🎓 Rivedi Tutorial Interattivo</button>
+  <button class="help-review-btn" onclick="toggleHelp();setTimeout(startDemoMode,300);" style="margin-top:6px;background:rgba(139,92,246,.12);border-color:rgba(139,92,246,.3);color:#8b5cf6">🎬 Demo Mode — Tour Automatico</button>
+  <button class="help-review-btn" onclick="toggleHelp();setTimeout(openNotificationsPanel,300);" style="margin-top:6px;background:rgba(236,72,153,.08);border-color:rgba(236,72,153,.25);color:#ec4899">🔔 Notifiche Team</button>
 </div>
 <div class="toast" id="toast"></div>
 <div class="smart-tip" id="smartTip"><button class="smart-tip-close" onclick="dismissSmartTip()">&times;</button><div class="smart-tip-inner"><div class="smart-tip-icon" id="smartTipIcon"></div><div class="smart-tip-body"><div class="smart-tip-text" id="smartTipText"></div><div id="smartTipAction"></div></div></div></div>
@@ -4844,7 +4857,7 @@ let currentFlipIndex=0,currentDevilIndex=0;
 function rand(a){return a[Math.floor(Math.random()*a.length)];}
 function showToast(m){const t=document.getElementById('toast');t.textContent=m;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2000);}
 function animateScore(){setTimeout(()=>{document.querySelectorAll('.score-display:not(.pop)').forEach(el=>el.classList.add('pop'));},50);}
-function saveItem(type,text){if(savedItems.some(i=>i.text===text)){showToast('Già nel mazzo!');return false;}savedItems.unshift({type,text,timestamp:Date.now(),category:'hook',rating:0});localStorage.setItem(hlKey('saved'),JSON.stringify(savedItems));updateSavedCount();stats.hooksWritten++;saveStats();showToast('Salvato!');sSave();sendWebhook('hook_saved',{type,text:text.substring(0,500)});return true;}
+function saveItem(type,text){if(savedItems.some(i=>i.text===text)){showToast('Già nel mazzo!');return false;}savedItems.unshift({type,text,timestamp:Date.now(),category:'hook',rating:0});localStorage.setItem(hlKey('saved'),JSON.stringify(savedItems));updateSavedCount();stats.hooksWritten++;saveStats();showToast('Salvato!');sSave();sendWebhook('hook_saved',{type,text:text.substring(0,500)});sendTeamNotification('hook_saved',{type,text:text.substring(0,100)});return true;}
 function saveScript(idx){
   const script=fucinaScripts[idx];if(!script)return false;
   const type=SCRIPT_TYPES[script.type];
@@ -4929,11 +4942,40 @@ card.classList.toggle('collapsed',profileCollapsed);
 btn.innerHTML=profileCollapsed?'&#9650;':'&#9660;';
 localStorage.setItem('hl_profileCollapsed',profileCollapsed?'1':'0');
 }
-function initProfileCollapse(){if(profileCollapsed){const card=document.getElementById('profileCardMain');const btn=document.getElementById('profileToggle');if(card)card.classList.add('collapsed');if(btn)btn.innerHTML='&#9650;';}}
+function initProfileCollapse(){if(profileCollapsed){const card=document.getElementById('profileCardMain');const btn=document.getElementById('profileToggle');if(card)card.classList.add('collapsed');if(btn)btn.innerHTML='&#9650;';}
+// Auto-collapse profile on scroll to prevent overlap
+let _scrollCollapseInit=false;
+window.addEventListener('scroll',()=>{
+  if(_scrollCollapseInit)return;
+  if(window.scrollY>120&&!profileCollapsed){
+    _scrollCollapseInit=true;
+    toggleProfileCard();
+    setTimeout(()=>{_scrollCollapseInit=false;},2000);
+  }
+},{passive:true});
+}
 function updateApiDot(){const d=document.getElementById('apiDot');if(d){d.className='api-dot '+(isAI('primary')?'on':'off');}}
 
 // ===== IL TUO MONDO =====
-function saveMondo(){localStorage.setItem(hlKey('mondo'),JSON.stringify(mondo));}
+function saveMondo(){localStorage.setItem(hlKey('mondo'),JSON.stringify(mondo));updateMondoProgress();}
+function updateMondoProgress(){
+  const bar=document.getElementById('mondoProgressBar');if(!bar)return;
+  let filled=0,total=6;
+  if(mondo.temi&&mondo.temi.length>0)filled++;
+  if(mondo.flips&&mondo.flips.length>0)filled++;
+  if(mondo.beliefs&&mondo.beliefs.length>0)filled++;
+  if(voice.tone&&voice.tone.length>0)filled++;
+  if(voice.lexUse&&voice.lexUse.length>0)filled++;
+  if(voice.audience&&(voice.audience.fears?.length>0||voice.audience.desires?.length>0))filled++;
+  const pct=Math.round(filled/total*100);
+  const color=pct>=80?'#22c55e':pct>=50?'#f59e0b':'#ef4444';
+  const label=pct>=80?'🔥 AI personalizzata al massimo!':pct>=50?'⚡ Buon livello — l\'AI ti conosce':'💡 Completa per migliorare l\'AI';
+  bar.innerHTML=`<div style="display:flex;align-items:center;gap:8px">
+    <div style="flex:1;height:6px;background:rgba(255,255,255,.08);border-radius:3px;overflow:hidden"><div style="height:100%;width:${pct}%;background:${color};border-radius:3px;transition:width .5s"></div></div>
+    <span style="font-size:.6rem;font-weight:700;color:${color};white-space:nowrap">${pct}%</span>
+  </div>
+  <div style="font-size:.58rem;color:var(--t2);margin-top:3px">${label} — ${filled}/${total} sezioni compilate</div>`;
+}
 function addMondo(type){
   if(type==='temi'){const v=document.getElementById('mondoTemaInput').value.trim();if(!v)return;mondo.temi.push(v);document.getElementById('mondoTemaInput').value='';}
   else if(type==='flips'){const f=document.getElementById('mondoFlipFront').value.trim(),b=document.getElementById('mondoFlipBack').value.trim();if(!f||!b)return;mondo.flips.push({front:f,back:b});document.getElementById('mondoFlipFront').value='';document.getElementById('mondoFlipBack').value='';}
@@ -9090,7 +9132,7 @@ function switchHub(tab){
   document.getElementById(panelMap[tab]).classList.add('active');
   if(tab==='piano')renderCalendar();
   if(tab==='note')updateNotesInfo();
-  if(tab==='mondo')renderVoice();
+  if(tab==='mondo'){renderVoice();setTimeout(updateMondoProgress,100);}
   if(tab==='raccolta')renderRaccolta();
   sClick();
   document.getElementById('hub').scrollIntoView({behavior:'smooth',block:'start'});
@@ -11265,6 +11307,28 @@ class GuidedTour{
   _debounce(fn,ms){let t;return function(){clearTimeout(t);t=setTimeout(fn,ms);};}
 }
 
+// Role-specific extra tour steps
+const ADMIN_TOUR_EXTRA=[
+  {selector:'[onclick*="openAdminDashboard"]',title:'📊 Dashboard Admin',body:'Come Admin hai accesso alla dashboard analytics: vedi tutti gli utenti, gestisci ruoli, esporta dati. Solo tu puoi accederci!',placement:'left'},
+  {selector:'[onclick*="showTeamSelector"]',title:'👥 Gestione Team',body:'Qui gestisci i team. Puoi assegnare ruoli Manager o Team ai membri, e monitorare l\'attività di tutti.',placement:'left'},
+  {selector:'[onclick*="openConnectionsPanel"]',title:'🔌 Connessioni AI',body:'Configura le integrazioni: webhook per Make/Zapier/n8n, Google Drive, ClickUp. Tutto il tuo ecosistema connesso.',placement:'left'}
+];
+const MANAGER_TOUR_EXTRA=[
+  {selector:'[onclick*="showTeamSelector"]',title:'👥 Il Tuo Team',body:'Come Manager puoi vedere i membri del tuo team e monitorare la loro attività creativa.',placement:'left'},
+  {selector:'.saved-toggle',title:'📦 Review Hook del Team',body:'Controlla gli hook salvati dal team. Puoi revisionare, approvare e dare feedback ai tuoi colleghi.',placement:'left'}
+];
+
+function getOnboardingSteps(){
+  const role=_supaProfile?.role||'team';
+  let steps=[...TOUR_STEPS];
+  if(role==='admin'||isAdminEmail(_currentUser?.email)){
+    steps=steps.concat(ADMIN_TOUR_EXTRA);
+  }else if(role==='manager'){
+    steps=steps.concat(MANAGER_TOUR_EXTRA);
+  }
+  return steps;
+}
+
 function showOnboarding(){
   if(localStorage.getItem('hl_onboarded'))return;
   if(window._tourActive)return; // Prevent double tour
@@ -11272,7 +11336,8 @@ function showOnboarding(){
   if(teamOv&&teamOv.style.display!=='none'){setTimeout(showOnboarding,1500);return;}
   const authGate=document.getElementById('authGate');
   if(authGate&&authGate.style.display!=='none'){setTimeout(showOnboarding,2000);return;}
-  window._tour=new GuidedTour(TOUR_STEPS);
+  const steps=getOnboardingSteps();
+  window._tour=new GuidedTour(steps);
   window._tour.start();
 }
 
@@ -11570,9 +11635,31 @@ function switchMode(mode){
     const cs=document.createElement('div');cs.id='modeComingSoon';cs.className='mode-coming-soon';
     cs.innerHTML=`<div style="font-size:2.5rem;margin-bottom:12px">🎓</div>
       <h2>Workshop Mode</h2>
-      <p>Crea materiali per workshop, corsi e presentazioni — struttura lezioni, esercizi interattivi, slide deck e handout.</p>
-      <p style="margin-top:12px;color:var(--a1);font-weight:700">🚀 Coming Soon</p>
-      <button onclick="switchMode('post')" style="margin-top:16px;padding:8px 20px;border-radius:8px;background:var(--gf);color:#fff;border:none;cursor:pointer;font-weight:700">← Torna a Post</button>`;
+      <p style="margin-bottom:16px">Crea materiali per workshop, corsi e presentazioni con l'AI</p>
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px;text-align:left;margin-bottom:20px">
+        <div style="padding:16px;background:rgba(255,107,53,.06);border:1px solid rgba(255,107,53,.15);border-radius:12px;cursor:pointer" onclick="startWorkshopTool('lezione')">
+          <div style="font-size:1.2rem;margin-bottom:6px">📖</div>
+          <div style="font-size:.8rem;font-weight:700;color:var(--a1)">Struttura Lezione</div>
+          <div style="font-size:.65rem;color:var(--t2);margin-top:4px">Genera scaletta, obiettivi, tempistiche per una lezione</div>
+        </div>
+        <div style="padding:16px;background:rgba(34,197,94,.06);border:1px solid rgba(34,197,94,.15);border-radius:12px;cursor:pointer" onclick="startWorkshopTool('esercizio')">
+          <div style="font-size:1.2rem;margin-bottom:6px">✏️</div>
+          <div style="font-size:.8rem;font-weight:700;color:#22c55e">Esercizio Interattivo</div>
+          <div style="font-size:.65rem;color:var(--t2);margin-top:4px">Crea esercizi pratici con istruzioni e soluzioni</div>
+        </div>
+        <div style="padding:16px;background:rgba(139,92,246,.06);border:1px solid rgba(139,92,246,.15);border-radius:12px;cursor:pointer" onclick="startWorkshopTool('slide')">
+          <div style="font-size:1.2rem;margin-bottom:6px">🖥️</div>
+          <div style="font-size:.8rem;font-weight:700;color:#8b5cf6">Slide Deck</div>
+          <div style="font-size:.65rem;color:var(--t2);margin-top:4px">Genera outline slide con titoli, bullet points e note speaker</div>
+        </div>
+        <div style="padding:16px;background:rgba(236,72,153,.06);border:1px solid rgba(236,72,153,.15);border-radius:12px;cursor:pointer" onclick="startWorkshopTool('handout')">
+          <div style="font-size:1.2rem;margin-bottom:6px">📋</div>
+          <div style="font-size:.8rem;font-weight:700;color:#ec4899">Handout / Dispensa</div>
+          <div style="font-size:.65rem;color:var(--t2);margin-top:4px">Crea materiale stampabile per i partecipanti</div>
+        </div>
+      </div>
+      <div id="workshopResult" style="display:none;text-align:left;margin-bottom:16px"></div>
+      <button onclick="switchMode('post')" style="padding:8px 20px;border-radius:8px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);color:var(--t2);cursor:pointer;font-weight:700;font-size:.75rem">← Torna a Post</button>`;
     const target=document.querySelector('.main-col')||document.querySelector('.container');
     if(target){
       const firstGame=target.querySelector('.smart-filters')||target.querySelector('.section-header');
@@ -11580,6 +11667,550 @@ function switchMode(mode){
       else target.appendChild(cs);
     }
   }
+}
+
+// ===== WORKSHOP TOOLS =====
+const WORKSHOP_PROMPTS={
+  lezione:{
+    emoji:'📖',label:'Struttura Lezione',color:'#ff6b35',
+    prompt:(arg,dur,lvl)=>`Sei un instructional designer esperto. Crea una struttura COMPLETA per una lezione di ${dur} minuti su "${arg}" per un pubblico di livello ${lvl}.
+Rispondi in italiano con questo formato:
+## 🎯 Obiettivi
+(3-4 obiettivi di apprendimento)
+## ⏱️ Scaletta (${dur} min)
+(blocchi con tempistiche precise, es: 0-5 min: Introduzione...)
+## 🎮 Attività Interattive
+(2-3 attività per coinvolgere i partecipanti)
+## 📦 Materiali Necessari
+(lista materiali/strumenti)
+## ✅ Verifica Apprendimento
+(domande o esercizi di verifica finale)`
+  },
+  esercizio:{
+    emoji:'✏️',label:'Esercizio Interattivo',color:'#22c55e',
+    prompt:(arg,dur,lvl)=>`Sei un formatore creativo. Crea un esercizio pratico e interattivo su "${arg}" della durata di ${dur} minuti per livello ${lvl}.
+Rispondi in italiano con questo formato:
+## ✏️ Titolo Esercizio
+(titolo accattivante)
+## 🎯 Obiettivo
+(cosa imparerà il partecipante)
+## 📋 Istruzioni Step-by-Step
+(passi numerati chiari e dettagliati)
+## 💡 Esempio Svolto
+(esempio completo da mostrare)
+## 🔑 Soluzione / Criteri di Successo
+(come valutare il risultato)
+## 🔄 Varianti
+(2-3 varianti per adattare la difficoltà)`
+  },
+  slide:{
+    emoji:'🖥️',label:'Slide Deck',color:'#8b5cf6',
+    prompt:(arg,dur,lvl)=>`Sei un presentation designer. Crea l'outline completo di un slide deck su "${arg}" per una presentazione di ${dur} minuti, livello ${lvl}.
+Rispondi in italiano con questo formato per OGNI slide:
+## Slide 1: [Titolo]
+- Bullet point 1
+- Bullet point 2
+- Bullet point 3
+📝 Note Speaker: (cosa dire durante questa slide)
+---
+(ripeti per 8-12 slide)`
+  },
+  handout:{
+    emoji:'📋',label:'Handout / Dispensa',color:'#ec4899',
+    prompt:(arg,dur,lvl)=>`Sei un content creator per la formazione. Crea una dispensa/handout stampabile su "${arg}" per livello ${lvl} (${dur} minuti di corso).
+Rispondi in italiano con questo formato:
+## 📋 [Titolo Dispensa]
+### Introduzione
+(breve intro al tema)
+### Concetti Chiave
+(spiegazione dei concetti principali con esempi)
+### Checklist Pratica
+☐ Punto 1
+☐ Punto 2
+(lista di cose da fare/ricordare)
+### Risorse Utili
+(link, libri, strumenti consigliati)
+### Spazio Note
+(area per appunti personali del partecipante)`
+  }
+};
+
+function startWorkshopTool(type){
+  const tool=WORKSHOP_PROMPTS[type];
+  if(!tool)return;
+  const res=document.getElementById('workshopResult');
+  if(!res)return;
+  res.style.display='block';
+  res.innerHTML=`
+    <div style="background:${tool.color}11;border:1px solid ${tool.color}33;border-radius:12px;padding:20px;margin-bottom:16px">
+      <h3 style="margin:0 0 16px;font-size:.95rem;color:${tool.color}">${tool.emoji} ${tool.label}</h3>
+      <div style="display:flex;flex-direction:column;gap:10px">
+        <input id="wsArg" type="text" placeholder="Argomento (es: Social Media Marketing, Public Speaking...)" style="padding:10px 14px;border-radius:8px;border:1px solid rgba(255,255,255,.12);background:var(--input-bg,rgba(255,255,255,.06));color:var(--t1);font-size:.8rem;width:100%;box-sizing:border-box">
+        <div style="display:flex;gap:8px;flex-wrap:wrap">
+          <select id="wsDur" style="flex:1;min-width:120px;padding:8px 12px;border-radius:8px;border:1px solid rgba(255,255,255,.12);background:var(--input-bg,rgba(255,255,255,.06));color:var(--t1);font-size:.75rem">
+            <option value="15">15 minuti</option>
+            <option value="30" selected>30 minuti</option>
+            <option value="45">45 minuti</option>
+            <option value="60">60 minuti</option>
+            <option value="90">90 minuti</option>
+            <option value="120">2 ore</option>
+          </select>
+          <select id="wsLvl" style="flex:1;min-width:120px;padding:8px 12px;border-radius:8px;border:1px solid rgba(255,255,255,.12);background:var(--input-bg,rgba(255,255,255,.06));color:var(--t1);font-size:.75rem">
+            <option value="principiante">🟢 Principiante</option>
+            <option value="intermedio" selected>🟡 Intermedio</option>
+            <option value="avanzato">🔴 Avanzato</option>
+          </select>
+        </div>
+        <button onclick="generateWorkshopContent('${type}')" style="padding:10px 20px;border-radius:8px;background:${tool.color};border:none;color:#fff;cursor:pointer;font-weight:700;font-size:.8rem;transition:transform .15s,opacity .15s" onmousedown="this.style.transform='scale(.97)'" onmouseup="this.style.transform=''">🚀 Genera con AI</button>
+      </div>
+      <div id="wsOutput" style="margin-top:16px"></div>
+    </div>`;
+  res.scrollIntoView({behavior:'smooth',block:'start'});
+  setTimeout(()=>document.getElementById('wsArg')?.focus(),200);
+}
+
+async function generateWorkshopContent(type){
+  const tool=WORKSHOP_PROMPTS[type];if(!tool)return;
+  const arg=document.getElementById('wsArg')?.value?.trim();
+  if(!arg){showToast('⚠️ Scrivi un argomento!');return;}
+  const dur=document.getElementById('wsDur')?.value||'30';
+  const lvl=document.getElementById('wsLvl')?.value||'intermedio';
+  const out=document.getElementById('wsOutput');if(!out)return;
+  out.innerHTML='<div style="text-align:center;padding:20px"><div class="loading-spinner" style="margin:0 auto 10px"></div><div style="font-size:.7rem;color:var(--t2)">Generazione in corso...</div></div>';
+
+  const systemPrompt='Sei HOOKA Workshop AI — un assistente per la creazione di materiali formativi professionali.';
+  const userPrompt=tool.prompt(arg,dur,lvl);
+
+  let result=await aiCall(systemPrompt,userPrompt,1500,0.8);
+
+  if(!result){
+    // Fallback mock se nessuna API key configurata
+    result=`## ${tool.emoji} ${tool.label}: ${arg}\n\n> ⚠️ AI non configurata — questo è un esempio dimostrativo.\n\n### Obiettivo\nInsegnare "${arg}" a un pubblico ${lvl} in ${dur} minuti.\n\n### Scaletta\n- **0-5 min**: Introduzione e ice-breaker\n- **5-${Math.round(dur*0.6)} min**: Contenuto principale con esempi pratici\n- **${Math.round(dur*0.6)}-${Math.round(dur*0.85)} min**: Esercitazione pratica\n- **${Math.round(dur*0.85)}-${dur} min**: Q&A e recap\n\n### Note\nConfigura l'AI nelle impostazioni per generare contenuti personalizzati!`;
+  }
+
+  // Convert markdown-like formatting to HTML
+  const html=result
+    .replace(/^## (.+)$/gm,'<h3 style="color:'+tool.color+';margin:16px 0 8px;font-size:.9rem">$1</h3>')
+    .replace(/^### (.+)$/gm,'<h4 style="margin:12px 0 6px;font-size:.8rem;color:var(--t1)">$1</h4>')
+    .replace(/^- \*\*(.+?)\*\*:(.+)$/gm,'<div style="margin:4px 0;font-size:.75rem"><strong style="color:var(--a1)">$1</strong>:$2</div>')
+    .replace(/^- (.+)$/gm,'<div style="margin:3px 0 3px 12px;font-size:.75rem">• $1</div>')
+    .replace(/^> (.+)$/gm,'<div style="background:rgba(255,200,0,.08);border-left:3px solid #f59e0b;padding:8px 12px;margin:8px 0;font-size:.72rem;border-radius:0 6px 6px 0">$1</div>')
+    .replace(/☐/g,'<span style="opacity:.7">☐</span>')
+    .replace(/---/g,'<hr style="border:none;border-top:1px solid rgba(255,255,255,.08);margin:12px 0">')
+    .replace(/📝 Note Speaker:/g,'<span style="color:#8b5cf6;font-weight:700;font-size:.7rem">📝 Note Speaker:</span>')
+    .replace(/\n/g,'');
+
+  out.innerHTML=`
+    <div style="background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.06);border-radius:10px;padding:16px;margin-top:12px;line-height:1.6">
+      ${html}
+    </div>
+    <div style="display:flex;gap:8px;margin-top:12px;flex-wrap:wrap">
+      <button onclick="copyWorkshopResult()" style="padding:7px 14px;border-radius:6px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);color:var(--t2);cursor:pointer;font-size:.7rem;font-weight:600">📋 Copia Testo</button>
+      <button onclick="saveWorkshopResult('${type}','${arg.replace(/'/g,"\\'")}')" style="padding:7px 14px;border-radius:6px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);color:var(--t2);cursor:pointer;font-size:.7rem;font-weight:600">💾 Salva nel Mazzo</button>
+      <button onclick="startWorkshopTool('${type}')" style="padding:7px 14px;border-radius:6px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);color:var(--t2);cursor:pointer;font-size:.7rem;font-weight:600">🔄 Genera di Nuovo</button>
+    </div>`;
+  sClick();
+}
+
+function copyWorkshopResult(){
+  const out=document.getElementById('wsOutput');if(!out)return;
+  const text=out.innerText||out.textContent;
+  navigator.clipboard.writeText(text).then(()=>showToast('📋 Copiato!')).catch(()=>showToast('❌ Errore copia'));
+}
+function saveWorkshopResult(type,arg){
+  const out=document.getElementById('wsOutput');if(!out)return;
+  const text=out.innerText||out.textContent;
+  saveItem('workshop',`[${WORKSHOP_PROMPTS[type]?.label||type}] ${arg}\n\n${text}`);
+}
+
+// ===== DEMO MODE =====
+let _demoActive=false,_demoStep=0;
+const _demoSteps=[
+  {
+    title:'👋 Benvenuto in HOOKA!',
+    text:'Ti mostro come funziona questa app in 60 secondi. HOOKA è il tuo laboratorio creativo per hook, storie e contenuti social.',
+    target:null,action:null
+  },
+  {
+    title:'🎮 I Giochi Creativi',
+    text:'Qui trovi giochi AI che ti aiutano a generare hook potenti. Prova il Flash Hook per un hook istantaneo!',
+    target:'.game-area',
+    action:()=>{document.querySelector('.game-area')?.scrollIntoView({behavior:'smooth',block:'center'});}
+  },
+  {
+    title:'🃏 Il Tuo Mazzo',
+    text:'Ogni hook che generi puoi salvarlo qui. Il mazzo è la tua collezione personale di idee vincenti.',
+    target:'.saved-count',
+    action:()=>{showToast('💾 Hook di esempio salvato!');}
+  },
+  {
+    title:'🏠 Lo Hub Creativo',
+    text:'L\'Hub è il tuo centro di comando: profilo, statistiche, mondo creativo e raccolta di tutti i tuoi contenuti.',
+    target:'.creative-hub',
+    action:()=>{
+      document.querySelector('.creative-hub')?.scrollIntoView({behavior:'smooth',block:'center'});
+    }
+  },
+  {
+    title:'🔥 La Fucina',
+    text:'Nella Fucina scrivi script completi con l\'aiuto dell\'AI. Blocchi modulari, tono di voce, struttura narrativa.',
+    target:'.fucina-standalone',
+    action:()=>{
+      document.querySelector('.fucina-standalone')?.scrollIntoView({behavior:'smooth',block:'center'});
+    }
+  },
+  {
+    title:'📱 Le Stories',
+    text:'Il planner Stories ti aiuta a pianificare 7 giorni di storie Instagram con strategia e coerenza.',
+    target:null,
+    action:()=>{
+      document.querySelector('.mode-tab[data-mode="stories"]')?.classList.add('demo-highlight');
+    }
+  },
+  {
+    title:'🎓 Il Workshop',
+    text:'Con il Workshop Mode generi materiali per corsi e lezioni: slide, esercizi, dispense — tutto AI-assistito.',
+    target:null,
+    action:()=>{
+      document.querySelector('.mode-tab[data-mode="stories"]')?.classList.remove('demo-highlight');
+      document.querySelector('.mode-tab[data-mode="workshop"]')?.classList.add('demo-highlight');
+    }
+  },
+  {
+    title:'🎯 Ora tocca a te!',
+    text:'Esplora, gioca, crea. Più usi HOOKA, più l\'AI impara il tuo stile. Buon divertimento!',
+    target:null,
+    action:()=>{
+      document.querySelectorAll('.demo-highlight').forEach(e=>e.classList.remove('demo-highlight'));
+    }
+  }
+];
+
+function startDemoMode(){
+  if(_demoActive)return;
+  _demoActive=true;_demoStep=0;
+  // Make sure we're on post mode
+  if(currentMode!=='post')switchMode('post');
+  window.scrollTo({top:0,behavior:'smooth'});
+  setTimeout(()=>renderDemoStep(),400);
+}
+
+function renderDemoStep(){
+  if(!_demoActive||_demoStep>=_demoSteps.length){stopDemoMode();return;}
+  const step=_demoSteps[_demoStep];
+  // Remove previous
+  document.getElementById('demoOverlay')?.remove();
+  // Execute action
+  if(step.action)step.action();
+  // Find target element for spotlight
+  let targetRect=null;
+  if(step.target){
+    const el=document.querySelector(step.target);
+    if(el){
+      targetRect=el.getBoundingClientRect();
+      el.scrollIntoView({behavior:'smooth',block:'center'});
+    }
+  }
+  // Build overlay
+  const ov=document.createElement('div');ov.id='demoOverlay';
+  ov.style.cssText='position:fixed;inset:0;z-index:100000;display:flex;align-items:center;justify-content:center;transition:opacity .3s';
+  // Background with optional spotlight hole
+  let bgStyle='position:absolute;inset:0;background:rgba(0,0,0,.75);';
+  if(targetRect){
+    const cx=targetRect.left+targetRect.width/2,cy=targetRect.top+targetRect.height/2;
+    const r=Math.max(targetRect.width,targetRect.height)/2+20;
+    bgStyle+=`mask:radial-gradient(circle ${r}px at ${cx}px ${cy}px,transparent 100%,black 100%);-webkit-mask:radial-gradient(circle ${r}px at ${cx}px ${cy}px,transparent 100%,black 100%);`;
+  }
+  const progress=Math.round(((_demoStep+1)/_demoSteps.length)*100);
+  ov.innerHTML=`
+    <div style="${bgStyle}"></div>
+    <div style="position:relative;z-index:1;background:var(--card,#1a1a2e);border:1px solid rgba(255,107,53,.3);border-radius:16px;padding:28px 32px;max-width:400px;width:90%;text-align:center;box-shadow:0 20px 60px rgba(0,0,0,.5);animation:demoCardIn .35s ease">
+      <div style="font-size:1.8rem;margin-bottom:10px">${step.title.split(' ')[0]}</div>
+      <h3 style="margin:0 0 10px;font-size:1rem;color:var(--t1)">${step.title}</h3>
+      <p style="font-size:.8rem;color:var(--t2);line-height:1.6;margin:0 0 20px">${step.text}</p>
+      <div style="background:rgba(255,255,255,.06);border-radius:4px;height:4px;margin-bottom:16px;overflow:hidden">
+        <div style="width:${progress}%;height:100%;background:var(--a1);border-radius:4px;transition:width .3s"></div>
+      </div>
+      <div style="display:flex;gap:8px;justify-content:center">
+        <button onclick="stopDemoMode()" style="padding:8px 16px;border-radius:8px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);color:var(--t2);cursor:pointer;font-size:.75rem">Salta Demo</button>
+        <button onclick="nextDemoStep()" style="padding:8px 20px;border-radius:8px;background:var(--a1);border:none;color:#fff;cursor:pointer;font-weight:700;font-size:.8rem">${_demoStep<_demoSteps.length-1?'Avanti →':'Fine! 🎉'}</button>
+      </div>
+      <div style="font-size:.6rem;color:var(--t3,#666);margin-top:10px">${_demoStep+1} / ${_demoSteps.length}</div>
+    </div>`;
+  document.body.appendChild(ov);
+  // Add animation keyframe if not exists
+  if(!document.getElementById('demoAnimStyle')){
+    const st=document.createElement('style');st.id='demoAnimStyle';
+    st.textContent=`@keyframes demoCardIn{from{opacity:0;transform:translateY(20px) scale(.95)}to{opacity:1;transform:translateY(0) scale(1)}}.demo-highlight{animation:demoPulse 1s ease infinite!important}@keyframes demoPulse{0%,100%{box-shadow:0 0 0 0 rgba(255,107,53,.4)}50%{box-shadow:0 0 0 8px rgba(255,107,53,0)}}`;
+    document.head.appendChild(st);
+  }
+}
+
+function nextDemoStep(){
+  _demoStep++;
+  if(_demoStep>=_demoSteps.length){stopDemoMode();return;}
+  renderDemoStep();
+}
+
+function stopDemoMode(){
+  _demoActive=false;_demoStep=0;
+  document.getElementById('demoOverlay')?.remove();
+  document.querySelectorAll('.demo-highlight').forEach(e=>e.classList.remove('demo-highlight'));
+  showToast('🎯 Demo completata!');
+}
+
+// ===== MICRO-VIDEO AI (Slideshow) =====
+function openMicroVideoCreator(){
+  const overlay=document.createElement('div');
+  overlay.id='microVideoOverlay';
+  overlay.style.cssText='position:fixed;inset:0;z-index:9999;background:rgba(0,0,0,.85);display:flex;align-items:center;justify-content:center;animation:fadeIn .2s ease';
+  overlay.innerHTML=`
+    <div style="background:var(--card,#1a1a2e);border-radius:16px;padding:28px;max-width:550px;width:95%;max-height:85vh;overflow-y:auto;box-shadow:0 20px 60px rgba(0,0,0,.5);border:1px solid rgba(255,255,255,.08)">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px">
+        <h2 style="margin:0;font-size:1rem">🎬 Micro-Video AI</h2>
+        <span onclick="document.getElementById('microVideoOverlay')?.remove()" style="cursor:pointer;font-size:1.2rem;opacity:.6">✕</span>
+      </div>
+      <p style="font-size:.75rem;color:var(--t2);margin:0 0 16px">Crea una sequenza di slide animate per i tuoi social. Scrivi il testo per ogni slide (3-6 slide).</p>
+      <div id="mvSlides">
+        <div class="mv-slide-input" style="margin-bottom:10px">
+          <div style="display:flex;gap:8px;align-items:center;margin-bottom:6px">
+            <span style="font-size:.7rem;font-weight:700;color:var(--a1)">Slide 1</span>
+            <input type="text" class="mv-bg-prompt" placeholder="Descrivi lo sfondo (opzionale per DALL-E)" style="flex:1;padding:6px 10px;border-radius:6px;border:1px solid rgba(255,255,255,.1);background:var(--input-bg,rgba(255,255,255,.06));color:var(--t1);font-size:.7rem">
+          </div>
+          <textarea class="mv-text" placeholder="Testo da mostrare sulla slide..." style="width:100%;box-sizing:border-box;padding:10px;border-radius:8px;border:1px solid rgba(255,255,255,.1);background:var(--input-bg,rgba(255,255,255,.06));color:var(--t1);font-size:.8rem;min-height:50px;resize:vertical"></textarea>
+        </div>
+      </div>
+      <button onclick="addMvSlide()" style="width:100%;padding:8px;border-radius:8px;border:1px dashed rgba(255,255,255,.15);background:none;color:var(--t2);cursor:pointer;font-size:.72rem;margin-bottom:16px">+ Aggiungi Slide</button>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px">
+        <select id="mvDuration" style="flex:1;padding:8px;border-radius:8px;border:1px solid rgba(255,255,255,.1);background:var(--input-bg,rgba(255,255,255,.06));color:var(--t1);font-size:.72rem">
+          <option value="3">3 sec/slide</option>
+          <option value="4" selected>4 sec/slide</option>
+          <option value="5">5 sec/slide</option>
+        </select>
+        <select id="mvStyle" style="flex:1;padding:8px;border-radius:8px;border:1px solid rgba(255,255,255,.1);background:var(--input-bg,rgba(255,255,255,.06));color:var(--t1);font-size:.72rem">
+          <option value="fade">Fade</option>
+          <option value="slide">Slide</option>
+          <option value="zoom">Zoom</option>
+        </select>
+      </div>
+      <div style="display:flex;gap:8px">
+        <button onclick="generateMicroVideo()" style="flex:1;padding:10px 20px;border-radius:8px;background:var(--a1);border:none;color:#fff;cursor:pointer;font-weight:700;font-size:.8rem">🚀 Genera Slideshow</button>
+        <button onclick="generateMvWithAI()" style="flex:1;padding:10px 20px;border-radius:8px;background:rgba(139,92,246,.8);border:none;color:#fff;cursor:pointer;font-weight:700;font-size:.8rem">🤖 AI Auto-genera</button>
+      </div>
+      <div id="mvPreview" style="margin-top:20px"></div>
+    </div>`;
+  document.body.appendChild(overlay);
+  // Add 2 more slides by default
+  addMvSlide();addMvSlide();
+}
+
+let _mvSlideCount=1;
+function addMvSlide(){
+  _mvSlideCount++;
+  const container=document.getElementById('mvSlides');if(!container)return;
+  const div=document.createElement('div');div.className='mv-slide-input';div.style.marginBottom='10px';
+  div.innerHTML=`
+    <div style="display:flex;gap:8px;align-items:center;margin-bottom:6px">
+      <span style="font-size:.7rem;font-weight:700;color:var(--a1)">Slide ${_mvSlideCount}</span>
+      <input type="text" class="mv-bg-prompt" placeholder="Descrivi lo sfondo (opzionale per DALL-E)" style="flex:1;padding:6px 10px;border-radius:6px;border:1px solid rgba(255,255,255,.1);background:var(--input-bg,rgba(255,255,255,.06));color:var(--t1);font-size:.7rem">
+      <span onclick="this.closest('.mv-slide-input').remove()" style="cursor:pointer;font-size:.8rem;opacity:.5">✕</span>
+    </div>
+    <textarea class="mv-text" placeholder="Testo da mostrare sulla slide..." style="width:100%;box-sizing:border-box;padding:10px;border-radius:8px;border:1px solid rgba(255,255,255,.1);background:var(--input-bg,rgba(255,255,255,.06));color:var(--t1);font-size:.8rem;min-height:50px;resize:vertical"></textarea>`;
+  container.appendChild(div);
+}
+
+function generateMicroVideo(){
+  const texts=[...document.querySelectorAll('.mv-text')].map(t=>t.value.trim()).filter(Boolean);
+  if(texts.length<2){showToast('⚠️ Serve almeno 2 slide!');return;}
+  const dur=parseInt(document.getElementById('mvDuration')?.value||'4');
+  const style=document.getElementById('mvStyle')?.value||'fade';
+  const bgPrompts=[...document.querySelectorAll('.mv-bg-prompt')].map(t=>t.value.trim());
+  const preview=document.getElementById('mvPreview');if(!preview)return;
+
+  // Generate colors for slides
+  const colors=['#ff6b35','#22c55e','#8b5cf6','#ec4899','#f59e0b','#06b6d4','#ef4444','#10b981'];
+  const totalDur=texts.length*dur;
+
+  let slidesHtml='';
+  const animName=style==='slide'?'mvSlideIn':style==='zoom'?'mvZoomIn':'mvFadeIn';
+
+  texts.forEach((t,i)=>{
+    const bg=colors[i%colors.length];
+    slidesHtml+=`<div class="mv-frame" data-idx="${i}" style="display:${i===0?'flex':'none'};align-items:center;justify-content:center;width:270px;height:480px;background:linear-gradient(135deg,${bg}22,${bg}44);border-radius:12px;text-align:center;padding:24px;box-sizing:border-box;animation:${animName} .5s ease">
+      <div style="font-size:1.1rem;font-weight:800;color:var(--t1);line-height:1.5;text-shadow:0 2px 8px rgba(0,0,0,.3)">${t}</div>
+    </div>`;
+  });
+
+  preview.innerHTML=`
+    <div style="text-align:center">
+      <div style="font-size:.7rem;color:var(--t2);margin-bottom:10px">📱 Anteprima (${texts.length} slide × ${dur}s = ${totalDur}s)</div>
+      <div id="mvPlayer" style="display:inline-block;position:relative;overflow:hidden;border-radius:12px;box-shadow:0 8px 32px rgba(0,0,0,.3)">
+        ${slidesHtml}
+      </div>
+      <div style="margin-top:10px;display:flex;gap:6px;justify-content:center;flex-wrap:wrap">
+        <button onclick="playMicroVideo(${dur})" style="padding:6px 14px;border-radius:6px;background:var(--a1);border:none;color:#fff;cursor:pointer;font-size:.72rem;font-weight:700">▶️ Play</button>
+        <button onclick="stopMicroVideo()" style="padding:6px 14px;border-radius:6px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);color:var(--t2);cursor:pointer;font-size:.72rem">⏹ Stop</button>
+      </div>
+    </div>`;
+
+  // Add animation keyframes
+  if(!document.getElementById('mvAnimStyle')){
+    const st=document.createElement('style');st.id='mvAnimStyle';
+    st.textContent=`@keyframes mvFadeIn{from{opacity:0}to{opacity:1}}@keyframes mvSlideIn{from{transform:translateX(100%);opacity:0}to{transform:translateX(0);opacity:1}}@keyframes mvZoomIn{from{transform:scale(.5);opacity:0}to{transform:scale(1);opacity:1}}`;
+    document.head.appendChild(st);
+  }
+  showToast('🎬 Slideshow generato!');
+}
+
+let _mvInterval=null;
+function playMicroVideo(dur){
+  stopMicroVideo();
+  const frames=document.querySelectorAll('.mv-frame');if(!frames.length)return;
+  let idx=0;
+  frames.forEach((f,i)=>f.style.display=i===0?'flex':'none');
+  _mvInterval=setInterval(()=>{
+    frames[idx].style.display='none';
+    idx=(idx+1)%frames.length;
+    frames[idx].style.display='flex';
+    frames[idx].style.animation='none';void frames[idx].offsetWidth;
+    const style=document.getElementById('mvStyle')?.value||'fade';
+    frames[idx].style.animation=(style==='slide'?'mvSlideIn':style==='zoom'?'mvZoomIn':'mvFadeIn')+' .5s ease';
+    if(idx===0)stopMicroVideo(); // Stop after one full loop
+  },dur*1000);
+}
+function stopMicroVideo(){if(_mvInterval){clearInterval(_mvInterval);_mvInterval=null;}}
+
+async function generateMvWithAI(){
+  const topic=document.querySelector('.mv-text')?.value?.trim();
+  if(!topic){showToast('⚠️ Scrivi almeno il tema nella prima slide!');return;}
+  showToast('🤖 AI sta generando le slide...');
+  const result=await aiCall(
+    'Sei un social media expert. Genera il testo per 4-5 slide di un micro-video Instagram Reels/TikTok.',
+    `Crea 4-5 slide per un micro-video su: "${topic}". Ogni slide deve avere una frase breve e d'impatto (max 15 parole). Rispondi SOLO con le frasi, una per riga, numerate (1. 2. 3. etc).`,
+    300,0.9
+  );
+  if(!result){showToast('⚠️ AI non disponibile');return;}
+  const lines=result.split('\n').map(l=>l.replace(/^\d+[\.\)]\s*/,'')).filter(l=>l.trim().length>3);
+  if(lines.length<2){showToast('❌ Risultato AI non valido');return;}
+  // Fill existing textareas or add new ones
+  const textareas=document.querySelectorAll('.mv-text');
+  lines.forEach((line,i)=>{
+    if(i<textareas.length){textareas[i].value=line;}
+    else{addMvSlide();setTimeout(()=>{const all=document.querySelectorAll('.mv-text');if(all[i])all[i].value=line;},50);}
+  });
+  showToast(`✅ ${lines.length} slide generate!`);
+}
+
+// ===== TEAM NOTIFICATIONS =====
+let _teamNotifications=[];
+let _notifCheckInterval=null;
+
+function initTeamNotifications(){
+  _teamNotifications=JSON.parse(localStorage.getItem(hlKey('teamNotifs'))||'[]');
+  // Start polling if admin/manager
+  if(isAdminEmail(_currentUserEmail)||_supaProfile?.role==='manager'){
+    _notifCheckInterval=setInterval(checkTeamNotifications,60000);
+    updateNotifBadge();
+  }
+}
+
+function sendTeamNotification(event,data){
+  if(!supabaseClient||!_currentUser)return;
+  const notif={
+    id:Date.now(),
+    event,
+    user:_currentUser.email||'Anonimo',
+    userName:_supaProfile?.display_name||_currentUser.email?.split('@')[0]||'Utente',
+    data,
+    timestamp:Date.now(),
+    read:false
+  };
+  // Save to local array and sync to Supabase
+  _teamNotifications.unshift(notif);
+  if(_teamNotifications.length>50)_teamNotifications=_teamNotifications.slice(0,50);
+  localStorage.setItem(hlKey('teamNotifs'),JSON.stringify(_teamNotifications));
+  // Try Supabase sync
+  syncTeamNotification(notif);
+}
+
+async function syncTeamNotification(notif){
+  if(!supabaseClient)return;
+  try{
+    // Store in a shared notifications channel via user_data
+    const{data}=await supabaseClient.from('user_data').select('data').eq('user_id','team_notifications').single();
+    let notifs=data?.data?.notifications||[];
+    notifs.unshift(notif);
+    if(notifs.length>100)notifs=notifs.slice(0,100);
+    await supabaseClient.from('user_data').upsert({user_id:'team_notifications',data:{notifications:notifs}},{onConflict:'user_id'});
+  }catch(e){console.warn('Notif sync failed:',e);}
+}
+
+async function checkTeamNotifications(){
+  if(!supabaseClient)return;
+  try{
+    const{data}=await supabaseClient.from('user_data').select('data').eq('user_id','team_notifications').single();
+    if(data?.data?.notifications){
+      const remote=data.data.notifications;
+      const localIds=new Set(_teamNotifications.map(n=>n.id));
+      let newCount=0;
+      remote.forEach(n=>{
+        if(!localIds.has(n.id)&&n.user!==(_currentUser?.email||'')){
+          _teamNotifications.unshift({...n,read:false});newCount++;
+        }
+      });
+      if(newCount>0){
+        localStorage.setItem(hlKey('teamNotifs'),JSON.stringify(_teamNotifications));
+        updateNotifBadge();
+        showToast(`🔔 ${newCount} nuove notifiche dal team`);
+      }
+    }
+  }catch(e){console.warn('Notif check failed:',e);}
+}
+
+function updateNotifBadge(){
+  const unread=_teamNotifications.filter(n=>!n.read&&n.user!==(_currentUser?.email||'')).length;
+  let badge=document.getElementById('notifBadge');
+  if(!badge){
+    const teamBtn=document.querySelector('[onclick*="showTeamSelector"]');
+    if(!teamBtn)return;
+    badge=document.createElement('span');badge.id='notifBadge';
+    badge.style.cssText='position:absolute;top:-4px;right:-4px;background:#ef4444;color:#fff;font-size:.55rem;font-weight:800;border-radius:50%;min-width:16px;height:16px;display:flex;align-items:center;justify-content:center;padding:0 4px';
+    teamBtn.style.position='relative';
+    teamBtn.appendChild(badge);
+  }
+  badge.textContent=unread;
+  badge.style.display=unread>0?'flex':'none';
+}
+
+function openNotificationsPanel(){
+  const unread=_teamNotifications.filter(n=>!n.read&&n.user!==(_currentUser?.email||''));
+  // Mark all as read
+  _teamNotifications.forEach(n=>n.read=true);
+  localStorage.setItem(hlKey('teamNotifs'),JSON.stringify(_teamNotifications));
+  updateNotifBadge();
+
+  const items=_teamNotifications.slice(0,30).map(n=>{
+    const ago=Math.round((Date.now()-n.timestamp)/60000);
+    const agoText=ago<1?'ora':ago<60?`${ago}m fa`:ago<1440?`${Math.round(ago/60)}h fa`:`${Math.round(ago/1440)}g fa`;
+    const icons={hook_saved:'💾',game_played:'🎮',script_saved:'📝',workshop:'🎓'};
+    return `<div style="padding:10px 12px;border-bottom:1px solid rgba(255,255,255,.05);font-size:.72rem;display:flex;gap:10px;align-items:flex-start${!n.read?' ;background:rgba(255,107,53,.04)':''}">
+      <span style="font-size:1rem">${icons[n.event]||'🔔'}</span>
+      <div style="flex:1"><strong style="color:var(--a1)">${n.userName}</strong> <span style="color:var(--t2)">${n.event==='hook_saved'?'ha salvato un hook':n.event==='game_played'?'ha giocato':n.event==='script_saved'?'ha salvato uno script':'azione'}</span>
+      <div style="font-size:.6rem;color:var(--t3,#666);margin-top:2px">${agoText}</div></div>
+    </div>`;
+  }).join('')||'<div style="padding:20px;text-align:center;font-size:.75rem;color:var(--t2)">Nessuna notifica</div>';
+
+  const ov=document.createElement('div');ov.id='notifPanel';
+  ov.style.cssText='position:fixed;inset:0;z-index:9999;background:rgba(0,0,0,.6);display:flex;align-items:flex-start;justify-content:flex-end;padding:60px 16px 16px;animation:fadeIn .2s ease';
+  ov.onclick=e=>{if(e.target===ov)ov.remove();};
+  ov.innerHTML=`<div style="background:var(--card,#1a1a2e);border-radius:12px;width:340px;max-height:70vh;overflow-y:auto;box-shadow:0 8px 32px rgba(0,0,0,.4);border:1px solid rgba(255,255,255,.08)">
+    <div style="padding:14px 16px;border-bottom:1px solid rgba(255,255,255,.06);display:flex;justify-content:space-between;align-items:center">
+      <h3 style="margin:0;font-size:.85rem">🔔 Notifiche Team</h3>
+      <span onclick="this.closest('#notifPanel').remove()" style="cursor:pointer;opacity:.6">✕</span>
+    </div>
+    ${items}
+  </div>`;
+  document.body.appendChild(ov);
 }
 
 // ===== STORIES MODE =====
@@ -14237,6 +14868,7 @@ document.addEventListener('DOMContentLoaded',()=>{
   setTimeout(()=>{initScrollReveal();},100);
   setTimeout(showOnboarding,300);
   setTimeout(checkSmartTips,2000);
+  setTimeout(initTeamNotifications,1500);
   // Restore AI Guard state
   setTimeout(()=>{
     if(aiGuard.suspended)showAiGuardBanner('suspended');

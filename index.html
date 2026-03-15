@@ -12307,6 +12307,7 @@ function clearHistory(){
 function renderStoriesMode(){
   const target=document.querySelector('.main-col')||document.querySelector('.container');
   if(!target)return;
+  closeFucinaStandalone();
   initStorySequences();
   const sc=document.createElement('div');sc.id='storiesContainer';
   const seq=getActiveSequence();
@@ -12466,7 +12467,7 @@ function renderStoriesMode(){
     <div class="sh-text"><h3>Studio Storie</h3><p>Hub di analisi e Fucina per le tue storie</p></div>
     <span class="sh-count" style="display:flex;gap:6px">
       <button class="hub-action-btn" onclick="openHub()" style="font-size:.7rem">🧩 Hub</button>
-      <button class="hub-action-btn" onclick="openFucinaStandalone()" style="font-size:.7rem;border-color:rgba(255,107,53,.3);background:rgba(255,107,53,.06)">🔥 Fucina</button>
+      <button class="hub-action-btn" onclick="document.querySelector('.fucina-stories')?.scrollIntoView({behavior:'smooth',block:'start'})" style="font-size:.7rem;border-color:rgba(255,107,53,.3);background:rgba(255,107,53,.06)">🔥 Fucina</button>
     </span>
   </div>
 
@@ -12487,6 +12488,7 @@ function renderStoriesMode(){
 function setStoryCycle(type){
   storyPlanner.activeCycle=type;
   saveStoryPlanner();
+  closeFucinaStandalone();
   document.getElementById('storiesContainer')?.remove();
   renderStoriesMode();
 }

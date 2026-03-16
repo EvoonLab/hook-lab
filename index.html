@@ -4075,25 +4075,21 @@ function renderChatHistory(){
     el.appendChild(emptyDiv);
     return;
   }
-  el.innerHTML=chatHistory.map(m=>{
-    const time=m.ts?new Date(m.ts).toLocaleTimeString('it-IT',{hour:'2-digit',minute:'2-digit'}):'';
-    const cls=m.role==='user'?'user':'ai';
-    const content=m.role==='user'?m.content.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/\n/g,'<br>'):formatChatContent(m.content);
-    const speakBtn=m.role==='assistant'?`<button onclick="speakAI(this.closest('.chat-bubble').textContent)" style="background:none;border:none;cursor:pointer;font-size:.7rem;opacity:.5;transition:.2s;padding:2px" onmouseover="this.style.opacity=1" onmouseout="this.style.opacity=.5" title="Ascolta">🔊</button>`:'';
-    return`<div class="chat-bubble ${cls}">${content}<span class="cb-time">${time} ${speakBtn}</span></div>`;
-  }).join('');
-  scrollChatBottom();
+  el.innerHTML='';
+  chatHistory.forEach(m=>{
+    addChatBubble(m.role==='assistant'?'assistant':'user',m.content,m.ts);
+  });
 }
 function saveChatHistory(){
   if(chatHistory.length>100)chatHistory=chatHistory.slice(-100);
   localStorage.setItem(hlKey('chat_history'),JSON.stringify(chatHistory));
 }
-function addChatBubble(role,content){
+function addChatBubble(role,content,customTs){
   const el=document.getElementById('chatMessages');if(!el)return;
   const empty=el.querySelector('.chat-empty');if(empty)empty.remove();
   const div=document.createElement('div');
   div.className='chat-bubble '+(role==='user'?'user':'ai');
-  const time=new Date().toLocaleTimeString('it-IT',{hour:'2-digit',minute:'2-digit'});
+  const time=customTs?new Date(customTs).toLocaleTimeString('it-IT',{hour:'2-digit',minute:'2-digit'}):new Date().toLocaleTimeString('it-IT',{hour:'2-digit',minute:'2-digit'});
   const speakBtn=role==='assistant'?'<button onclick="speakAI(this.closest(\'.chat-bubble\').textContent)" style="background:none;border:none;cursor:pointer;font-size:.7rem;opacity:.5;padding:2px" title="Ascolta">🔊</button>':'';
   const feedbackBtns=role==='assistant'?aiFeedbackHtml('chat_advisor',''):'';
   div.dataset.rawContent=content; // Store raw content for clean extraction
@@ -5034,8 +5030,14 @@ function saveScript(idx){
   if(savedItems.some(i=>i.scriptRef?.id===script.id)){showToast('Script già nel mazzo!');return false;}
   const fullText=script.blocks.filter(b=>b.text.trim()).map(b=>`[${b.label}]\n${b.text}`).join('\n\n');
   if(!fullText.trim()){showToast('Script vuoto!');return false;}
-  savedItems.unshift({type:type.name,text:fullText,timestamp:Date.now(),category:'script',rating:0,scriptRef:{id:script.id,type:script.type,title:script.title||script.blocks[0]?.text?.substring(0,50)||'Senza titolo',blockCount:script.blocks.filter(b=>b.text.trim()).length}});
+  savedItems.unshift({type:'Script '+type.name,text:fullText,timestamp:Date.now(),category:'script',rating:0,scriptRef:{id:script.id,type:script.type,title:script.title||script.blocks[0]?.text?.substring(0,50)||'Senza titolo',blockCount:script.blocks.filter(b=>b.text.trim()).length}});
   localStorage.setItem(hlKey('saved'),JSON.stringify(savedItems));updateSavedCount();showToast('Script salvato nel Mazzo!');sSave();return true;
+}
+function copyFullScript(){
+  const script=fucinaScripts[fucinaCurrentScript];if(!script){showToast('Nessuno script selezionato');return;}
+  const text=script.blocks.filter(b=>b.text.trim()).map(b=>b.text).join('\n\n');
+  if(!text.trim()){showToast('Script vuoto!');return;}
+  navigator.clipboard.writeText(text).then(()=>{showToast('📋 Script copiato!');sClick();}).catch(()=>showToast('Errore copia'));
 }
 function saveBlock(sIdx,bIdx){
   const script=fucinaScripts[sIdx];if(!script)return false;
@@ -10925,8 +10927,9 @@ function renderFucinaEditor(){
   // Bottom actions
   html+=`<div class="editor-bottom">
     <button class="save-btn" onclick="saveFucinaAutoTitle();showToast('Script salvato!');sClick()">💾 Salva</button>
+    <button class="save-btn" onclick="copyFullScript()">📋 Copia</button>
     <button class="save-btn" onclick="saveScript(fucinaCurrentScript)">⭐ Nel Mazzo</button>
-    <button class="save-btn" onclick="duplicateScript(fucinaCurrentScript)">📋 Duplica</button>
+    <button class="save-btn" onclick="duplicateScript(fucinaCurrentScript)">📄 Duplica</button>
     <button class="save-btn" style="color:var(--a1)" onclick="deleteScript(fucinaCurrentScript)">🗑 Elimina</button>
   </div>`;
 

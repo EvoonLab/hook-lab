@@ -21,6 +21,9 @@
 <meta name="twitter:description" content="Giochi AI, Script Studio, Story Planner e Workshop per contenuti social."/>
 <meta name="twitter:image" content="https://evoonlab.github.io/hook-lab/og-image.svg"/>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script>if(typeof jspdf!=='undefined')window.jsPDF=jspdf.jsPDF;</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.4/jspdf.plugin.autotable.min.js"></script>
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 :root{
@@ -2240,7 +2243,8 @@ body.light .shimmer::after{background:linear-gradient(90deg,transparent 0%,rgba(
         <div class="voice-sep"><span>&#129516; Voice DNA — Insegna all'AI come parli</span></div>
         <div class="voice-card" style="background:rgba(0,180,216,.04);border:1px solid rgba(0,180,216,.15);margin-bottom:12px">
           <div style="font-size:.72rem;color:rgba(255,255,255,.6);line-height:1.4">💡 <strong>Suggerimento:</strong> Puoi esportare tutto il tuo Voice DNA in un file .md, modificarlo e ricaricarlo. L'AI avrà un contesto completo su di te.</div>
-          <button class="profile-ai-btn" onclick="generateKnowledgeFile()" style="margin-top:6px;width:auto;padding:4px 12px">📥 Scarica Knowledge .md</button>
+          <button class="profile-ai-btn" onclick="generateKnowledgePdf()" style="margin-top:6px;width:auto;padding:4px 12px">📕 Scarica PDF</button>
+          <button class="profile-ai-btn" onclick="generateKnowledgeFile()" style="margin-top:6px;width:auto;padding:4px 12px">📥 Scarica .md</button>
         </div>
         <div class="voice-card">
           <h3>&#127917; Tono di Voce <button class="profile-ai-btn" onclick="aiSuggestVoice('tone')" title="AI suggerisce toni">🤖</button></h3>
@@ -2318,8 +2322,9 @@ body.light .shimmer::after{background:linear-gradient(90deg,transparent 0%,rgba(
     <div class="settings-row">
       <select id="aiProvider">
         <option value="openai">OpenAI (GPT)</option>
-        <option value="groq">Groq (Llama)</option>
         <option value="anthropic">Anthropic (Claude)</option>
+        <option value="google">Google AI (Gemini)</option>
+        <option value="groq">Groq (Llama)</option>
         <option value="openrouter">OpenRouter (Multi)</option>
         <option value="custom">Custom API</option>
       </select>
@@ -3546,13 +3551,15 @@ function generateSketchFromText(text,containerId){
 // ===== AI SERVICE LAYER =====
 const AI_PROVIDERS={
   openai:{label:'OpenAI (GPT)',baseUrl:'https://api.openai.com/v1/chat/completions',format:'openai',
-    models:[{id:'gpt-4o-mini',label:'GPT-4o Mini (veloce)'},{id:'gpt-4o',label:'GPT-4o (potente)'},{id:'gpt-4.1-mini',label:'GPT-4.1 Mini'},{id:'gpt-4.1-nano',label:'GPT-4.1 Nano (ultrafast)'},{id:'o4-mini',label:'o4-mini (reasoning)'},{id:'gpt-4.5-preview',label:'GPT-4.5 Preview'}]},
+    models:[{id:'gpt-4o-mini',label:'GPT-4o Mini (veloce)'},{id:'gpt-4o',label:'GPT-4o (potente)'},{id:'gpt-4.1-nano',label:'GPT-4.1 Nano (ultrafast)'},{id:'gpt-4.1-mini',label:'GPT-4.1 Mini'},{id:'gpt-4.1',label:'GPT-4.1 (completo)'},{id:'o4-mini',label:'o4-mini (reasoning)'},{id:'o3',label:'o3 (reasoning, premium)'},{id:'gpt-4.5-preview',label:'GPT-4.5 Preview'}]},
+  anthropic:{label:'Anthropic (Claude)',baseUrl:'https://api.anthropic.com/v1/messages',format:'anthropic',
+    models:[{id:'claude-haiku-4-20250514',label:'Claude Haiku 4 (veloce)'},{id:'claude-sonnet-4-20250514',label:'Claude Sonnet 4'},{id:'claude-opus-4-20250514',label:'Claude Opus 4 (premium)'}]},
+  google:{label:'Google AI (Gemini)',baseUrl:'https://generativelanguage.googleapis.com/v1beta/openai/chat/completions',format:'openai',
+    models:[{id:'gemini-2.5-flash',label:'Gemini 2.5 Flash (veloce)'},{id:'gemini-2.5-pro',label:'Gemini 2.5 Pro (potente)'}]},
   groq:{label:'Groq (Llama)',baseUrl:'https://api.groq.com/openai/v1/chat/completions',format:'openai',
     models:[{id:'llama-3.3-70b-versatile',label:'Llama 3.3 70B'},{id:'llama-3.1-8b-instant',label:'Llama 3.1 8B (fast)'},{id:'mixtral-8x7b-32768',label:'Mixtral 8x7B'}]},
-  anthropic:{label:'Anthropic (Claude)',baseUrl:'https://api.anthropic.com/v1/messages',format:'anthropic',
-    models:[{id:'claude-sonnet-4-20250514',label:'Claude Sonnet 4'},{id:'claude-haiku-4-20250514',label:'Claude Haiku 4 (veloce)'}]},
   openrouter:{label:'OpenRouter (Multi)',baseUrl:'https://openrouter.ai/api/v1/chat/completions',format:'openai',
-    models:[{id:'anthropic/claude-sonnet-4',label:'Claude Sonnet 4'},{id:'openai/gpt-4o',label:'GPT-4o'},{id:'google/gemini-2.5-flash',label:'Gemini 2.5 Flash'},{id:'meta-llama/llama-3.3-70b-instruct',label:'Llama 3.3 70B'}]},
+    models:[{id:'anthropic/claude-sonnet-4',label:'Claude Sonnet 4'},{id:'anthropic/claude-opus-4',label:'Claude Opus 4 (premium)'},{id:'openai/gpt-4o',label:'GPT-4o'},{id:'openai/o3',label:'o3 (reasoning)'},{id:'google/gemini-2.5-flash',label:'Gemini 2.5 Flash'},{id:'google/gemini-2.5-pro',label:'Gemini 2.5 Pro'},{id:'meta-llama/llama-3.3-70b-instruct',label:'Llama 3.3 70B'},{id:'deepseek/deepseek-r1',label:'DeepSeek R1 (reasoning)'}]},
   custom:{label:'Custom API',baseUrl:'',format:'openai',models:[]}
 };
 // Dual AI settings — migrate from old flat format
@@ -3663,7 +3670,10 @@ async function aiCallOpenAI(url,model,messages,maxTokens,temperature,apiKey,prov
   const key=apiKey||aiSettings.primary.apiKey;
   const headers={'Content-Type':'application/json','Authorization':`Bearer ${key}`};
   if(provId==='openrouter'){headers['HTTP-Referer']=location.href;headers['X-Title']='HOOKA';}
-  const r=await fetch(url,{method:'POST',headers,body:JSON.stringify({model,messages,max_tokens:maxTokens,temperature})});
+  const isReasoning=/^o[34]|deepseek.*r1/i.test(model);
+  const body={model,messages,max_tokens:maxTokens};
+  if(!isReasoning)body.temperature=temperature;
+  const r=await fetch(url,{method:'POST',headers,body:JSON.stringify(body)});
   if(!r.ok)throw new Error(`API ${r.status}`);
   const d=await r.json();
   return d.choices?.[0]?.message?.content?.trim()||null;
@@ -3703,12 +3713,12 @@ async function chatAiCall(chatMsgs){
   if(!isAI())return null;
   const slot=chatAiSlot||'primary';
   const s=aiSettings[slot]||aiSettings.primary;
-  if(!s||!s.key){// fallback to primary if secondary not configured
+  if(!s||!s.apiKey){// fallback to primary if secondary not configured
     if(slot==='secondary'){showToast('⚠️ AI Secondaria non configurata — uso Primaria');
-      const s2=aiSettings.primary;if(!s2||!s2.key)return null;
+      const s2=aiSettings.primary;if(!s2||!s2.apiKey)return null;
     }
   }
-  const activeSlot=(s&&s.key)?slot:'primary';
+  const activeSlot=(s&&s.apiKey)?slot:'primary';
   const p=AI_PROVIDERS[(aiSettings[activeSlot]||{}).provider]||AI_PROVIDERS.openai;
   const url=getAiUrl(activeSlot),model=getAiModel(activeSlot);
   // Build knowledge context from selected sources
@@ -3777,8 +3787,17 @@ NON sbilanciare sempre su attrazione. Rispetta l'obiettivo selezionato.
 REGOLE DI INTERAZIONE:
 - Dopo ogni analisi o creazione, proponi 2-3 AZIONI CONCRETE come prossimo step
 - Usa i dati del Mazzo dell'utente per fare proposte specifiche: "Ho visto nel tuo mazzo questo hook che potrebbe essere perfetto per..."
-- Se crei uno script, dì: "Vuoi che lo mandi in Fucina per completarlo?"
 - NON essere passivo. Sii un consulente che AGISCE e PROPONE.
+
+REGOLA SCRIPT FUCINA:
+Quando crei uno script COMPLETO (con hook + apertura + corpo + chiusura), usa SEMPRE i tag blocco nel formato [BLOCCO] testo del blocco.
+Blocchi disponibili: [HOOK], [APERTURA], [PROBLEMA], [SOLUZIONE], [CTA], [AMPLIFICA], [OBIEZIONE], [CHIUSURA], [STORIA], [TRANSIZIONE], [VALORE].
+Scrivi ogni blocco su una riga separata. Esempio:
+[HOOK] Il 90% dei creator sbaglia questa cosa...
+[PROBLEMA] Passano ore a creare contenuti che nessuno guarda
+[SOLUZIONE] Esiste un metodo in 3 step che cambia tutto
+[CTA] Commenta "METODO" e te lo mando gratis
+IMPORTANTE: NON dire MAI "Ho inviato lo script in Fucina" o "Fatto, inviato!". Tu NON puoi farlo. Dì invece: "Ecco lo script pronto! Clicca il pulsante 🔥 → Fucina qui sotto per inviarlo."
 - Se l'utente è vago, chiedi: quale obiettivo? attrazione, educazione o vendita?
 ${goalCtx}
 
@@ -3813,7 +3832,7 @@ anatomy_hook:{system_prompt:'Sei un esperto di viral content italiano e copywrit
 quick_win:{system_prompt:'Sei un copywriter esperto. Genera UN SOLO hook virale, breve (max 2 frasi), personalizzato. Solo il testo, niente altro.',temperature:0.95,max_tokens:150,category:'generation',pipeline:'fast',context_mode:'post'},
 scene_picker:{system_prompt:'Sei un assistente. Rispondi SOLO con l\'id esatto della scena, nient\'altro.',temperature:0.9,max_tokens:50,category:'script',pipeline:'fast',context_mode:'none'},
 generic_assistant:{system_prompt:'Sei un assistente esperto di social media e content creation in italiano.',temperature:0.8,max_tokens:500,category:'coaching',pipeline:'fast',context_mode:'none'},
-chat_advisor:{system_prompt:'Sei il CONSULENTE STRATEGICO PERSONALE dell\'utente. Hai accesso COMPLETO a tutti i suoi dati: profilo, hook salvati, script, Hub creativo, risorse caricate, Voice DNA. NON sei un chatbot generico — sei il suo direttore creativo con 15 anni di esperienza.\n\nREGOLE D\'ORO:\n- Quando l\'utente chiede di creare o modificare qualcosa, FAI — non spiegare come fare\n- Quando analizzi un hook: (1) leva psicologica, (2) motivi TECNICI perché funziona/fallisce, (3) 2-3 varianti migliori, (4) formato ideale\n- Quando generi: usa TUTTI i dati dell\'utente (tono, lessico, pubblico, nicchia) per personalizzare al 100%\n- Cita dati specifici dell\'utente nella risposta (es. "visto che il tuo pubblico teme X...")\n- Sii diretto, concreto, specifico. MAI generico. MAI "dipende dal contesto"\n- Se hai dati su conversazioni precedenti, NON ripetere consigli già dati\n\nTIPI DI CONTENUTO (usa quello selezionato dall\'utente):\n- ATTRAZIONE: hook virali, pattern interrupt, curiosity gap, primi 3 secondi\n- EDUCAZIONE: valore pratico, tutorial, insight, framework, "ti spiego come"\n- VENDITA: CTA dirette, scarcity, social proof, obiezioni\nNON sbilanciare sempre su attrazione. Rispetta l\'obiettivo selezionato.\n\nREGOLE DI INTERAZIONE:\n- Dopo ogni analisi o creazione, proponi 2-3 AZIONI CONCRETE come prossimo step\n- Usa i dati del Mazzo dell\'utente per fare proposte specifiche\n- Se crei uno script, dì: "Vuoi che lo mandi in Fucina per completarlo?"\n- NON essere passivo. Sii un consulente che AGISCE e PROPONE.\n- Se l\'utente è vago, chiedi: quale obiettivo? attrazione, educazione o vendita?',temperature:0.8,max_tokens:800,category:'coaching',pipeline:'enhanced',context_mode:'post'},
+chat_advisor:{system_prompt:'Sei il CONSULENTE STRATEGICO PERSONALE dell\'utente. Hai accesso COMPLETO a tutti i suoi dati: profilo, hook salvati, script, Hub creativo, risorse caricate, Voice DNA. NON sei un chatbot generico — sei il suo direttore creativo con 15 anni di esperienza.\n\nREGOLE D\'ORO:\n- Quando l\'utente chiede di creare o modificare qualcosa, FAI — non spiegare come fare\n- Quando analizzi un hook: (1) leva psicologica, (2) motivi TECNICI perché funziona/fallisce, (3) 2-3 varianti migliori, (4) formato ideale\n- Quando generi: usa TUTTI i dati dell\'utente (tono, lessico, pubblico, nicchia) per personalizzare al 100%\n- Cita dati specifici dell\'utente nella risposta (es. "visto che il tuo pubblico teme X...")\n- Sii diretto, concreto, specifico. MAI generico. MAI "dipende dal contesto"\n- Se hai dati su conversazioni precedenti, NON ripetere consigli già dati\n\nTIPI DI CONTENUTO (usa quello selezionato dall\'utente):\n- ATTRAZIONE: hook virali, pattern interrupt, curiosity gap, primi 3 secondi\n- EDUCAZIONE: valore pratico, tutorial, insight, framework, "ti spiego come"\n- VENDITA: CTA dirette, scarcity, social proof, obiezioni\nNON sbilanciare sempre su attrazione. Rispetta l\'obiettivo selezionato.\n\nREGOLE DI INTERAZIONE:\n- Dopo ogni analisi o creazione, proponi 2-3 AZIONI CONCRETE come prossimo step\n- Usa i dati del Mazzo dell\'utente per fare proposte specifiche\n- NON essere passivo. Sii un consulente che AGISCE e PROPONE.\n- Se l\'utente è vago, chiedi: quale obiettivo? attrazione, educazione o vendita?\n\nREGOLA SCRIPT FUCINA:\nQuando crei uno script COMPLETO, usa SEMPRE i tag blocco: [HOOK], [APERTURA], [PROBLEMA], [SOLUZIONE], [CTA], [AMPLIFICA], [OBIEZIONE], [CHIUSURA], [STORIA], [TRANSIZIONE], [VALORE].\nFormato: [BLOCCO] testo del blocco (uno per riga).\nIMPORTANTE: NON dire MAI "Ho inviato lo script in Fucina". Tu NON puoi farlo.\nDì: "Ecco lo script pronto! Clicca 🔥 → Fucina qui sotto per inviarlo."',temperature:0.8,max_tokens:800,category:'coaching',pipeline:'enhanced',context_mode:'post'},
 // Fight styles
 fight_aggressivo:{system_prompt:'Sei un copywriter italiano AGGRESSIVO e provocatorio. Usi shock value, affermazioni forti e polarizzanti. Vai dritto al punto con brutalità. Provochi una reazione immediata.',temperature:0.9,max_tokens:120,category:'fight',pipeline:'fast',context_mode:'post'},
 fight_empatico:{system_prompt:'Sei un copywriter italiano EMPATICO e narrativo. Usi storie personali, vulnerabilità e connessione emotiva. Fai sentire il lettore compreso e accompagnato.',temperature:0.9,max_tokens:120,category:'fight',pipeline:'fast',context_mode:'post'},
@@ -3912,10 +3931,99 @@ async function aiCallByName(promptName,userPrompt,opts={}){
   }
   // Allow extra system content
   if(opts.extraSystem)sys+='\n\n'+opts.extraSystem;
+  // Inject learning context for enhanced/deep pipelines
+  const pipeline=p.pipeline||'fast';
+  if(pipeline!=='fast'){
+    const examples=getTopExamples(promptName,2);
+    if(examples)sys+=examples;
+    const prefCtx=getPreferenceContext();
+    if(prefCtx)sys+=prefCtx;
+  }
   const temp=opts.temperature!==undefined?opts.temperature:p.temperature;
   const tokens=opts.maxTokens||p.max_tokens;
   const slot=opts.slot||'primary';
   return aiCall(sys,userPrompt,tokens,temp,slot);
+}
+
+// ===== AI FEEDBACK & LEARNING SYSTEM (V12.1) =====
+let _aiFeedbackLocal=JSON.parse(localStorage.getItem('hl_ai_feedback')||'[]');
+const AI_FEEDBACK_MAX=200;
+
+function rateAiOutput(btn,rating){
+  const container=btn.closest('.ai-feedback-btns')||btn.closest('.chat-bubble');
+  if(!container)return;
+  // Visual feedback
+  container.querySelectorAll('.ai-fb-btn').forEach(b=>{b.style.opacity=b===btn?'1':'0.3';b.style.transform=b===btn?'scale(1.2)':'scale(1)';});
+  btn.style.opacity='1';btn.style.transform='scale(1.2)';
+  // Extract data
+  const bubble=btn.closest('.chat-bubble')||btn.closest('[data-ai-output]');
+  const outputText=bubble?.dataset?.rawContent||bubble?.textContent?.substring(0,500)||'';
+  const promptName=bubble?.dataset?.promptName||'chat_advisor';
+  const inputText=bubble?.dataset?.inputText||'';
+  // Save locally
+  const entry={promptName,input:inputText.substring(0,200),output:outputText.substring(0,500),rating,ts:Date.now(),saved:false};
+  _aiFeedbackLocal.push(entry);
+  if(_aiFeedbackLocal.length>AI_FEEDBACK_MAX)_aiFeedbackLocal=_aiFeedbackLocal.slice(-AI_FEEDBACK_MAX);
+  localStorage.setItem('hl_ai_feedback',JSON.stringify(_aiFeedbackLocal));
+  // Sync to Supabase if available
+  syncFeedbackToSupabase(entry);
+  // Update voice preferences
+  updateVoicePreferences(entry);
+  showToast(rating>=4?'Grazie! L\'AI imparerà da questo':rating<=2?'Capito, faremo meglio!':'Feedback registrato');
+}
+
+async function syncFeedbackToSupabase(entry){
+  try{
+    if(!supabaseClient||!currentUser)return;
+    await supabaseClient.from('ai_feedback').insert({
+      user_id:currentUser.id,prompt_name:entry.promptName,
+      input_text:entry.input,output_text:entry.output,
+      rating:entry.rating,saved:entry.saved,
+      context:{goal:typeof chatGoal!=='undefined'?chatGoal:''}
+    });
+  }catch(e){console.warn('Feedback sync failed:',e);}
+}
+
+function updateVoicePreferences(entry){
+  if(!voice.preferences)voice.preferences={likedPatterns:[],dislikedPatterns:[],avgRatings:{}};
+  const p=voice.preferences;
+  // Track avg rating per prompt
+  if(!p.avgRatings[entry.promptName])p.avgRatings[entry.promptName]={sum:0,count:0};
+  p.avgRatings[entry.promptName].sum+=entry.rating;
+  p.avgRatings[entry.promptName].count++;
+  // Track liked/disliked patterns from output
+  if(entry.rating>=4&&entry.output){
+    const snippet=entry.output.substring(0,100);
+    if(!p.likedPatterns.includes(snippet)){p.likedPatterns.push(snippet);if(p.likedPatterns.length>15)p.likedPatterns.shift();}
+  }
+  if(entry.rating<=2&&entry.output){
+    const snippet=entry.output.substring(0,100);
+    if(!p.dislikedPatterns.includes(snippet)){p.dislikedPatterns.push(snippet);if(p.dislikedPatterns.length>10)p.dislikedPatterns.shift();}
+  }
+  saveVoice();
+}
+
+function getTopExamples(promptName,limit=3){
+  const good=_aiFeedbackLocal.filter(f=>f.rating>=4&&(!promptName||f.promptName===promptName)).sort((a,b)=>b.rating-a.rating||b.ts-a.ts).slice(0,limit);
+  if(!good.length)return '';
+  return '\n\nESEMPI APPREZZATI DALL\'UTENTE (usa come riferimento per qualità e stile):\n'+good.map((g,i)=>(i+1)+'. '+g.output.substring(0,200)).join('\n');
+}
+
+function getPreferenceContext(){
+  if(!voice.preferences)return '';
+  const p=voice.preferences;
+  let ctx='';
+  if(p.likedPatterns.length){ctx+='\nSTILE PREFERITO DALL\'UTENTE (basato su feedback positivi):\n'+p.likedPatterns.slice(-5).map(s=>'- "'+s+'"').join('\n');}
+  if(p.dislikedPatterns.length){ctx+='\nSTILE DA EVITARE (feedback negativi):\n'+p.dislikedPatterns.slice(-3).map(s=>'- "'+s+'"').join('\n');}
+  return ctx;
+}
+
+function aiFeedbackHtml(promptName,inputText){
+  return `<div class="ai-feedback-btns" style="display:inline-flex;gap:4px;margin-left:8px;vertical-align:middle" data-prompt-name="${promptName||''}" data-input-text="${(inputText||'').substring(0,100).replace(/"/g,'&quot;')}">
+    <button class="ai-fb-btn" onclick="rateAiOutput(this,1)" title="Scarso" style="background:none;border:none;cursor:pointer;font-size:.7rem;opacity:.5;transition:all .2s;padding:2px">👎</button>
+    <button class="ai-fb-btn" onclick="rateAiOutput(this,3)" title="OK" style="background:none;border:none;cursor:pointer;font-size:.7rem;opacity:.5;transition:all .2s;padding:2px">😐</button>
+    <button class="ai-fb-btn" onclick="rateAiOutput(this,5)" title="Ottimo" style="background:none;border:none;cursor:pointer;font-size:.7rem;opacity:.5;transition:all .2s;padding:2px">👍</button>
+  </div>`;
 }
 
 // ===== CHAT AI =====
@@ -3987,11 +4095,17 @@ function addChatBubble(role,content){
   div.className='chat-bubble '+(role==='user'?'user':'ai');
   const time=new Date().toLocaleTimeString('it-IT',{hour:'2-digit',minute:'2-digit'});
   const speakBtn=role==='assistant'?'<button onclick="speakAI(this.closest(\'.chat-bubble\').textContent)" style="background:none;border:none;cursor:pointer;font-size:.7rem;opacity:.5;padding:2px" title="Ascolta">🔊</button>':'';
+  const feedbackBtns=role==='assistant'?aiFeedbackHtml('chat_advisor',''):'';
   div.dataset.rawContent=content; // Store raw content for clean extraction
-  div.innerHTML=(role==='user'?content.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/\n/g,'<br>'):formatChatContent(content))+'<span class="cb-time">'+time+' '+speakBtn+'</span>';
+  div.dataset.promptName='chat_advisor';
+  div.innerHTML=(role==='user'?content.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/\n/g,'<br>'):formatChatContent(content))+'<span class="cb-time">'+time+' '+speakBtn+feedbackBtns+'</span>';
   // Detect script-like content and add action buttons
   if(role==='assistant'&&/\[(HOOK|APERTURA|PROBLEMA|SOLUZIONE|CTA|AMPLIFICA|OBIEZIONE|CHIUSURA|STORIA|TRANSIZIONE|VALORE|SCENA|INTRO|FINALE)\]/i.test(content)){
     div.innerHTML+='<div style="margin-top:8px;padding-top:8px;border-top:1px solid rgba(255,255,255,.08);display:flex;gap:6px;flex-wrap:wrap"><button onclick="chatSendToFucina(this)" class="hub-action-btn" style="font-size:.7rem;padding:5px 12px">🔥 → Fucina</button><button onclick="chatCopyBubble(this)" class="hub-action-btn" style="font-size:.7rem;padding:5px 12px;border-color:rgba(255,255,255,.15);background:rgba(255,255,255,.04)">📋 Copia</button><button onclick="chatSaveBubble(this)" class="hub-action-btn" style="font-size:.7rem;padding:5px 12px;border-color:rgba(255,255,255,.15);background:rgba(255,255,255,.04)">⭐ Salva</button></div>';
+  }
+  // Warning: AI claims it sent to Fucina but didn't produce tagged blocks
+  if(role==='assistant'&&/inviat[oa].*fucina|mand.*in fucina|inviato in fucina/i.test(content)&&!/\[(HOOK|APERTURA|PROBLEMA|SOLUZIONE|CTA|AMPLIFICA|OBIEZIONE|CHIUSURA)\]/i.test(content)){
+    div.innerHTML+='<div style="margin-top:6px;padding:8px 12px;background:rgba(234,179,8,.08);border:1px solid rgba(234,179,8,.2);border-radius:8px;font-size:.65rem;color:#eab308">⚠️ Lo script non contiene blocchi formattati. Chiedi di riscriverlo con i tag [HOOK], [APERTURA], etc. per poterlo inviare in Fucina con il pulsante 🔥</div>';
   }
   el.appendChild(div);
   scrollChatBottom();
@@ -8772,7 +8886,8 @@ function renderBrainStatus(){
     <div class="brain-progress"><div class="brain-progress-fill" style="width:${pct}%"></div></div>
     <div style="font-size:.65rem;color:var(--t2);margin-bottom:10px">${pct<30?'Compila il profilo e gioca per potenziare l\'AI':pct<60?'Buon inizio! Continua a dare feedback per risultati migliori':pct<80?'L\'AI ti conosce bene. Carica file .md per il massimo':'L\'AI è ben addestrata sul tuo stile!'}</div>
     <div class="brain-actions">
-      <button class="brain-btn brain-btn-download" onclick="generateKnowledgeFile()">📥 Scarica Knowledge .md</button>
+      <button class="brain-btn brain-btn-download" onclick="generateKnowledgePdf()">📕 Scarica PDF</button>
+      <button class="brain-btn brain-btn-download" onclick="generateKnowledgeFile()">📥 Scarica .md</button>
       <button class="brain-btn brain-btn-upload" onclick="document.getElementById('brainUploadInput')?.click()">📤 Carica nel Brain</button>
       <input type="file" id="brainUploadInput" accept=".md,.txt" style="display:none" onchange="uploadBrainFile(this)">
     </div>`;
@@ -11627,8 +11742,11 @@ function exportPack(){
   ov.innerHTML=`<div style="background:var(--card);border-radius:16px;padding:28px;width:90%;max-width:400px;border:1px solid rgba(255,255,255,.1)">
     <h3 style="margin-bottom:16px;font-size:1.1rem;text-align:center">📦 Export Pack — Scegli Formato</h3>
     <div style="display:flex;flex-direction:column;gap:10px">
+      <button onclick="doExportPdf()" style="padding:14px;border-radius:12px;background:rgba(239,68,68,.12);border:1px solid rgba(239,68,68,.25);color:#ef4444;cursor:pointer;font-weight:700;font-size:.85rem;text-align:left">
+        📕 PDF (.pdf)<br><span style="font-weight:400;font-size:.72rem;color:var(--t2)">Download diretto — formattato con stile HOOKA</span>
+      </button>
       <button onclick="doExport('html')" style="padding:14px;border-radius:12px;background:rgba(255,107,53,.12);border:1px solid rgba(255,107,53,.25);color:var(--a1);cursor:pointer;font-weight:700;font-size:.85rem;text-align:left">
-        📄 HTML (PDF)<br><span style="font-weight:400;font-size:.72rem;color:var(--t2)">Apre in nuova finestra — Ctrl+P per salvare come PDF</span>
+        📄 HTML<br><span style="font-weight:400;font-size:.72rem;color:var(--t2)">Apre in nuova finestra — preview web</span>
       </button>
       <button onclick="doExport('md')" style="padding:14px;border-radius:12px;background:rgba(0,184,148,.12);border:1px solid rgba(0,184,148,.25);color:#00b894;cursor:pointer;font-weight:700;font-size:.85rem;text-align:left">
         📝 Markdown (.md)<br><span style="font-weight:400;font-size:.72rem;color:var(--t2)">Download diretto — perfetto per Notion, Obsidian</span>
@@ -11725,6 +11843,117 @@ function downloadFile(content,mime,filename){
   const a=document.createElement('a');a.href=url;a.download=filename;
   document.body.appendChild(a);a.click();document.body.removeChild(a);
   URL.revokeObjectURL(url);
+}
+// ===== PDF EXPORT (jsPDF) =====
+function generateHookaPdf(title,sections,filename){
+  if(typeof jspdf==='undefined'){showToast('PDF library non caricata. Riprova.');return;}
+  const{jsPDF}=jspdf;
+  const doc=new jsPDF('p','mm','a4');
+  const pw=doc.internal.pageSize.getWidth();
+  const ph=doc.internal.pageSize.getHeight();
+  const mx=15,mxr=pw-15;
+  let y=20;
+  function addFooter(pg){doc.setFontSize(8);doc.setTextColor(150);doc.text('HOOKA — Palestra Creativa DSS',mx,ph-8);doc.text('Pag. '+pg,mxr,ph-8,{align:'right'});}
+  function checkPage(need){if(y+need>ph-20){addFooter(doc.getNumberOfPages());doc.addPage();y=20;}}
+  // Header
+  doc.setFillColor(255,107,53);doc.rect(0,0,pw,28,'F');
+  doc.setFontSize(22);doc.setFont('helvetica','bold');doc.setTextColor(255);doc.text('HOOKA',mx,16);
+  doc.setFontSize(10);doc.setFont('helvetica','normal');doc.text(title,mx,24);
+  const dt=new Date().toLocaleDateString('it-IT',{day:'2-digit',month:'long',year:'numeric'});
+  doc.text(dt,mxr,24,{align:'right'});
+  y=36;
+  // Sections
+  sections.forEach(sec=>{
+    checkPage(20);
+    doc.setFontSize(13);doc.setFont('helvetica','bold');doc.setTextColor(255,107,53);
+    doc.text(sec.heading,mx,y);y+=8;
+    doc.setTextColor(40);doc.setFont('helvetica','normal');doc.setFontSize(9);
+    if(sec.table){
+      doc.autoTable({startY:y,margin:{left:mx,right:mx},headStyles:{fillColor:[255,107,53],fontSize:8,font:'helvetica'},
+        bodyStyles:{fontSize:8,cellPadding:3},head:[sec.table.head],body:sec.table.body,
+        theme:'grid',styles:{overflow:'linebreak',cellWidth:'wrap'},columnStyles:sec.table.colStyles||{}});
+      y=doc.lastAutoTable.finalY+10;
+    }
+    if(sec.text){
+      const lines=doc.splitTextToSize(sec.text,pw-30);
+      lines.forEach(line=>{checkPage(6);doc.text(line,mx,y);y+=5;});
+      y+=6;
+    }
+    if(sec.items){
+      sec.items.forEach(item=>{
+        checkPage(12);
+        const lines=doc.splitTextToSize(item,pw-34);
+        lines.forEach((line,li)=>{doc.text(li===0?'•':'',mx,y);doc.text(line,mx+4,y);y+=5;});
+        y+=2;
+      });
+      y+=4;
+    }
+  });
+  addFooter(doc.getNumberOfPages());
+  // Add footer to all pages
+  const totalPages=doc.getNumberOfPages();
+  for(let i=1;i<=totalPages;i++){doc.setPage(i);addFooter(i);}
+  doc.save(filename);
+  showToast('PDF scaricato!');
+}
+function doExportPdf(){
+  if(!savedItems.length){showToast('Mazzo vuoto!');return;}
+  const lv=Math.floor(stats.xp/100)+1;
+  const stars=n=>'★'.repeat(Math.floor(n))+(n%1>=.5?'½':'')+'☆'.repeat(5-Math.ceil(n));
+  const sections=[{heading:'Statistiche',table:{head:[['LV','XP','Giocate','Hook','Streak']],body:[[lv,stats.xp,stats.gamesPlayed,stats.hooksWritten,(stats.streak||0)+'']],colStyles:{}}}];
+  // Group by type
+  const byType={};savedItems.forEach(h=>{const t=h.type||'Hook';if(!byType[t])byType[t]=[];byType[t].push(h);});
+  Object.entries(byType).forEach(([type,hooks])=>{
+    sections.push({heading:type+' ('+hooks.length+')',table:{
+      head:[['#','Hook','Rating']],
+      body:hooks.map((h,i)=>[(i+1)+'',h.text.substring(0,200),stars(h.rating||0)]),
+      colStyles:{0:{cellWidth:10},2:{cellWidth:25}}
+    }});
+  });
+  generateHookaPdf('Export Mazzo — '+savedItems.length+' Hook',sections,'hooka-mazzo-'+new Date().toISOString().slice(0,10)+'.pdf');
+}
+function exportSequencePdf(){
+  const seq=getActiveSequence();if(!seq||!seq.days){showToast('Nessuna sequenza attiva');return;}
+  const sections=[];
+  seq.days.forEach((day,di)=>{
+    if(!day.stories||!day.stories.length)return;
+    sections.push({heading:'Giorno '+(di+1)+' — '+day.stories.length+' storie',table:{
+      head:[['#','Tipo','Testo','Nota Visiva']],
+      body:day.stories.map((s,si)=>[(si+1)+'',s.tipo||'',s.testo||'—',(s.nota_visiva||'').substring(0,100)]),
+      colStyles:{0:{cellWidth:8},1:{cellWidth:20},3:{cellWidth:35}}
+    }});
+  });
+  if(!sections.length){showToast('Sequenza vuota');return;}
+  generateHookaPdf('Sequenza Storie: '+(seq.name||'Senza nome'),sections,'hooka-storie-'+new Date().toISOString().slice(0,10)+'.pdf');
+}
+function generateKnowledgePdf(){
+  const who=localStorage.getItem(hlKey('who'))||'';
+  const what=localStorage.getItem(hlKey('what'))||'';
+  const aud=localStorage.getItem(hlKey('aud'))||'';
+  const sections=[];
+  sections.push({heading:'Profilo',items:['Chi: '+who,'Cosa: '+what,'Pubblico: '+aud].filter(s=>s.length>5)});
+  if(voice.tone||voice.vocab){
+    sections.push({heading:'Voice DNA',items:[
+      voice.tone?'Tono: '+voice.tone:'',
+      voice.vocab?'Vocabolario: '+voice.vocab:'',
+      voice.avoid?'Evita: '+voice.avoid:''
+    ].filter(Boolean)});
+  }
+  const top=savedItems.filter(h=>h.rating>=4);
+  if(top.length){
+    sections.push({heading:'Top Hook ('+top.length+')',table:{
+      head:[['Hook','Rating']],
+      body:top.slice(0,20).map(h=>[h.text.substring(0,180),'★'.repeat(Math.floor(h.rating||0))]),
+      colStyles:{1:{cellWidth:20}}
+    }});
+  }
+  if(voice.blockFeedback&&Object.keys(voice.blockFeedback).length){
+    sections.push({heading:'Pattern Feedback',items:Object.entries(voice.blockFeedback).map(([k,v])=>k+': '+JSON.stringify(v).substring(0,100))});
+  }
+  if(voice.learned&&voice.learned.length){
+    sections.push({heading:'Correzioni Apprese',items:voice.learned.slice(-10).map(l=>l.original+' → '+l.correction)});
+  }
+  generateHookaPdf('HOOKA Brain Knowledge',sections,'hooka-brain-'+new Date().toISOString().slice(0,10)+'.pdf');
 }
 
 // ===== MODE SWITCHER =====
@@ -12443,7 +12672,8 @@ function renderStoriesMode(){
     </div>
     <!-- Planner toolbar -->
     <div style="display:flex;gap:6px;padding:8px 18px;background:var(--card);border:1px solid rgba(255,255,255,.08);border-top:none;flex-wrap:wrap">
-      <button onclick="exportSequenceMd()" style="padding:4px 10px;border-radius:6px;font-size:.62rem;font-weight:700;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.1);color:var(--t2);cursor:pointer">📥 Scarica .md</button>
+      <button onclick="exportSequencePdf()" style="padding:4px 10px;border-radius:6px;font-size:.62rem;font-weight:700;background:rgba(239,68,68,.08);border:1px solid rgba(239,68,68,.2);color:#ef4444;cursor:pointer">📕 PDF</button>
+      <button onclick="exportSequenceMd()" style="padding:4px 10px;border-radius:6px;font-size:.62rem;font-weight:700;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.1);color:var(--t2);cursor:pointer">📥 .md</button>
       <button onclick="importSequenceMd()" style="padding:4px 10px;border-radius:6px;font-size:.62rem;font-weight:700;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.1);color:var(--t2);cursor:pointer">📤 Carica .md</button>
       <button onclick="resetSequenceTemplate()" style="padding:4px 10px;border-radius:6px;font-size:.62rem;font-weight:700;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.1);color:var(--t2);cursor:pointer">🔄 Reset</button>
       <button onclick="copySequenceAll()" style="padding:4px 10px;border-radius:6px;font-size:.62rem;font-weight:700;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.1);color:var(--t2);cursor:pointer">📋 Copia Tutto</button>

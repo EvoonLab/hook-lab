@@ -314,3 +314,35 @@ ON CONFLICT (name) DO UPDATE SET
   pipeline = EXCLUDED.pipeline,
   context_mode = EXCLUDED.context_mode,
   updated_at = now();
+
+-- ============================================
+-- HOOKA V12.1 — AI Feedback Table
+-- ============================================
+
+CREATE TABLE IF NOT EXISTS ai_feedback (
+  id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+  user_id UUID REFERENCES auth.users(id) ON DELETE CASCADE,
+  prompt_name TEXT,
+  input_text TEXT,
+  output_text TEXT,
+  rating INT CHECK (rating BETWEEN 1 AND 5),
+  saved BOOLEAN DEFAULT false,
+  context JSONB DEFAULT '{}',
+  created_at TIMESTAMPTZ DEFAULT now()
+);
+
+ALTER TABLE ai_feedback ENABLE ROW LEVEL SECURITY;
+
+-- Users can only manage their own feedback
+CREATE POLICY "Users manage own feedback" ON ai_feedback
+  FOR ALL USING (auth.uid() = user_id);
+
+-- Admin can read all feedback
+CREATE POLICY "Admin reads all feedback" ON ai_feedback
+  FOR SELECT USING (
+    auth.jwt() ->> 'email' = 'evoonconsulting@gmail.com'
+  );
+
+CREATE INDEX IF NOT EXISTS idx_feedback_user ON ai_feedback(user_id);
+CREATE INDEX IF NOT EXISTS idx_feedback_rating ON ai_feedback(rating DESC);
+CREATE INDEX IF NOT EXISTS idx_feedback_prompt ON ai_feedback(prompt_name);

@@ -3791,10 +3791,133 @@ ${getCtxPrompt()}${knowledgeCtx}`;
 }
 // Wrapper for single-prompt AI calls (used by new features)
 async function callAI(prompt,maxTokens=500){
-  const r=await aiCall('Sei un assistente esperto di social media e content creation in italiano.',prompt,maxTokens,0.8);
+  const r=await aiCallByName('generic_assistant',prompt,{maxTokens});
   if(!r)throw new Error('AI non disponibile');
   return r;
 }
+// ===== PROMPT REGISTRY (V12.0) =====
+let _promptCache={};let _promptCacheTime=0;const PROMPT_CACHE_TTL=5*60*1000;
+const FALLBACK_PROMPTS={
+hook_generator:{system_prompt:'Sei un copywriter italiano di livello mondiale specializzato in hook virali per social media.\n\nREGOLE FONDAMENTALI:\n- Scrivi SOLO l\'hook, niente intro, niente spiegazioni\n- Max 2 frasi. La prima DEVE fermare lo scroll\n- Usa una di queste leve: curiosity gap, contrasto shock, dato specifico, domanda provocatoria, confessione personale, lista numerata\n- Linguaggio PARLATO italiano — come parleresti al bar con un amico, zero formalità\n- NON usare: "scopri come", "incredibile", "fantastico", clickbait generico\n- INIZIA con: un numero, una negazione ("Non"), una provocazione ("Il problema è che"), una confessione ("Ho")\n- Deve far pensare "Devo leggere il resto"',temperature:0.9,max_tokens:300,category:'generation',pipeline:'fast',context_mode:'post'},
+battle_hook:{system_prompt:'Sei un copywriter italiano esperto di viral content. Genera UN solo hook virale sul tema dato. Max 2 frasi brevi. Usa una leva a scelta tra: paradosso, dato shock, confessione, domanda retorica, lista, contrasto. Scrivi come parli — zero formalità. Scrivi SOLO l\'hook.',temperature:0.9,max_tokens:150,category:'generation',pipeline:'fast',context_mode:'post'},
+hook_evaluator:{system_prompt:'Sei un direttore creativo italiano con 15 anni di esperienza in content virali. Valuta l\'hook con occhio critico e SPECIFICO.\n\nFormato ESATTO della risposta: PUNTEGGIO|FEEDBACK\n\nCRITERI DI VALUTAZIONE:\n- Scroll-stopping power (ferma davvero lo scroll?)\n- Specificità (evita il generico — numeri, nomi, dettagli concreti)\n- Leva psicologica (curiosità, paura, desiderio, appartenenza?)\n- Tono (suona come un post virale o come un volantino?)\n- Target match (parla AL pubblico dell\'utente?)\n\n5 = Virale sicuro | 4 = Forte | 3 = Medio | 2 = Debole | 1 = Da rifare\nIl feedback DEVE suggerire UNA modifica concreta per migliorarlo.',temperature:0.3,max_tokens:150,category:'evaluation',pipeline:'fast',context_mode:'post'},
+coach_feedback:{system_prompt:'Sei un COACH SPORTIVO PROFESSIONISTA per copywriter. Come un allenatore vero: severo, esigente, ma giusto.\n\nIL TUO APPROCCIO:\n1. ANALISI — Guarda i DATI, non le intenzioni. I numeri parlano.\n2. DIAGNOSI — Identifica il problema SPECIFICO: perché questo hook è debole? Cosa manca?\n3. PRESCRIZIONE — Dai un ESERCIZIO concreto: "Fai X round di Y concentrandoti su Z"\n4. CONFRONTO — Compara con le sessioni passate: "Prima facevi X, ora Y"\n5. PIANO — Chiudi con cosa fare questa settimana per migliorare\n\nREGOLE FERREE:\n- VIETATO dire "bravo", "ottimo", "complimenti" se punteggio sotto 4 stelle\n- Se il punteggio è BASSO (< 3★): "Questo hook non funziona. Ecco perché..." — spiega il PERCHÉ tecnico\n- Se il punteggio è MEDIO (3-4★): "C\'è del buono, ma manca X. Esercizio: fai 5 round di Y"\n- Se il punteggio è ALTO (4.5+★): "Questo funziona. Ora alza l\'asticella: rifallo in 30 sec / con metà parole / cambiando angolo"\n- Fai l\'avvocato del diavolo: "Il tuo pubblico cliccherebbe DAVVERO? Perché?"\n- ZERO fuffa, zero gentilezze inutili, zero emoji\n- Linguaggio: diretto, concreto, come un coach italiano\n- Formatta con punti chiari: ANALISI → ESERCIZIO → PROSSIMO OBIETTIVO',temperature:0.6,max_tokens:300,category:'coaching',pipeline:'fast',context_mode:'post'},
+remix_suggestion:{system_prompt:'Sei un copywriter italiano esperto di riformulazione creativa. L\'utente ha scritto un hook e deve riscriverlo con un vincolo specifico.\n\nDai un SUGGERIMENTO STRATEGICO in 2-3 frasi:\n1. Identifica la leva psicologica dell\'hook originale\n2. Spiega COME adattarla al vincolo (quale tecnica usare)\n3. Dai un esempio di struttura (senza scrivere l\'hook completo)\nNON riscrivere l\'hook per lui — guidalo.',temperature:0.7,max_tokens:200,category:'coaching',pipeline:'fast',context_mode:'post'},
+slot_combo:{system_prompt:'Sei un esperto di content strategy italiano. Genera una combinazione TEMA + ANGOLO + HOOK per contenuti virali.\n\nREGOLE:\n- TEMA: specifico e concreto (non "business" → "freelancer che fatturano sotto i 50k")\n- ANGOLO: prospettiva controintuitiva o inaspettata (non l\'ovvio)\n- HOOK: frase che ferma lo scroll, max 2 frasi, linguaggio parlato\n\nFormato ESATTO (una riga):\nTEMA|ANGOLO|HOOK\nSolo questo, nient\'altro.',temperature:0.85,max_tokens:150,category:'generation',pipeline:'fast',context_mode:'post'},
+collision_hook:{system_prompt:'Sei un copywriter italiano maestro di connessioni inaspettate e analogie potenti.\n\nTi do 2 parole da mondi diversi. Il tuo compito:\n1. Trova il PONTE nascosto tra i due concetti (cosa hanno in comune a livello profondo?)\n2. Trasformalo in UN hook virale che fa dire "Geniale, non ci avevo mai pensato!"\n\nTECNICHE DA USARE (scegline una):\n- Metafora: "X è il Y del Z"\n- Parallelismo: "Come X fa Y, così Z fa W"\n- Contrasto: "Tutti vedono X come Y, ma in realtà è Z"\n- Lezione nascosta: "Cosa mi ha insegnato X su Y"\n\nMax 2 frasi punchy. Scrivi SOLO l\'hook, nient\'altro.',temperature:0.9,max_tokens:180,category:'generation',pipeline:'fast',context_mode:'post'},
+devil_contrarian:{system_prompt:'Sei un provocatore italiano esperto di content virali e pensiero critico.\n\nTi do una credenza comune. Demoliscila con un RIBALTONE che:\n- NON è semplicemente il contrario (troppo banale)\n- Attacca il presupposto nascosto dietro la credenza\n- Usa dati, logica o un esempio concreto per smontarla\n- Fa sentire il lettore "intelligente" per aver capito\n\nMax 2 frasi brutali e dirette. Scrivi SOLO il ribaltone, come parleresti a un amico.',temperature:0.9,max_tokens:150,category:'generation',pipeline:'fast',context_mode:'post'},
+emotion_result:{system_prompt:'Sei un copywriter italiano esperto di hook emotivi e psicologia del contenuto.\n\nTi do un\'emozione e un tema. Genera UN hook virale che:\n- Evoca quell\'emozione nei PRIMI 3 secondi di lettura\n- È specifico al tema (non generico)\n- Usa il linguaggio sensoriale (far "sentire" l\'emozione, non dirla)\n- NON nominare l\'emozione direttamente — falla provare\n\nMax 2 frasi punchy. Scrivi SOLO l\'hook.',temperature:0.9,max_tokens:120,category:'generation',pipeline:'fast',context_mode:'post'},
+flip_pair:{system_prompt:'Sei un provocatore italiano esperto di ribaltoni concettuali.\n\nGenera UNA coppia per il gioco del Flip:\n- PAROLA: un concetto che TUTTI vedono come positivo/desiderabile (max 3 parole)\n- RIBALTONE: la verità scomoda che nessuno dice — specifico, provocatorio, concreto (max 10 parole)\n\nIl ribaltone NON deve essere il semplice contrario. Deve essere una RIVELAZIONE.\n\nFormato ESATTO: PAROLA|RIBALTONE\nSolo questo, nient\'altro.',temperature:0.9,max_tokens:120,category:'generation',pipeline:'fast',context_mode:'post'},
+hot_or_not:{system_prompt:'Sei un copywriter italiano esperto di viral content.\n\nGenera {{count}} hook virali DIVERSI tra loro, uno per riga. Ogni hook deve:\n- Usare una leva psicologica DIVERSA (curiosità, paura, desiderio, appartenenza, etc.)\n- Essere specifico (numeri, nomi, dettagli concreti)\n- Sembrare un vero post virale, NON un esercizio scolastico\n\nNON usare numeri o prefissi. Solo gli hook, uno per riga.',temperature:0.9,max_tokens:250,category:'generation',pipeline:'fast',context_mode:'post'},
+anatomy_hook:{system_prompt:'Sei un esperto di viral content italiano e copywriting avanzato. Genera UN hook virale da analizzare, realistico e con metadati precisi. L\'hook deve sembrare scritto da un creator vero, non troppo perfetto. Formato ESATTO (una sola riga):\nHOOK|EMOZIONE|PATTERN|POTENZA\nEmozioni possibili: {{emotions}}.\nPattern possibili: {{patterns}}.\nPotenza: 1-5 (usa anche 2 e 3, non solo 4-5).\nRispondi SOLO con una riga nel formato richiesto.',temperature:0.85,max_tokens:150,category:'generation',pipeline:'fast',context_mode:'post'},
+quick_win:{system_prompt:'Sei un copywriter esperto. Genera UN SOLO hook virale, breve (max 2 frasi), personalizzato. Solo il testo, niente altro.',temperature:0.95,max_tokens:150,category:'generation',pipeline:'fast',context_mode:'post'},
+scene_picker:{system_prompt:'Sei un assistente. Rispondi SOLO con l\'id esatto della scena, nient\'altro.',temperature:0.9,max_tokens:50,category:'script',pipeline:'fast',context_mode:'none'},
+generic_assistant:{system_prompt:'Sei un assistente esperto di social media e content creation in italiano.',temperature:0.8,max_tokens:500,category:'coaching',pipeline:'fast',context_mode:'none'},
+chat_advisor:{system_prompt:'Sei il CONSULENTE STRATEGICO PERSONALE dell\'utente. Hai accesso COMPLETO a tutti i suoi dati: profilo, hook salvati, script, Hub creativo, risorse caricate, Voice DNA. NON sei un chatbot generico — sei il suo direttore creativo con 15 anni di esperienza.\n\nREGOLE D\'ORO:\n- Quando l\'utente chiede di creare o modificare qualcosa, FAI — non spiegare come fare\n- Quando analizzi un hook: (1) leva psicologica, (2) motivi TECNICI perché funziona/fallisce, (3) 2-3 varianti migliori, (4) formato ideale\n- Quando generi: usa TUTTI i dati dell\'utente (tono, lessico, pubblico, nicchia) per personalizzare al 100%\n- Cita dati specifici dell\'utente nella risposta (es. "visto che il tuo pubblico teme X...")\n- Sii diretto, concreto, specifico. MAI generico. MAI "dipende dal contesto"\n- Se hai dati su conversazioni precedenti, NON ripetere consigli già dati\n\nTIPI DI CONTENUTO (usa quello selezionato dall\'utente):\n- ATTRAZIONE: hook virali, pattern interrupt, curiosity gap, primi 3 secondi\n- EDUCAZIONE: valore pratico, tutorial, insight, framework, "ti spiego come"\n- VENDITA: CTA dirette, scarcity, social proof, obiezioni\nNON sbilanciare sempre su attrazione. Rispetta l\'obiettivo selezionato.\n\nREGOLE DI INTERAZIONE:\n- Dopo ogni analisi o creazione, proponi 2-3 AZIONI CONCRETE come prossimo step\n- Usa i dati del Mazzo dell\'utente per fare proposte specifiche\n- Se crei uno script, dì: "Vuoi che lo mandi in Fucina per completarlo?"\n- NON essere passivo. Sii un consulente che AGISCE e PROPONE.\n- Se l\'utente è vago, chiedi: quale obiettivo? attrazione, educazione o vendita?',temperature:0.8,max_tokens:800,category:'coaching',pipeline:'enhanced',context_mode:'post'},
+// Fight styles
+fight_aggressivo:{system_prompt:'Sei un copywriter italiano AGGRESSIVO e provocatorio. Usi shock value, affermazioni forti e polarizzanti. Vai dritto al punto con brutalità. Provochi una reazione immediata.',temperature:0.9,max_tokens:120,category:'fight',pipeline:'fast',context_mode:'post'},
+fight_empatico:{system_prompt:'Sei un copywriter italiano EMPATICO e narrativo. Usi storie personali, vulnerabilità e connessione emotiva. Fai sentire il lettore compreso e accompagnato.',temperature:0.9,max_tokens:120,category:'fight',pipeline:'fast',context_mode:'post'},
+fight_ironico:{system_prompt:'Sei un copywriter italiano IRONICO e sarcastico. Usi umorismo tagliente, battute intelligenti e sarcasmo sottile. Fai ridere mentre fai riflettere.',temperature:0.9,max_tokens:120,category:'fight',pipeline:'fast',context_mode:'post'},
+fight_educativo:{system_prompt:'Sei un copywriter italiano EDUCATIVO e data-driven. Usi numeri, statistiche, framework e struttura logica. Insegni qualcosa di concreto e misurabile.',temperature:0.9,max_tokens:120,category:'fight',pipeline:'fast',context_mode:'post'},
+fight_provocatorio:{system_prompt:'Sei un copywriter italiano PROVOCATORIO e contrarian. Vai contro la corrente, sfidi le convenzioni, dici quello che nessuno osa dire. Polarizzi il pubblico.',temperature:0.9,max_tokens:120,category:'fight',pipeline:'fast',context_mode:'post'},
+fight_storytelling:{system_prompt:'Sei un copywriter italiano maestro di STORYTELLING. Costruisci mini-narrazioni cinematografiche con setup, tensione e risoluzione. Ogni frase è un fotogramma.',temperature:0.9,max_tokens:120,category:'fight',pipeline:'fast',context_mode:'post'},
+fight_minimalista:{system_prompt:'Sei un copywriter italiano MINIMALISTA estremo. Usi il minor numero di parole possibile per il massimo impatto. Ogni parola deve pesare come un macigno. Max 15 parole.',temperature:0.9,max_tokens:120,category:'fight',pipeline:'fast',context_mode:'post'},
+fight_motivazionale:{system_prompt:'Sei un copywriter italiano MOTIVAZIONALE. Ispiri azione, fiducia, empowerment. Fai sentire il lettore capace di tutto. Sei un coach che accende il fuoco dentro.',temperature:0.9,max_tokens:120,category:'fight',pipeline:'fast',context_mode:'post'},
+fight_premium:{system_prompt:'Sei un copywriter italiano PREMIUM e aspirazionale. Parli di esclusività, élite, risultati straordinari. Fai desiderare uno status superiore. Tono sofisticato.',temperature:0.9,max_tokens:120,category:'fight',pipeline:'fast',context_mode:'post'},
+fight_fear:{system_prompt:'Sei un copywriter italiano esperto di PAURA e urgenza. Mostri le conseguenze negative dell\'inazione. Usi loss aversion, timer mentali, scenari catastrofici controllati.',temperature:0.9,max_tokens:120,category:'fight',pipeline:'fast',context_mode:'post'},
+// Personas
+persona_provocatore:{system_prompt:'Sei un copywriter italiano provocatorio e polarizzante. Usi shock value e affermazioni forti.',temperature:0.9,max_tokens:120,category:'persona',pipeline:'fast',context_mode:'post'},
+persona_narratore:{system_prompt:'Sei un copywriter italiano narrativo. Usi storie personali ed emozioni per connetterti.',temperature:0.9,max_tokens:120,category:'persona',pipeline:'fast',context_mode:'post'},
+persona_tecnico:{system_prompt:'Sei un copywriter italiano data-driven. Usi numeri, statistiche e prove concrete.',temperature:0.9,max_tokens:120,category:'persona',pipeline:'fast',context_mode:'post'},
+persona_empatico:{system_prompt:'Sei un copywriter italiano empatico. Capisci il dolore del pubblico e lo abbracci.',temperature:0.9,max_tokens:120,category:'persona',pipeline:'fast',context_mode:'post'},
+persona_minimalista:{system_prompt:'Sei un copywriter italiano minimalista. Poche parole, massimo impatto. Max 10 parole.',temperature:0.9,max_tokens:120,category:'persona',pipeline:'fast',context_mode:'post'},
+persona_guru:{system_prompt:'Sei un copywriter italiano che parla con autorità assoluta. Esperienza e saggezza trasudano.',temperature:0.9,max_tokens:120,category:'persona',pipeline:'fast',context_mode:'post'},
+persona_ribelle:{system_prompt:'Sei un copywriter italiano contrarian. Vai contro la corrente, sfidi le convenzioni.',temperature:0.9,max_tokens:120,category:'persona',pipeline:'fast',context_mode:'post'},
+persona_coach:{system_prompt:'Sei un copywriter italiano motivazionale. Ispiri azione e fiducia in se stessi.',temperature:0.9,max_tokens:120,category:'persona',pipeline:'fast',context_mode:'post'},
+// Arena
+arena_synthesis:{system_prompt:'Sei un DIRETTORE CREATIVO SENIOR italiano.\nHai appena simulato una sessione creativa intensa con vari esercizi. Devi sintetizzare tutto in un risultato finale straordinario.\n\nREGOLE:\n- Il HOOK finale deve essere il migliore possibile, sintetizzando le intuizioni di TUTTI gli esercizi\n- Le 3 ALTERNATIVE devono usare leve psicologiche DIVERSE (curiosità vs paura vs desiderio etc.)',temperature:0.85,max_tokens:800,category:'arena',pipeline:'deep',context_mode:'post'},
+arena_cta_urgency:{system_prompt:'Sei un copywriter italiano esperto di urgenza e scarsità.',temperature:0.9,max_tokens:80,category:'arena',pipeline:'fast',context_mode:'post'},
+arena_cta_value:{system_prompt:'Sei un copywriter italiano esperto di value proposition.',temperature:0.9,max_tokens:80,category:'arena',pipeline:'fast',context_mode:'post'},
+arena_anatomy:{system_prompt:'Sei un analista di contenuti virali italiano esperto.',temperature:0.5,max_tokens:200,category:'arena',pipeline:'fast',context_mode:'post'},
+arena_remix:{system_prompt:'Sei un copywriter italiano esperto di remix creativi.',temperature:0.9,max_tokens:120,category:'arena',pipeline:'fast',context_mode:'post'},
+arena_default:{system_prompt:'Sei un copywriter italiano esperto.',temperature:0.9,max_tokens:120,category:'arena',pipeline:'fast',context_mode:'post'},
+// Script / Fucina
+block_attrazione:{system_prompt:'Sei un esperto di contenuti virali per social media in italiano. Crei contenuti di ATTRAZIONE: polarizzanti, catchy, aizzanti, entusiasmanti. Usi trend, brand noti, personaggi famosi, abitudini sbagliate del target, problemi del pubblico. NON sei clickbait — sei provocazione intelligente. Il picco emotivo sta all\'INIZIO. Linguaggio semplice, capibile da tutti. Tono amichevole, giovanile, ironico. L\'obiettivo è VIRALITA\'. Il lead deve sentirsi chiamato in causa direttamente.',temperature:0.9,max_tokens:300,category:'script',pipeline:'fast',context_mode:'post'},
+block_educazione:{system_prompt:'Sei un esperto di contenuti educativi per social media in italiano. Crei contenuti che sono il CUORE del topic. L\'obiettivo è trasferire valore reale: informazione, panoramiche, demolizione di obiezioni, Q&A. Sei autorevole ma mai noioso. Ogni blocco deve far sentire il pubblico più intelligente dopo averlo letto.',temperature:0.9,max_tokens:300,category:'script',pipeline:'fast',context_mode:'post'},
+block_vendita:{system_prompt:'Sei un esperto di copywriting di vendita per social media in italiano. Crei contenuti di VENDITA che convertono. Usi social proof (studenti, clienti, risultati), storia personale, valorizzazione del servizio/prodotto, e dimostri il metodo di delivery. Non sei aggressivo — sei convincente con i FATTI.',temperature:0.9,max_tokens:300,category:'script',pipeline:'fast',context_mode:'post'},
+block_suggestion:{system_prompt:'Ogni blocco che scrivi è parte di UNA SOLA narrazione coerente dall\'hook al CTA.',temperature:0.9,max_tokens:300,category:'script',pipeline:'enhanced',context_mode:'post'},
+// Story
+story_battle:{system_prompt:'Scrivi una storia Instagram sul tema indicato. Max 3-4 frasi brevi, formato story. Diretto, emotivo, personale.',temperature:0.9,max_tokens:200,category:'story',pipeline:'fast',context_mode:'story'},
+story_persona_switch:{system_prompt:'Scrivi la STESSA storia Instagram sul tema indicato da 3 angoli diversi:\n\n1. MENTOR (autorevole, guida)\n2. AMICO (confidenziale, vicino)\n3. PROVOCATORE (sfida, scomoda)\n\nPer ogni angolo scrivi:\nANGOLO: [nome]\nCOPY: [2-3 frasi brevi, formato story]\n\nSolo copy diretto, niente spiegazioni.',temperature:0.9,max_tokens:400,category:'story',pipeline:'fast',context_mode:'story'},
+story_duel_emotivo:{system_prompt:'Scrivi una sequenza di 3 storie Instagram sul tema indicato. Per ogni storia: tipo (volto/screenshot/storytelling/cta) + copy (2-3 frasi). Formato story, diretto, emotivo. Usa uno stile EMOTIVO e PERSONALE. Racconta come se parlassi a un amico.',temperature:0.9,max_tokens:300,category:'story',pipeline:'fast',context_mode:'story'},
+story_duel_strategico:{system_prompt:'Scrivi una sequenza di 3 storie Instagram sul tema indicato. Per ogni storia: tipo (volto/screenshot/storytelling/cta) + copy (2-3 frasi). Formato story, diretto, emotivo. Usa uno stile STRATEGICO e PROVOCATORIO. Sfida il lettore, metti pressione.',temperature:0.9,max_tokens:300,category:'story',pipeline:'fast',context_mode:'story'},
+story_style_clash:{system_prompt:'Scrivi una storia Instagram sul tema indicato nello stile specificato. Max 3 frasi, formato story.',temperature:0.9,max_tokens:200,category:'story',pipeline:'fast',context_mode:'story'},
+story_card_genera:{system_prompt:'Sei un copywriter di storie Instagram esperto. Genera il copy per una storia seguendo strategia, posizione e contesto indicati. Max 3-4 frasi, linguaggio parlato, formato story.',temperature:0.9,max_tokens:200,category:'story',pipeline:'fast',context_mode:'story'},
+story_card_riscrivi:{system_prompt:'Sei un copywriter di storie Instagram esperto. Riscrivi il copy mantenendo il messaggio ma con un taglio completamente diverso. Max 3-4 frasi.',temperature:0.85,max_tokens:200,category:'story',pipeline:'fast',context_mode:'story'},
+story_card_forte:{system_prompt:'Sei un copywriter di storie Instagram esperto. Rendi questo copy più FORTE: più diretto, più emotivo, più urgente. Max 3-4 frasi.',temperature:0.9,max_tokens:200,category:'story',pipeline:'fast',context_mode:'story'},
+// Workshop
+workshop_lezione:{system_prompt:'Sei un instructional designer esperto. Crea una struttura COMPLETA per una lezione con obiettivi, scaletta con tempistiche precise, attività interattive, materiali necessari e verifica apprendimento. Rispondi in italiano.',temperature:0.8,max_tokens:1500,category:'workshop',pipeline:'deep',context_mode:'none'},
+workshop_esercizio:{system_prompt:'Sei un formatore creativo. Crea un esercizio pratico e interattivo con istruzioni passo-passo, obiettivo, materiali, durata stimata, livello di difficoltà e varianti. Rispondi in italiano.',temperature:0.8,max_tokens:1500,category:'workshop',pipeline:'deep',context_mode:'none'},
+workshop_slide:{system_prompt:'Sei un presentation designer esperto. Genera un outline completo di slide con titoli, bullet points, note speaker per ogni slide, suggerimenti visivi e struttura narrativa. Rispondi in italiano.',temperature:0.8,max_tokens:1500,category:'workshop',pipeline:'deep',context_mode:'none'},
+workshop_handout:{system_prompt:'Sei un formatore esperto. Crea una dispensa stampabile completa con sezioni chiare, esercizi pratici, checklist, spazi per appunti e risorse consigliate. Rispondi in italiano.',temperature:0.8,max_tokens:1500,category:'workshop',pipeline:'deep',context_mode:'none'},
+// Support
+support_response:{system_prompt:'Sei l\'assistente di supporto di HOOKA, una web app per la creazione di hook e contenuti creativi per social media. Rispondi in italiano, in modo chiaro e conciso. Conosci queste funzionalità: giochi creativi (Slot, Ribaltamento, Collisione, Speed Hook, etc.), Fucina per script, Stories planner, Hub creativo (profilo, Voice DNA, calendario, note), Chat AI, Coach AI, Mazzo (raccolta hook salvati), connessioni AI (OpenRouter, OpenAI, Anthropic), webhook (Make/Zapier/n8n), Google Drive, ClickUp, Workshop Mode (lezioni, esercizi, slide, dispense). Se non sai la risposta o il problema è tecnico/account, suggerisci di parlare con un operatore umano. Sii breve (max 3-4 frasi).',temperature:0.7,max_tokens:200,category:'support',pipeline:'fast',context_mode:'none'},
+support_summary:{system_prompt:'Riassumi questa conversazione di supporto in 2-3 frasi in italiano. Evidenzia il problema principale.',temperature:0.5,max_tokens:150,category:'support',pipeline:'fast',context_mode:'none'},
+// Pipeline (future V12.2)
+strategist:{system_prompt:'Sei uno stratega di contenuti italiano con 15 anni di esperienza. Analizza il task e proponi l\'approccio migliore in 2-3 righe: quale leva psicologica usare, quale angolo, quale formato.',temperature:0.7,max_tokens:200,category:'pipeline',pipeline:'fast',context_mode:'post'},
+quality_gate:{system_prompt:'Sei un editor italiano esperto. Migliora qualità, chiarezza e impatto del testo. Restituisci SOLO il testo migliorato, nient\'altro.',temperature:0.5,max_tokens:300,category:'pipeline',pipeline:'fast',context_mode:'none'},
+critic:{system_prompt:'Sei un direttore creativo italiano esigente. Rifinisci il testo rendendolo più incisivo, naturale e d\'impatto. Restituisci SOLO il testo migliorato.',temperature:0.4,max_tokens:300,category:'pipeline',pipeline:'fast',context_mode:'none'}
+};
+
+async function loadPrompts(force){
+  if(!force&&Date.now()-_promptCacheTime<PROMPT_CACHE_TTL&&Object.keys(_promptCache).length)return;
+  if(!supabaseClient){_promptCache=FALLBACK_PROMPTS;_promptCacheTime=Date.now();return;}
+  try{
+    const{data,error}=await supabaseClient.from('prompts').select('*').eq('active',true);
+    if(error||!data||!data.length){_promptCache=FALLBACK_PROMPTS;_promptCacheTime=Date.now();return;}
+    _promptCache={};
+    data.forEach(p=>{_promptCache[p.name]=p;});
+    _promptCacheTime=Date.now();
+    console.log('[PromptRegistry] Loaded',data.length,'prompts from DB');
+  }catch(e){
+    console.warn('[PromptRegistry] DB fallback:',e.message);
+    _promptCache=FALLBACK_PROMPTS;_promptCacheTime=Date.now();
+  }
+}
+
+function getPrompt(name){
+  return _promptCache[name]||FALLBACK_PROMPTS[name]||{system_prompt:'Sei un assistente esperto di social media e content creation in italiano.',temperature:0.9,max_tokens:300,category:'generation',pipeline:'fast',context_mode:'post'};
+}
+
+function resolvePromptVars(text,vars){
+  if(!vars||!text)return text;
+  return text.replace(/\{\{(\w+)\}\}/g,(_,key)=>vars[key]!==undefined?String(vars[key]):_);
+}
+
+function getContextForMode(mode){
+  if(mode==='post')return getCtxPrompt();
+  if(mode==='story')return typeof getStoryCtxPrompt==='function'?getStoryCtxPrompt():'';
+  return '';
+}
+
+async function aiCallByName(promptName,userPrompt,opts={}){
+  await loadPrompts();
+  const p=getPrompt(promptName);
+  let sys=resolvePromptVars(p.system_prompt,opts.vars||{});
+  // Append context based on mode
+  const ctxMode=opts.contextMode||p.context_mode||'post';
+  if(ctxMode!=='none'){
+    const ctx=getContextForMode(ctxMode);
+    if(ctx)sys+='\n\n'+ctx;
+  }
+  // Allow extra system content
+  if(opts.extraSystem)sys+='\n\n'+opts.extraSystem;
+  const temp=opts.temperature!==undefined?opts.temperature:p.temperature;
+  const tokens=opts.maxTokens||p.max_tokens;
+  const slot=opts.slot||'primary';
+  return aiCall(sys,userPrompt,tokens,temp,slot);
+}
+
 // ===== CHAT AI =====
 let chatHistory=JSON.parse(localStorage.getItem(hlKey('chat_history'))||'[]');
 let chatOpen=true;
@@ -4089,37 +4212,13 @@ function initChat(){
 }
 
 async function aiGenerateHook(tema,extra=''){
-  const sys=`Sei un copywriter italiano di livello mondiale specializzato in hook virali per social media. ${getCtxPrompt()}
-
-REGOLE FONDAMENTALI:
-- Scrivi SOLO l'hook, niente intro, niente spiegazioni
-- Max 2 frasi. La prima DEVE fermare lo scroll
-- Usa una di queste leve: curiosity gap, contrasto shock, dato specifico, domanda provocatoria, confessione personale, lista numerata
-- Linguaggio PARLATO italiano — come parleresti al bar con un amico, zero formalità
-- NON usare: "scopri come", "incredibile", "fantastico", clickbait generico
-- INIZIA con: un numero, una negazione ("Non"), una provocazione ("Il problema è che"), una confessione ("Ho")
-- Deve far pensare "Devo leggere il resto"`;
-  return aiCall(sys,`Genera un hook virale sul tema: "${tema}". ${extra}`.trim());
+  return aiCallByName('hook_generator',`Genera un hook virale sul tema: "${tema}". ${extra}`.trim());
 }
 async function aiBattleHook(tema){
-  const sys=`Sei un copywriter italiano esperto di viral content. ${getCtxPrompt()} Genera UN solo hook virale sul tema dato. Max 2 frasi brevi. Usa una leva a scelta tra: paradosso, dato shock, confessione, domanda retorica, lista, contrasto. Scrivi come parli — zero formalità. Scrivi SOLO l'hook.`;
-  return aiCall(sys,`Tema: "${tema}". Scrivi un hook potente.`,150);
+  return aiCallByName('battle_hook',`Tema: "${tema}". Scrivi un hook potente.`);
 }
 async function aiEvaluateHook(hookText){
-  const sys=`Sei un direttore creativo italiano con 15 anni di esperienza in content virali. ${getCtxPrompt()} Valuta l'hook con occhio critico e SPECIFICO.
-
-Formato ESATTO della risposta: PUNTEGGIO|FEEDBACK
-
-CRITERI DI VALUTAZIONE:
-- Scroll-stopping power (ferma davvero lo scroll?)
-- Specificità (evita il generico — numeri, nomi, dettagli concreti)
-- Leva psicologica (curiosità, paura, desiderio, appartenenza?)
-- Tono (suona come un post virale o come un volantino?)
-- Target match (parla AL pubblico dell'utente?)
-
-5 = Virale sicuro | 4 = Forte | 3 = Medio | 2 = Debole | 1 = Da rifare
-Il feedback DEVE suggerire UNA modifica concreta per migliorarlo.`;
-  const r=await aiCall(sys,`Valuta questo hook: "${hookText}"`,150,0.3);
+  const r=await aiCallByName('hook_evaluator',`Valuta questo hook: "${hookText}"`);
   if(!r)return null;
   const parts=r.split('|');
   const score=parseInt(parts[0])||3;
@@ -4139,26 +4238,6 @@ async function aiCoachFeedback(gameType,data){
   const strongest=gameAvgs[0]?.game||'nessuno';
   const weakest=gameAvgs.length>1?gameAvgs[gameAvgs.length-1].game:'nessuno';
 
-  const sys=`Sei un COACH SPORTIVO PROFESSIONISTA per copywriter. Come un allenatore vero: severo, esigente, ma giusto.
-${getCtxPrompt()}
-
-IL TUO APPROCCIO:
-1. ANALISI — Guarda i DATI, non le intenzioni. I numeri parlano.
-2. DIAGNOSI — Identifica il problema SPECIFICO: perché questo hook è debole? Cosa manca?
-3. PRESCRIZIONE — Dai un ESERCIZIO concreto: "Fai X round di Y concentrandoti su Z"
-4. CONFRONTO — Compara con le sessioni passate: "Prima facevi X, ora Y"
-5. PIANO — Chiudi con cosa fare questa settimana per migliorare
-
-REGOLE FERREE:
-- VIETATO dire "bravo", "ottimo", "complimenti" se punteggio sotto 4 stelle
-- Se il punteggio è BASSO (< 3★): "Questo hook non funziona. Ecco perché..." — spiega il PERCHÉ tecnico
-- Se il punteggio è MEDIO (3-4★): "C'è del buono, ma manca X. Esercizio: fai 5 round di Y"
-- Se il punteggio è ALTO (4.5+★): "Questo funziona. Ora alza l'asticella: rifallo in 30 sec / con metà parole / cambiando angolo"
-- Fai l'avvocato del diavolo: "Il tuo pubblico cliccherebbe DAVVERO? Perché?"
-- ZERO fuffa, zero gentilezze inutili, zero emoji
-- Linguaggio: diretto, concreto, come un coach italiano
-- Formatta con punti chiari: ANALISI → ESERCIZIO → PROSSIMO OBIETTIVO`;
-
   const prompt=`GIOCO: ${gameType}
 DATI SESSIONE: ${JSON.stringify(data)}
 CONTESTO STORICO: ${history.totalHooks} hook scritti, ${history.totalSessions} sessioni totali, media globale ${history.avgRating}/5, trend ${history.trend}.
@@ -4166,30 +4245,13 @@ ULTIME 5 SESSIONI di ${gameType}: ${recentScores.length?'punteggi '+recentScores
 GIOCO PIÙ FORTE: ${GAME_NAMES[strongest]||strongest}. GIOCO PIÙ DEBOLE: ${GAME_NAMES[weakest]||weakest}.
 
 Dai il tuo feedback con: 1) ANALISI del risultato 2) ESERCIZIO specifico 3) OBIETTIVO per la prossima sessione.`;
-  return aiCall(sys,prompt,300,0.6);
+  return aiCallByName('coach_feedback',prompt);
 }
 async function aiRemixSuggestion(original,constraint){
-  const sys=`Sei un copywriter italiano esperto di riformulazione creativa. ${getCtxPrompt()} L'utente ha scritto un hook e deve riscriverlo con un vincolo specifico.
-
-Dai un SUGGERIMENTO STRATEGICO in 2-3 frasi:
-1. Identifica la leva psicologica dell'hook originale
-2. Spiega COME adattarla al vincolo (quale tecnica usare)
-3. Dai un esempio di struttura (senza scrivere l'hook completo)
-NON riscrivere l'hook per lui — guidalo.`;
-  return aiCall(sys,`Hook originale: "${original}". Vincolo: ${constraint}. Suggerisci la strategia migliore per il remix.`,200,0.7);
+  return aiCallByName('remix_suggestion',`Hook originale: "${original}". Vincolo: ${constraint}. Suggerisci la strategia migliore per il remix.`);
 }
 async function aiGenerateSlotCombo(){
-  const sys=`Sei un esperto di content strategy italiano. ${getCtxPrompt()} Genera una combinazione TEMA + ANGOLO + HOOK per contenuti virali.
-
-REGOLE:
-- TEMA: specifico e concreto (non "business" → "freelancer che fatturano sotto i 50k")
-- ANGOLO: prospettiva controintuitiva o inaspettata (non l'ovvio)
-- HOOK: frase che ferma lo scroll, max 2 frasi, linguaggio parlato
-
-Formato ESATTO (una riga):
-TEMA|ANGOLO|HOOK
-Solo questo, nient'altro.`;
-  const r=await aiCall(sys,'Genera una combo virale originale e provocatoria per social media.',150,0.85);
+  const r=await aiCallByName('slot_combo','Genera una combo virale originale e provocatoria per social media.');
   if(!r)return null;
   const parts=r.split('|');
   if(parts.length<3)return null;
@@ -4199,60 +4261,19 @@ Solo questo, nient'altro.`;
 // === AI ENRICHMENT PER GIOCO ===
 // Genera connessione creativa tra 2 parole (Collisione)
 async function aiCollisionHook(wordA,wordB){
-  const sys=`Sei un copywriter italiano maestro di connessioni inaspettate e analogie potenti. ${getCtxPrompt()}
-
-Ti do 2 parole da mondi diversi. Il tuo compito:
-1. Trova il PONTE nascosto tra i due concetti (cosa hanno in comune a livello profondo?)
-2. Trasformalo in UN hook virale che fa dire "Geniale, non ci avevo mai pensato!"
-
-TECNICHE DA USARE (scegline una):
-- Metafora: "X è il Y del Z"
-- Parallelismo: "Come X fa Y, così Z fa W"
-- Contrasto: "Tutti vedono X come Y, ma in realtà è Z"
-- Lezione nascosta: "Cosa mi ha insegnato X su Y"
-
-Max 2 frasi punchy. Scrivi SOLO l'hook, nient'altro.`;
-  return aiCall(sys,`Collega queste 2 parole in un hook virale per social media:\n1. "${wordA}"\n2. "${wordB}"\nTrova la connessione nascosta tra questi 2 mondi e trasformala in un hook che ferma lo scroll.`,180);
+  return aiCallByName('collision_hook',`Collega queste 2 parole in un hook virale per social media:\n1. "${wordA}"\n2. "${wordB}"\nTrova la connessione nascosta tra questi 2 mondi e trasformala in un hook che ferma lo scroll.`);
 }
 // Genera contrarian fresco (Avvocato del Diavolo)
 async function aiDevilContrarian(belief){
-  const sys=`Sei un provocatore italiano esperto di content virali e pensiero critico. ${getCtxPrompt()}
-
-Ti do una credenza comune. Demoliscila con un RIBALTONE che:
-- NON è semplicemente il contrario (troppo banale)
-- Attacca il presupposto nascosto dietro la credenza
-- Usa dati, logica o un esempio concreto per smontarla
-- Fa sentire il lettore "intelligente" per aver capito
-
-Max 2 frasi brutali e dirette. Scrivi SOLO il ribaltone, come parleresti a un amico.`;
-  return aiCall(sys,`Credenza da demolire: "${belief}"`,150);
+  return aiCallByName('devil_contrarian',`Credenza da demolire: "${belief}"`);
 }
 // Genera risultato emozione x tema
 async function aiEmotionResult(emotion,tema){
-  const sys=`Sei un copywriter italiano esperto di hook emotivi e psicologia del contenuto. ${getCtxPrompt()}
-
-Ti do un'emozione e un tema. Genera UN hook virale che:
-- Evoca quell'emozione nei PRIMI 3 secondi di lettura
-- È specifico al tema (non generico)
-- Usa il linguaggio sensoriale (far "sentire" l'emozione, non dirla)
-- NON nominare l'emozione direttamente — falla provare
-
-Max 2 frasi punchy. Scrivi SOLO l'hook.`;
-  return aiCall(sys,`Emozione: "${emotion}". Tema: "${tema}". Genera un hook che colpisce con quell'emozione.`,120);
+  return aiCallByName('emotion_result',`Emozione: "${emotion}". Tema: "${tema}". Genera un hook che colpisce con quell'emozione.`);
 }
 // Genera coppia flip fresca
 async function aiFlipPair(){
-  const sys=`Sei un provocatore italiano esperto di ribaltoni concettuali. ${getCtxPrompt()}
-
-Genera UNA coppia per il gioco del Flip:
-- PAROLA: un concetto che TUTTI vedono come positivo/desiderabile (max 3 parole)
-- RIBALTONE: la verità scomoda che nessuno dice — specifico, provocatorio, concreto (max 10 parole)
-
-Il ribaltone NON deve essere il semplice contrario. Deve essere una RIVELAZIONE.
-
-Formato ESATTO: PAROLA|RIBALTONE
-Solo questo, nient'altro.`;
-  const r=await aiCall(sys,'Genera una coppia parola → ribaltone shock originale e provocatoria per social media.',120);
+  const r=await aiCallByName('flip_pair','Genera una coppia parola → ribaltone shock originale e provocatoria per social media.');
   if(!r)return null;
   const parts=r.split('|');
   if(parts.length<2)return null;
@@ -4260,15 +4281,7 @@ Solo questo, nient'altro.`;
 }
 // Genera hook freschi per Hot or Not
 async function aiHotOrNotHooks(count=3){
-  const sys=`Sei un copywriter italiano esperto di viral content. ${getCtxPrompt()}
-
-Genera ${count} hook virali DIVERSI tra loro, uno per riga. Ogni hook deve:
-- Usare una leva psicologica DIVERSA (curiosità, paura, desiderio, appartenenza, etc.)
-- Essere specifico (numeri, nomi, dettagli concreti)
-- Sembrare un vero post virale, NON un esercizio scolastico
-
-NON usare numeri o prefissi. Solo gli hook, uno per riga.`;
-  const r=await aiCall(sys,`Genera ${count} hook virali diversi, uno per riga.`,250);
+  const r=await aiCallByName('hot_or_not',`Genera ${count} hook virali diversi, uno per riga.`,{vars:{count}});
   if(!r)return[];
   return r.split('\n').map(l=>l.trim()).filter(l=>l.length>10).slice(0,count);
 }
@@ -6950,8 +6963,8 @@ function drawSceneEnhanced(canvasId,text){
 }
 async function aiPickBestScene(text){
   const sceneList=SKETCH_SCENES.map(s=>`${s.id}: ${s.name} — ${s.hint}`).join('\n');
-  const r=await aiCall('Sei un assistente. Rispondi SOLO con l\'id esatto della scena, nient\'altro.',
-    `Scegli la scena più adatta a questo testo:\n"${text.substring(0,200)}"\n\nScene disponibili:\n${sceneList}\n\nRispondi SOLO con l'id (es: laptop_money).`,50);
+  const r=await aiCallByName('scene_picker',
+    `Scegli la scena più adatta a questo testo:\n"${text.substring(0,200)}"\n\nScene disponibili:\n${sceneList}\n\nRispondi SOLO con l'id (es: laptop_money).`);
   if(!r)return null;
   const id=r.trim().replace(/['"]/g,'').toLowerCase();
   return SCENE_DRAW[id]?id:null;
@@ -7087,7 +7100,7 @@ const PATTERNS=["Curiosity Gap","Shock Value","Contrarian","Personal Story","Num
 let anatState={hooks:[],current:0,score:0,total:5};
 function renderAnatomy(skipDiff){if(!skipDiff&&DIFFICULTY_CONFIG.anatomy){return renderDiffScreen('anatomy',()=>renderAnatomy(true));}const diff=DIFFICULTY_CONFIG.anatomy[getGameDifficulty('anatomy')];const aTotal=diff?.hooks||5;const aOpts=diff?.opts||4;const a=document.getElementById('gameArea');const pool=[...ANATOMY_HOOKS].sort(()=>Math.random()-.5).slice(0,aTotal);anatState={hooks:pool,current:0,score:0,total:aTotal,numOpts:aOpts};showAnatQuestion(a);
   // AI Controllore: genera hook freschi da analizzare
-  if(isAI()){(async()=>{const sys=`Sei un esperto di viral content italiano e copywriting avanzato. ${getCtxPrompt()} Genera UN hook virale da analizzare, realistico e con metadati precisi. L'hook deve sembrare scritto da un creator vero, non troppo perfetto. Formato ESATTO (una sola riga):\nHOOK|EMOZIONE|PATTERN|POTENZA\nEmozioni possibili: ${DB.emotions.join(', ')}.\nPattern possibili: ${PATTERNS.join(', ')}.\nPotenza: 1-5 (usa anche 2 e 3, non solo 4-5).\nRispondi SOLO con una riga nel formato richiesto.`;const r=await aiCall(sys,'Genera un hook virale italiano con emozione, pattern e potenza. Deve sembrare scritto da un content creator su Instagram o TikTok.',150,0.85);if(r){const p=r.split('|');if(p.length>=4){const fresh={text:p[0].trim().replace(/"/g,''),emotion:p[1].trim(),pattern:p[2].trim(),power:parseInt(p[3])||4};if(fresh.text.length>15&&anatState.current<2){anatState.hooks.splice(2,1,fresh);}}}})();}}
+  if(isAI()){(async()=>{const r=await aiCallByName('anatomy_hook','Genera un hook virale italiano con emozione, pattern e potenza. Deve sembrare scritto da un content creator su Instagram o TikTok.',{vars:{emotions:DB.emotions.join(', '),patterns:PATTERNS.join(', ')}});if(r){const p=r.split('|');if(p.length>=4){const fresh={text:p[0].trim().replace(/"/g,''),emotion:p[1].trim(),pattern:p[2].trim(),power:parseInt(p[3])||4};if(fresh.text.length>15&&anatState.current<2){anatState.hooks.splice(2,1,fresh);}}}})();}}
 function showAnatQuestion(a){if(!a)a=document.getElementById('gameArea');const h=anatState.hooks[anatState.current];const nOpts=anatState.numOpts||4;const emoOpts=shuffleWith(DB.emotions,h.emotion,nOpts);const patOpts=shuffleWith(PATTERNS,h.pattern,nOpts);a.innerHTML=`<button class="back-btn" onclick="closeGame()">← Indietro</button><div class="game-title">🔬 Anatomia Hook</div><p class="game-subtitle">${anatState.current+1}/${anatState.total} — Analizza questo hook</p><div style="max-width:500px;margin:0 auto 16px;padding:18px;background:rgba(255,107,53,.06);border:1px solid rgba(255,107,53,.15);border-radius:var(--r);text-align:center"><div style="font-size:1.1rem;font-weight:700;line-height:1.4">"${h.text}"</div></div><div style="max-width:500px;margin:0 auto"><div style="font-size:.7rem;text-transform:uppercase;letter-spacing:2px;color:var(--a2);font-weight:700;margin-bottom:6px">1. Quale emozione usa?</div><div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:14px" id="anatEmo">${emoOpts.map(e=>`<button class="pause-btn pause" onclick="pickAnatEmo(this,'${e}','${h.emotion}')" style="flex:1;min-width:45%;text-align:center">${e}</button>`).join('')}</div><div style="font-size:.7rem;text-transform:uppercase;letter-spacing:2px;color:var(--a2);font-weight:700;margin-bottom:6px">2. Quale pattern?</div><div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:14px" id="anatPat">${patOpts.map(p=>`<button class="pause-btn pause" onclick="pickAnatPat(this,'${p}','${h.pattern}')" style="flex:1;min-width:45%;text-align:center">${p}</button>`).join('')}</div><div style="font-size:.7rem;text-transform:uppercase;letter-spacing:2px;color:var(--a2);font-weight:700;margin-bottom:6px">3. Potenza (1-5)</div><div class="star-rating" id="anatPow" style="justify-content:center">${[1,2,3,4,5].map(s=>`<span class="star" style="font-size:1.6rem" onclick="pickAnatPow(${s})">★</span>`).join('')}</div></div><div class="game-actions" id="anatAct" style="margin-top:16px"><button class="action-btn btn-hot" onclick="submitAnat()" id="anatSubmit" disabled>Conferma →</button></div><div id="anatRes"></div>`;}
 let anatPicks={emo:null,pat:null,pow:0};
 function pickAnatEmo(btn,val,correct){anatPicks.emo=val;document.querySelectorAll('#anatEmo .pause-btn').forEach(b=>{b.style.opacity=b===btn?'1':'.4';b.style.borderColor=b===btn?'var(--a1)':'';});checkAnatReady();}
@@ -7116,16 +7129,16 @@ function saveFightStats(){localStorage.setItem(hlKey('fightStats'),JSON.stringif
 
 // Fight personality styles
 const FIGHT_STYLES={
-  aggressivo:{label:'🔥 Aggressivo',desc:'Shock value, provocazione, affermazioni forti',sys:'Sei un copywriter italiano AGGRESSIVO e provocatorio. Usi shock value, affermazioni forti e polarizzanti. Vai dritto al punto con brutalità. Provochi una reazione immediata.'},
-  empatico:{label:'💛 Empatico',desc:'Storie personali, vulnerabilità, connessione',sys:'Sei un copywriter italiano EMPATICO e narrativo. Usi storie personali, vulnerabilità e connessione emotiva. Fai sentire il lettore compreso e accompagnato.'},
-  ironico:{label:'😏 Ironico',desc:'Sarcasmo intelligente, umorismo tagliente',sys:'Sei un copywriter italiano IRONICO e sarcastico. Usi umorismo tagliente, battute intelligenti e sarcasmo sottile. Fai ridere mentre fai riflettere.'},
-  educativo:{label:'📚 Educativo',desc:'Dati, framework, insegnamento strutturato',sys:'Sei un copywriter italiano EDUCATIVO e data-driven. Usi numeri, statistiche, framework e struttura logica. Insegni qualcosa di concreto e misurabile.'},
-  provocatorio:{label:'⚡ Provocatorio',desc:'Contrarian, sfida le convenzioni',sys:'Sei un copywriter italiano PROVOCATORIO e contrarian. Vai contro la corrente, sfidi le convenzioni, dici quello che nessuno osa dire. Polarizzi il pubblico.'},
-  storytelling:{label:'📖 Storytelling',desc:'Narrazione cinematografica, arco narrativo',sys:'Sei un copywriter italiano maestro di STORYTELLING. Costruisci mini-narrazioni cinematografiche con setup, tensione e risoluzione. Ogni frase è un fotogramma.'},
-  minimalista:{label:'✂️ Minimalista',desc:'Poche parole, massimo impatto',sys:'Sei un copywriter italiano MINIMALISTA estremo. Usi il minor numero di parole possibile per il massimo impatto. Ogni parola deve pesare come un macigno. Max 15 parole.'},
-  motivazionale:{label:'🏆 Motivazionale',desc:'Ispirante, coach, empowerment',sys:'Sei un copywriter italiano MOTIVAZIONALE. Ispiri azione, fiducia, empowerment. Fai sentire il lettore capace di tutto. Sei un coach che accende il fuoco dentro.'},
-  lusso:{label:'💎 Premium',desc:'Esclusività, aspirazionale, élite',sys:'Sei un copywriter italiano PREMIUM e aspirazionale. Parli di esclusività, élite, risultati straordinari. Fai desiderare uno status superiore. Tono sofisticato.'},
-  paura:{label:'😱 Fear-based',desc:'Urgenza, perdita, conseguenze negative',sys:'Sei un copywriter italiano esperto di PAURA e urgenza. Mostri le conseguenze negative dell\'inazione. Usi loss aversion, timer mentali, scenari catastrofici controllati.'}
+  aggressivo:{label:'🔥 Aggressivo',desc:'Shock value, provocazione, affermazioni forti',promptName:'fight_aggressivo',get sys(){return getPrompt(this.promptName).system_prompt;}},
+  empatico:{label:'💛 Empatico',desc:'Storie personali, vulnerabilità, connessione',promptName:'fight_empatico',get sys(){return getPrompt(this.promptName).system_prompt;}},
+  ironico:{label:'😏 Ironico',desc:'Sarcasmo intelligente, umorismo tagliente',promptName:'fight_ironico',get sys(){return getPrompt(this.promptName).system_prompt;}},
+  educativo:{label:'📚 Educativo',desc:'Dati, framework, insegnamento strutturato',promptName:'fight_educativo',get sys(){return getPrompt(this.promptName).system_prompt;}},
+  provocatorio:{label:'⚡ Provocatorio',desc:'Contrarian, sfida le convenzioni',promptName:'fight_provocatorio',get sys(){return getPrompt(this.promptName).system_prompt;}},
+  storytelling:{label:'📖 Storytelling',desc:'Narrazione cinematografica, arco narrativo',promptName:'fight_storytelling',get sys(){return getPrompt(this.promptName).system_prompt;}},
+  minimalista:{label:'✂️ Minimalista',desc:'Poche parole, massimo impatto',promptName:'fight_minimalista',get sys(){return getPrompt(this.promptName).system_prompt;}},
+  motivazionale:{label:'🏆 Motivazionale',desc:'Ispirante, coach, empowerment',promptName:'fight_motivazionale',get sys(){return getPrompt(this.promptName).system_prompt;}},
+  lusso:{label:'💎 Premium',desc:'Esclusività, aspirazionale, élite',promptName:'fight_premium',get sys(){return getPrompt(this.promptName).system_prompt;}},
+  paura:{label:'😱 Fear-based',desc:'Urgenza, perdita, conseguenze negative',promptName:'fight_fear',get sys(){return getPrompt(this.promptName).system_prompt;}}
 };
 
 let fightStyleA=localStorage.getItem(hlKey('fightStyleA'))||'aggressivo';
@@ -7510,14 +7523,14 @@ async function startFight_angleduel(){
 // ===== FIGHT GAME 8: TOURNAMENT =====
 let tournamentState=null;
 const TOURNEY_PERSONAS=[
-  {name:'Il Provocatore',sys:'Sei un copywriter italiano provocatorio e polarizzante. Usi shock value e affermazioni forti.'},
-  {name:'Il Narratore',sys:'Sei un copywriter italiano narrativo. Usi storie personali ed emozioni per connetterti.'},
-  {name:'Il Tecnico',sys:'Sei un copywriter italiano data-driven. Usi numeri, statistiche e prove concrete.'},
-  {name:'L\'Empatico',sys:'Sei un copywriter italiano empatico. Capisci il dolore del pubblico e lo abbracci.'},
-  {name:'Il Minimalista',sys:'Sei un copywriter italiano minimalista. Poche parole, massimo impatto. Max 10 parole.'},
-  {name:'Il Guru',sys:'Sei un copywriter italiano che parla con autorità assoluta. Esperienza e saggezza trasudano.'},
-  {name:'Il Ribelle',sys:'Sei un copywriter italiano contrarian. Vai contro la corrente, sfidi le convenzioni.'},
-  {name:'Il Coach',sys:'Sei un copywriter italiano motivazionale. Ispiri azione e fiducia in se stessi.'}
+  {name:'Il Provocatore',promptName:'persona_provocatore',get sys(){return getPrompt(this.promptName).system_prompt;}},
+  {name:'Il Narratore',promptName:'persona_narratore',get sys(){return getPrompt(this.promptName).system_prompt;}},
+  {name:'Il Tecnico',promptName:'persona_tecnico',get sys(){return getPrompt(this.promptName).system_prompt;}},
+  {name:'L\'Empatico',promptName:'persona_empatico',get sys(){return getPrompt(this.promptName).system_prompt;}},
+  {name:'Il Minimalista',promptName:'persona_minimalista',get sys(){return getPrompt(this.promptName).system_prompt;}},
+  {name:'Il Guru',promptName:'persona_guru',get sys(){return getPrompt(this.promptName).system_prompt;}},
+  {name:'Il Ribelle',promptName:'persona_ribelle',get sys(){return getPrompt(this.promptName).system_prompt;}},
+  {name:'Il Coach',promptName:'persona_coach',get sys(){return getPrompt(this.promptName).system_prompt;}}
 ];
 async function renderTournament(){
   const tema=smartTema();
@@ -8126,28 +8139,26 @@ async function runAutorunStage(game,tema,prevHook,settings){
       const sA=styles[Math.floor(Math.random()*styles.length)];
       let sB=styles[Math.floor(Math.random()*styles.length)];
       while(sB===sA)sB=styles[Math.floor(Math.random()*styles.length)];
-      const sysA=FIGHT_STYLES[sA].sys+' '+getCtxPrompt();
-      const sysB=FIGHT_STYLES[sB].sys+' '+getCtxPrompt();
       const [a,b]=await Promise.all([
-        aiCall(sysA,`Scrivi un hook virale su: "${tema}". Max 2 frasi. Solo l'hook.`,120,temp),
-        aiCall(sysB,`Scrivi un hook virale su: "${tema}". Max 2 frasi. Solo l'hook.`,120,temp)
+        aiCallByName(FIGHT_STYLES[sA].promptName,`Scrivi un hook virale su: "${tema}". Max 2 frasi. Solo l'hook.`,{temperature:temp}),
+        aiCallByName(FIGHT_STYLES[sB].promptName,`Scrivi un hook virale su: "${tema}". Max 2 frasi. Solo l'hook.`,{temperature:temp})
       ]);
       return`[${FIGHT_STYLES[sA].label}]: ${a||'—'}\n[${FIGHT_STYLES[sB].label}]: ${b||'—'}`;
     }
     case 'ctaclash':{
       const [urgency,value]=await Promise.all([
-        aiCall('Sei un copywriter italiano esperto di urgenza e scarsità. '+getCtxPrompt(),`Scrivi un CTA urgente per: "${tema}". Max 1-2 frasi. Solo il CTA.`,80,temp),
-        aiCall('Sei un copywriter italiano esperto di value proposition. '+getCtxPrompt(),`Scrivi un CTA basato sul valore per: "${tema}". Max 1-2 frasi. Solo il CTA.`,80,temp)
+        aiCallByName('arena_cta_urgency',`Scrivi un CTA urgente per: "${tema}". Max 1-2 frasi. Solo il CTA.`,{temperature:temp}),
+        aiCallByName('arena_cta_value',`Scrivi un CTA basato sul valore per: "${tema}". Max 1-2 frasi. Solo il CTA.`,{temperature:temp})
       ]);
       return`[Urgenza]: ${urgency||'—'}\n[Valore]: ${value||'—'}`;
     }
     case 'anatomy':
-      return aiCall('Sei un analista di contenuti virali italiano esperto. '+getCtxPrompt(),`Analizza la struttura di questo hook:\n"${prevHook}"\n\nIdentifica: 1) Leva psicologica 2) Pattern strutturale 3) Perché funziona 4) Come migliorarlo. Sii conciso, 4 punti.`,200,0.5);
+      return aiCallByName('arena_anatomy',`Analizza la struttura di questo hook:\n"${prevHook}"\n\nIdentifica: 1) Leva psicologica 2) Pattern strutturale 3) Perché funziona 4) Come migliorarlo. Sii conciso, 4 punti.`);
     case 'remix':
       const constraints=['con metà delle parole','in forma di domanda','con un numero specifico','con una metafora','in prima persona'];
       const c=constraints[Math.floor(Math.random()*constraints.length)];
-      return aiCall('Sei un copywriter italiano esperto di remix creativi. '+getCtxPrompt(),`Riscrivi questo hook ${c}:\n"${prevHook}"\nScrivi SOLO il nuovo hook.`,120,temp);
-    default:return aiCall('Sei un copywriter italiano esperto. '+getCtxPrompt(),`Genera un hook virale su: "${tema}". Max 2 frasi.`,120,temp);
+      return aiCallByName('arena_remix',`Riscrivi questo hook ${c}:\n"${prevHook}"\nScrivi SOLO il nuovo hook.`,{temperature:temp});
+    default:return aiCallByName('arena_default',`Genera un hook virale su: "${tema}". Max 2 frasi.`,{temperature:temp});
   }
 }
 
@@ -8158,13 +8169,7 @@ async function autorunSynthesize(){
   const st=SCRIPT_TYPES[scriptType]||SCRIPT_TYPES.attrazione;
   const blockKeys=st.blocks.map(b=>b.key+'|'+b.label).join(', ');
 
-  const sys=`Sei un DIRETTORE CREATIVO SENIOR italiano. ${getCtxPrompt()}
-Hai appena simulato una sessione creativa intensa con vari esercizi. Devi sintetizzare tutto in un risultato finale straordinario.
-
-REGOLE:
-- Il HOOK finale deve essere il migliore possibile, sintetizzando le intuizioni di TUTTI gli esercizi
-- Le 3 ALTERNATIVE devono usare leve psicologiche DIVERSE (curiosità vs paura vs desiderio etc.)
-- Lo SCRIPT deve seguire la struttura ${st.name} con i blocchi: ${blockKeys}
+  const extraSys=`\n- Lo SCRIPT deve seguire la struttura ${st.name} con i blocchi: ${blockKeys}
 - Lunghezza hook: ${s.hookLength==='corto'?'max 1 frase potente':s.hookLength==='narrativo'?'2-3 frasi narrative':'1-2 frasi punchy'}
 ${s.tone.length?'- Tono: '+s.tone.join(', '):''}
 ${s.constraints?'- Vincoli: '+s.constraints:''}
@@ -8185,7 +8190,7 @@ ${st.blocks.map(b=>'SCRIPT_'+b.key.toUpperCase()+'|{testo per '+b.label+'}').joi
   }
   const prompt=`RISULTATI DELLA SESSIONE CREATIVA:\n\n${pipeOutputs}${mazzoRef}\n\nTOPIC: ${s.topic}\nOBIETTIVO: ${s.goal}\n\nProduci il risultato finale con il formato richiesto. Usa lo stile dei riferimenti dal Mazzo come ispirazione.`;
 
-  const r=await aiCall(sys,prompt,800,s.temperature||0.85);
+  const r=await aiCallByName('arena_synthesis',prompt,{extraSystem:extraSys,temperature:s.temperature||0.85});
   if(!r)throw new Error('Nessuna risposta dall\'AI');
 
   // Parse response
@@ -10674,10 +10679,9 @@ async function generateAiHook(){
   const type=SCRIPT_TYPES[fucinaSetup.type];
   const bpSys=BLOCK_PROMPTS[fucinaSetup.type]?._system||'';
   const hookInstr=BLOCK_PROMPTS[fucinaSetup.type]?.hook||'';
-  const hook=await aiCall(
-    `Sei un copywriter esperto di content creation per social media. ${bpSys} ${ctx}`,
+  const hook=await aiCallByName('hook_generator',
     `Genera UN SOLO hook virale per un contenuto di tipo "${type.name}" (${type.desc}). ${hookInstr||"L'hook deve essere breve (max 2 frasi), polarizzante, e deve fermare lo scroll."} Rispondi SOLO con l'hook, nient'altro.`,
-    150
+    {extraSystem:bpSys,maxTokens:150}
   );
   btn.disabled=false;btn.textContent='🤖 Genera Hook';
   if(hook){
@@ -10908,7 +10912,9 @@ NON ripetere concetti già trattati nei blocchi precedenti. NON introdurre temi 
 Il lettore deve sentire che ogni blocco lo avvicina alla conclusione promessa dall'hook.
 `:'';
 
-  const systemPrompt=(bp?._system||'Sei un copywriter italiano esperto di social media e content marketing.')+' Ogni blocco che scrivi è parte di UNA SOLA narrazione coerente dall\'hook al CTA. '+ctx;
+  const blockType=type.id||'attrazione';
+  const blockPromptName='block_'+blockType;
+  const basePrompt=bp?._system||getPrompt(blockPromptName)?.system_prompt||'Sei un copywriter italiano esperto di social media e content marketing.';
   const prompt=`${ctx}
 Stai scrivendo uno script di tipo "${type.name}" (${type.desc}).
 ${cascadeRule}${context?`Ecco i blocchi precedenti dello script:\n${context}\n`:''}
@@ -10917,7 +10923,7 @@ ISTRUZIONE PER QUESTO BLOCCO — "${block.label}":
 ${blockInstruction}
 Rispondi SOLO con il testo del blocco. Nient'altro.`;
 
-  const result=await aiCall(systemPrompt,prompt,300);
+  const result=await aiCallByName('block_suggestion',prompt,{extraSystem:basePrompt});
   if(btn){btn.disabled=false;btn.classList.remove('loading');btn.textContent='🤖 Suggerisci';}
   if(result){
     const ta=document.getElementById('blockText'+i);
@@ -11549,9 +11555,8 @@ async function generateHookOfDay(){
   const el=document.getElementById('sideHookOfDayContent');
   if(!el||!isAI())return;
   el.innerHTML='<span style="color:var(--t2)">Genero il tuo hook del giorno...</span>';
-  const ctx=getCtxPrompt();
-  const hook=await aiCall('Sei un copywriter esperto. Genera UN SOLO hook virale, breve (max 2 frasi), personalizzato. Solo il testo, niente altro.\n\n'+ctx,
-    'Genera un hook virale per oggi. Deve essere originale, provocatorio o emotivo. Basati sul profilo dell\'utente.',150,0.95);
+  const hook=await aiCallByName('quick_win',
+    'Genera un hook virale per oggi. Deve essere originale, provocatorio o emotivo. Basati sul profilo dell\'utente.');
   if(hook){
     const clean=hook.replace(/^["']|["']$/g,'').trim();
     localStorage.setItem(hlKey('hookOfDay'),JSON.stringify({date:new Date().toISOString().split('T')[0],hook:clean}));
@@ -11892,10 +11897,10 @@ async function generateWorkshopContent(type){
   const out=document.getElementById('wsOutput');if(!out)return;
   out.innerHTML='<div style="text-align:center;padding:20px"><div class="loading-spinner" style="margin:0 auto 10px"></div><div style="font-size:.7rem;color:var(--t2)">Generazione in corso...</div></div>';
 
-  const systemPrompt='Sei HOOKA Workshop AI — un assistente per la creazione di materiali formativi professionali.';
+  const wsPromptName='workshop_'+tool.id;
   const userPrompt=tool.prompt(arg,dur,lvl);
 
-  let result=await aiCall(systemPrompt,userPrompt,1500,0.8);
+  let result=await aiCallByName(FALLBACK_PROMPTS[wsPromptName]?wsPromptName:'workshop_lezione',userPrompt,{maxTokens:1500});
 
   if(!result){
     // Fallback mock se nessuna API key configurata
@@ -12065,10 +12070,9 @@ async function generateMvWithAI(){
   const topic=document.querySelector('.mv-text')?.value?.trim();
   if(!topic){showToast('⚠️ Scrivi almeno il tema nella prima slide!');return;}
   showToast('🤖 AI sta generando le slide...');
-  const result=await aiCall(
-    'Sei un social media expert. Genera il testo per 4-5 slide di un micro-video Instagram Reels/TikTok.',
+  const result=await aiCallByName('generic_assistant',
     `Crea 4-5 slide per un micro-video su: "${topic}". Ogni slide deve avere una frase breve e d'impatto (max 15 parole). Rispondi SOLO con le frasi, una per riga, numerate (1. 2. 3. etc).`,
-    300,0.9
+    {extraSystem:'Genera il testo per 4-5 slide di un micro-video Instagram Reels/TikTok.'}
   );
   if(!result){showToast('⚠️ AI non disponibile');return;}
   const lines=result.split('\n').map(l=>l.replace(/^\d+[\.\)]\s*/,'')).filter(l=>l.trim().length>3);
@@ -14685,6 +14689,22 @@ async function openAdminDashboard(){
         </div>
       </div>
 
+      <!-- PROMPT MANAGER -->
+      <div style="margin-bottom:20px">
+        <h3 style="font-size:.85rem;color:var(--t1);margin-bottom:10px;cursor:pointer" onclick="document.getElementById('adminPromptMgr').style.display=document.getElementById('adminPromptMgr').style.display==='none'?'block':'none'">🧠 Prompt Manager <span style="font-size:.65rem;color:var(--t2)">(${Object.keys(_promptCache).length||Object.keys(FALLBACK_PROMPTS).length} prompt) — clicca per espandere</span></h3>
+        <div id="adminPromptMgr" style="display:none">
+          <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px" id="adminPromptCats"></div>
+          <div id="adminPromptList"></div>
+          <div id="adminPromptEditor" style="display:none;margin-top:12px;padding:16px;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.08);border-radius:12px"></div>
+        </div>
+      </div>
+
+      <!-- DESIGN SYSTEM -->
+      <div style="margin-bottom:20px">
+        <h3 style="font-size:.85rem;color:var(--t1);margin-bottom:10px;cursor:pointer" onclick="document.getElementById('adminDesignSys').style.display=document.getElementById('adminDesignSys').style.display==='none'?'block':'none'">🎨 Design System <span style="font-size:.65rem;color:var(--t2)">— clicca per espandere</span></h3>
+        <div id="adminDesignSys" style="display:none"></div>
+      </div>
+
       <!-- Support Tickets -->
       <div style="margin-bottom:20px">
         <h3 style="font-size:.85rem;color:var(--t1);margin-bottom:10px">🆘 Ticket Supporto</h3>
@@ -14697,8 +14717,10 @@ async function openAdminDashboard(){
         <code style="display:block;background:rgba(0,0,0,.3);padding:8px;border-radius:6px;font-size:.6rem;color:var(--t2);margin-top:6px;word-break:break-all">CREATE POLICY "Admin can read all profiles" ON profiles FOR SELECT USING (auth.jwt() ->> 'email' = 'evoonconsulting@gmail.com');</code>
       </div>
     `;
-    // Load support tickets
+    // Load support tickets + prompt manager + design system
     loadAdminSupportQueue();
+    renderAdminPromptManager();
+    renderAdminDesignSystem();
   }catch(err){
     ov.querySelector('div').innerHTML=`<h3 style="color:#ef4444">Errore</h3><p style="color:var(--t2);font-size:.75rem">${err.message}</p><button onclick="document.getElementById('adminDashOverlay')?.remove()" style="margin-top:12px;padding:8px 16px;border-radius:8px;background:none;border:1px solid rgba(255,255,255,.1);color:var(--t2);cursor:pointer">Chiudi</button>`;
   }
@@ -14963,9 +14985,8 @@ async function sendSupportMsg(){
   renderSupportMessages();
   if(ticket.status==='waiting_human'){saveSupportTickets();return;}
   // AI response
-  const systemPrompt='Sei l\'assistente di supporto di HOOKA, una web app per la creazione di hook e contenuti creativi per social media. Rispondi in italiano, in modo chiaro e conciso. Conosci queste funzionalita\': giochi creativi (Slot, Ribaltamento, Collisione, Speed Hook, etc.), Fucina per script, Stories planner, Hub creativo (profilo, Voice DNA, calendario, note), Chat AI, Coach AI, Mazzo (raccolta hook salvati), connessioni AI (OpenRouter, OpenAI, Anthropic), webhook (Make/Zapier/n8n), Google Drive, ClickUp, Workshop Mode (lezioni, esercizi, slide, dispense). Se non sai la risposta o il problema e\' tecnico/account, suggerisci di parlare con un operatore umano. Sii breve (max 3-4 frasi).';
   try{
-    const response=await aiCall(systemPrompt,text,200,0.7);
+    const response=await aiCallByName('support_response',text);
     if(response){
       ticket.messages.push({role:'ai',content:response,timestamp:new Date().toISOString()});
     }else{
@@ -14984,7 +15005,7 @@ async function escalateToHuman(){
   const allMsgs=ticket.messages.map(m=>'['+m.role+']: '+m.content).join('\n');
   let summary='';
   try{
-    summary=await aiCall('Riassumi questa conversazione di supporto in 2-3 frasi in italiano. Evidenzia il problema principale.',allMsgs,150,0.5)||('Richiesta di supporto da '+ticket.user_name);
+    summary=await aiCallByName('support_summary',allMsgs)||('Richiesta di supporto da '+ticket.user_name);
   }catch(e){summary='Richiesta di supporto da '+ticket.user_name;}
   ticket.status='waiting_human';
   ticket.summary=summary;
@@ -15071,6 +15092,252 @@ async function adminReplyTicket(userId,ticketId){
     showToast('Risposta inviata!');
     loadAdminSupportQueue();
   }catch(e){showToast('Errore: '+e.message);}
+}
+
+// ===== ADMIN: PROMPT MANAGER =====
+let _adminPromptFilter='all';
+async function renderAdminPromptManager(){
+  await loadPrompts();
+  const prompts=Object.values(_promptCache).length?_promptCache:FALLBACK_PROMPTS;
+  const cats=[...new Set(Object.values(prompts).map(p=>p.category||'other'))].sort();
+  const catEl=document.getElementById('adminPromptCats');
+  if(catEl){
+    catEl.innerHTML='<button onclick="adminFilterPrompts(\'all\')" class="hub-action-btn" style="font-size:.6rem;'+ (_adminPromptFilter==='all'?'background:var(--a1);color:#fff':'') +'">Tutti ('+Object.keys(prompts).length+')</button>'+
+      cats.map(c=>{const count=Object.values(prompts).filter(p=>(p.category||'other')===c).length;return `<button onclick="adminFilterPrompts('${c}')" class="hub-action-btn" style="font-size:.6rem;${_adminPromptFilter===c?'background:var(--a1);color:#fff':''}">${c} (${count})</button>`;}).join('');
+  }
+  const listEl=document.getElementById('adminPromptList');
+  if(!listEl)return;
+  const filtered=Object.entries(prompts).filter(([n,p])=>_adminPromptFilter==='all'||(p.category||'other')===_adminPromptFilter);
+  listEl.innerHTML=`<div style="display:grid;gap:6px;max-height:400px;overflow-y:auto">${filtered.map(([name,p])=>{
+    const pipColor=p.pipeline==='deep'?'#ef4444':p.pipeline==='enhanced'?'#a855f7':'#22c55e';
+    return `<div onclick="adminEditPrompt('${name}')" style="display:flex;align-items:center;gap:10px;padding:10px 14px;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.06);border-radius:8px;cursor:pointer;transition:all .15s" onmouseenter="this.style.borderColor='var(--a1)'" onmouseleave="this.style.borderColor='rgba(255,255,255,.06)'">
+      <div style="flex:1;min-width:0">
+        <div style="font-size:.72rem;font-weight:700;color:var(--t1)">${name}</div>
+        <div style="font-size:.6rem;color:var(--t2);margin-top:2px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${(p.system_prompt||'').substring(0,80)}...</div>
+      </div>
+      <div style="display:flex;gap:6px;align-items:center;flex-shrink:0">
+        <span style="font-size:.55rem;padding:2px 6px;border-radius:4px;background:${pipColor}15;color:${pipColor};font-weight:700">${p.pipeline||'fast'}</span>
+        <span style="font-size:.55rem;color:var(--t2)">T:${p.temperature||0.9}</span>
+        <span style="font-size:.55rem;color:var(--t2)">${p.max_tokens||300}tk</span>
+      </div>
+    </div>`;
+  }).join('')}</div>`;
+}
+
+function adminFilterPrompts(cat){
+  _adminPromptFilter=cat;
+  renderAdminPromptManager();
+}
+
+function adminEditPrompt(name){
+  const prompts=Object.keys(_promptCache).length?_promptCache:FALLBACK_PROMPTS;
+  const p=prompts[name];if(!p)return;
+  const ed=document.getElementById('adminPromptEditor');if(!ed)return;
+  ed.style.display='block';
+  ed.innerHTML=`
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
+      <h4 style="color:var(--a1);margin:0;font-size:.8rem">✏️ ${name}</h4>
+      <div style="display:flex;gap:6px">
+        <span style="font-size:.6rem;padding:2px 8px;border-radius:4px;background:rgba(255,255,255,.06);color:var(--t2)">${p.category||'other'}</span>
+        <span style="font-size:.6rem;padding:2px 8px;border-radius:4px;background:rgba(255,255,255,.06);color:var(--t2)">${p.context_mode||'post'}</span>
+        <button onclick="document.getElementById('adminPromptEditor').style.display='none'" style="background:none;border:none;color:var(--t2);cursor:pointer;font-size:.8rem">✕</button>
+      </div>
+    </div>
+    <label style="font-size:.6rem;font-weight:700;color:var(--t2);text-transform:uppercase;letter-spacing:.5px">System Prompt</label>
+    <textarea id="apeSysPrompt" style="width:100%;box-sizing:border-box;min-height:200px;padding:12px;border-radius:8px;border:1px solid rgba(255,255,255,.1);background:var(--input-bg,rgba(255,255,255,.06));color:var(--t1);font-size:.72rem;line-height:1.5;resize:vertical;margin:6px 0 12px;font-family:monospace">${(p.system_prompt||'').replace(/</g,'&lt;')}</textarea>
+    <div style="display:flex;gap:12px;align-items:center;margin-bottom:12px">
+      <div style="flex:1">
+        <label style="font-size:.6rem;font-weight:700;color:var(--t2)">Temperatura: <span id="apeTempVal">${p.temperature||0.9}</span></label>
+        <input type="range" id="apeTemp" min="0" max="1" step="0.05" value="${p.temperature||0.9}" oninput="document.getElementById('apeTempVal').textContent=this.value" style="width:100%">
+      </div>
+      <div style="flex:1">
+        <label style="font-size:.6rem;font-weight:700;color:var(--t2)">Max Tokens</label>
+        <input type="number" id="apeTokens" value="${p.max_tokens||300}" min="50" max="4000" step="50" style="width:100%;padding:6px;border-radius:6px;border:1px solid rgba(255,255,255,.1);background:var(--input-bg,rgba(255,255,255,.06));color:var(--t1);font-size:.72rem">
+      </div>
+      <div style="flex:1">
+        <label style="font-size:.6rem;font-weight:700;color:var(--t2)">Pipeline</label>
+        <select id="apePipeline" style="width:100%;padding:6px;border-radius:6px;border:1px solid rgba(255,255,255,.1);background:var(--card);color:var(--t1);font-size:.72rem">
+          <option value="fast"${p.pipeline==='fast'?' selected':''}>⚡ Fast (1 call)</option>
+          <option value="enhanced"${p.pipeline==='enhanced'?' selected':''}>🔄 Enhanced (2 calls)</option>
+          <option value="deep"${p.pipeline==='deep'?' selected':''}>🧠 Deep (3 calls)</option>
+        </select>
+      </div>
+    </div>
+    <div style="display:flex;gap:8px">
+      <button onclick="adminSavePrompt('${name}')" style="flex:1;padding:10px;border-radius:8px;background:var(--a1);border:none;color:#fff;cursor:pointer;font-weight:700;font-size:.72rem">💾 Salva${supabaseClient?' su Supabase':' (locale)'}</button>
+      <button onclick="adminTestPrompt('${name}')" style="flex:1;padding:10px;border-radius:8px;background:rgba(139,92,246,.15);border:1px solid rgba(139,92,246,.3);color:#8b5cf6;cursor:pointer;font-weight:700;font-size:.72rem">🧪 Test</button>
+    </div>
+    <div id="apeTestResult" style="display:none;margin-top:12px;padding:12px;background:rgba(255,255,255,.03);border-radius:8px;border:1px solid rgba(255,255,255,.06)"></div>
+  `;
+  ed.scrollIntoView({behavior:'smooth',block:'center'});
+}
+
+async function adminSavePrompt(name){
+  const sys=document.getElementById('apeSysPrompt')?.value;
+  const temp=parseFloat(document.getElementById('apeTemp')?.value)||0.9;
+  const tokens=parseInt(document.getElementById('apeTokens')?.value)||300;
+  const pipeline=document.getElementById('apePipeline')?.value||'fast';
+  if(!sys){showToast('System prompt vuoto!');return;}
+  // Update local cache
+  const existing=getPrompt(name);
+  _promptCache[name]={...existing,system_prompt:sys,temperature:temp,max_tokens:tokens,pipeline};
+  // Save to Supabase if available
+  if(supabaseClient){
+    try{
+      const{error}=await supabaseClient.from('prompts').upsert({
+        name,system_prompt:sys,temperature:temp,max_tokens:tokens,pipeline,
+        category:existing.category||'generation',context_mode:existing.context_mode||'post',
+        version:(existing.version||1)+1,active:true,updated_at:new Date().toISOString()
+      },{onConflict:'name'});
+      if(error)throw error;
+      showToast('✅ Prompt "'+name+'" salvato su DB!');
+    }catch(e){
+      showToast('⚠️ Salvato solo in locale: '+e.message);
+    }
+  }else{
+    showToast('✅ Prompt aggiornato in locale (no DB)');
+  }
+  renderAdminPromptManager();
+}
+
+async function adminTestPrompt(name){
+  const sys=document.getElementById('apeSysPrompt')?.value;
+  const temp=parseFloat(document.getElementById('apeTemp')?.value)||0.9;
+  const tokens=parseInt(document.getElementById('apeTokens')?.value)||300;
+  const res=document.getElementById('apeTestResult');
+  if(!res)return;
+  res.style.display='block';
+  res.innerHTML='<div style="font-size:.7rem;color:var(--t2)">⏳ Testando prompt...</div>';
+  try{
+    const ctx=getContextForMode(getPrompt(name).context_mode||'post');
+    const fullSys=sys+(ctx?'\n\n'+ctx:'');
+    const r=await aiCall(fullSys,'Test: genera un esempio breve usando questo prompt.',Math.min(tokens,200),temp);
+    res.innerHTML=`<div style="font-size:.6rem;font-weight:700;color:#22c55e;margin-bottom:6px">✅ Output:</div><div style="font-size:.72rem;color:var(--t1);line-height:1.5">${(r||'Nessuna risposta').replace(/</g,'&lt;')}</div>`;
+  }catch(e){
+    res.innerHTML=`<div style="font-size:.7rem;color:#ef4444">❌ Errore: ${e.message}</div>`;
+  }
+}
+
+// ===== ADMIN: DESIGN SYSTEM =====
+function renderAdminDesignSystem(){
+  const el=document.getElementById('adminDesignSys');if(!el)return;
+  const cs=getComputedStyle(document.documentElement);
+  const getVar=(v)=>cs.getPropertyValue(v).trim()||'';
+  el.innerHTML=`
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px">
+      <!-- COLORS -->
+      <div>
+        <h4 style="font-size:.72rem;color:var(--a1);margin:0 0 10px">🎨 Colori</h4>
+        <div style="display:grid;gap:8px">
+          ${[['--a1','Primario (Arancio)'],['--a2','Secondario (Oro)'],['--bg','Background'],['--card','Card'],['--t1','Testo Primario'],['--t2','Testo Secondario']].map(([v,label])=>`
+            <div style="display:flex;align-items:center;gap:8px">
+              <input type="color" value="${rgbToHex(getVar(v))}" onchange="adminSetCSSVar('${v}',this.value)" style="width:32px;height:32px;border:none;border-radius:6px;cursor:pointer;background:none">
+              <div><div style="font-size:.65rem;font-weight:700;color:var(--t1)">${label}</div><div style="font-size:.55rem;color:var(--t2)">${v}: ${getVar(v)}</div></div>
+            </div>`).join('')}
+        </div>
+      </div>
+      <!-- DIMENSIONS & FX -->
+      <div>
+        <h4 style="font-size:.72rem;color:var(--a1);margin:0 0 10px">📐 Dimensioni & FX</h4>
+        <div style="display:grid;gap:10px">
+          <div>
+            <label style="font-size:.6rem;font-weight:700;color:var(--t2)">Border Radius: <span id="dsRadVal">${parseInt(getVar('--r'))||14}px</span></label>
+            <input type="range" min="0" max="30" step="2" value="${parseInt(getVar('--r'))||14}" oninput="adminSetCSSVar('--r',this.value+'px');document.getElementById('dsRadVal').textContent=this.value+'px'" style="width:100%">
+          </div>
+          <div>
+            <label style="font-size:.6rem;font-weight:700;color:var(--t2)">Font Size Base</label>
+            <input type="range" min="12" max="18" step="1" value="${parseInt(getVar('font-size'))||14}" oninput="document.documentElement.style.fontSize=this.value+'px'" style="width:100%">
+          </div>
+          <div style="display:flex;gap:8px;flex-wrap:wrap">
+            <button onclick="adminToggleBgFx('dots')" style="padding:5px 10px;border-radius:6px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);color:var(--t2);cursor:pointer;font-size:.6rem">● Dots</button>
+            <button onclick="adminToggleBgFx('glow')" style="padding:5px 10px;border-radius:6px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);color:var(--t2);cursor:pointer;font-size:.6rem">◐ Glow</button>
+            <button onclick="adminToggleBgFx('none')" style="padding:5px 10px;border-radius:6px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);color:var(--t2);cursor:pointer;font-size:.6rem">✕ None</button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div style="display:flex;gap:8px;margin-top:16px">
+      <button onclick="adminSaveDesignSettings()" style="flex:1;padding:10px;border-radius:8px;background:var(--a1);border:none;color:#fff;cursor:pointer;font-weight:700;font-size:.72rem">💾 Salva Design</button>
+      <button onclick="adminResetDesignSettings()" style="flex:1;padding:10px;border-radius:8px;background:rgba(239,68,68,.15);border:1px solid rgba(239,68,68,.3);color:#ef4444;cursor:pointer;font-weight:700;font-size:.72rem">↩️ Reset Default</button>
+    </div>
+  `;
+}
+
+function rgbToHex(color){
+  if(!color)return '#000000';
+  if(color.startsWith('#'))return color.length===4?'#'+color[1]+color[1]+color[2]+color[2]+color[3]+color[3]:color;
+  const m=color.match(/\d+/g);
+  if(!m||m.length<3)return '#000000';
+  return '#'+m.slice(0,3).map(n=>parseInt(n).toString(16).padStart(2,'0')).join('');
+}
+
+function adminSetCSSVar(name,value){
+  document.documentElement.style.setProperty(name,value);
+}
+
+function adminToggleBgFx(mode){
+  const body=document.body;
+  if(mode==='dots'){
+    body.style.backgroundImage='radial-gradient(circle at 1px 1px, rgba(255,107,53,.025) 1px, transparent 0)';
+    body.style.backgroundSize='44px 44px';
+  }else if(mode==='glow'){
+    body.style.backgroundImage='radial-gradient(ellipse at 50% 0%, rgba(255,107,53,.08) 0%, transparent 60%)';
+    body.style.backgroundSize='100% 100%';
+  }else{
+    body.style.backgroundImage='none';
+  }
+}
+
+async function adminSaveDesignSettings(){
+  const settings={};
+  ['--a1','--a2','--bg','--card','--t1','--t2','--r'].forEach(v=>{
+    const val=document.documentElement.style.getPropertyValue(v);
+    if(val)settings[v]=val;
+  });
+  if(supabaseClient){
+    try{
+      await supabaseClient.from('user_data').upsert({
+        user_id:'app_settings',data_type:'design_settings',
+        data:settings,updated_at:new Date().toISOString()
+      },{onConflict:'user_id,data_type'});
+      showToast('✅ Design salvato!');
+    }catch(e){showToast('⚠️ Errore: '+e.message);}
+  }
+  localStorage.setItem('hl_design_settings',JSON.stringify(settings));
+  showToast('✅ Design salvato!');
+}
+
+function adminResetDesignSettings(){
+  ['--a1','--a2','--bg','--card','--t1','--t2','--r'].forEach(v=>{
+    document.documentElement.style.removeProperty(v);
+  });
+  document.body.style.backgroundImage='';
+  document.body.style.backgroundSize='';
+  localStorage.removeItem('hl_design_settings');
+  showToast('↩️ Design reset al default');
+  renderAdminDesignSystem();
+}
+
+function applyDesignSettings(){
+  const settings=JSON.parse(localStorage.getItem('hl_design_settings')||'{}');
+  Object.entries(settings).forEach(([k,v])=>{
+    document.documentElement.style.setProperty(k,v);
+  });
+}
+
+// Apply design settings on load
+try{applyDesignSettings();}catch(e){}
+
+// Also try to load from Supabase on auth
+async function loadDesignSettingsFromDB(){
+  if(!supabaseClient)return;
+  try{
+    const{data}=await supabaseClient.from('user_data').select('data').eq('user_id','app_settings').eq('data_type','design_settings').maybeSingle();
+    if(data?.data){
+      localStorage.setItem('hl_design_settings',JSON.stringify(data.data));
+      Object.entries(data.data).forEach(([k,v])=>{document.documentElement.style.setProperty(k,v);});
+    }
+  }catch(e){}
 }
 
 // ===== CONNECTIONS PANEL =====

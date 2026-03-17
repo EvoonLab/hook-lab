@@ -879,6 +879,13 @@ body::after{content:'';position:fixed;top:0;left:0;right:0;height:2px;background
 /* SOUND TOGGLE */
 .sound-toggle{position:absolute;top:12px;right:12px;background:none;border:none;font-size:1rem;cursor:pointer;opacity:.5;transition:var(--tr);z-index:5}
 .sound-toggle:hover{opacity:1}
+/* V12.2e: Header actions flex row */
+.header-actions{position:absolute;top:10px;right:50px;display:flex;gap:6px;align-items:center;z-index:10}
+.header-act-btn{padding:6px 12px;border-radius:8px;cursor:pointer;font-weight:700;font-size:.72rem;border:1px solid;transition:var(--tr)}
+.ha-admin{background:rgba(251,191,36,.12);border-color:rgba(251,191,36,.3);color:#fbbf24}
+.ha-video{background:rgba(139,92,246,.1);border-color:rgba(139,92,246,.25);color:#8b5cf6}
+.ha-ai{background:rgba(102,187,106,.1);border-color:rgba(102,187,106,.25);color:#66bb6a}
+.ha-auth{background:rgba(255,107,53,.15);border-color:rgba(255,107,53,.3);color:var(--a1)}
 .theme-toggle-btn{position:absolute;top:10px;left:12px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.12);border-radius:20px;padding:5px 14px 5px 10px;font-size:.85rem;cursor:pointer;display:flex;align-items:center;gap:5px;color:var(--t1);transition:var(--tr);z-index:10;backdrop-filter:blur(8px)}
 .theme-toggle-btn:hover{background:rgba(255,107,53,.15);border-color:var(--a2)}
 .theme-toggle-btn .tt-label{font-size:.7rem;font-weight:600;letter-spacing:.5px;text-transform:uppercase}
@@ -2149,10 +2156,12 @@ body.light .shimmer::after{background:linear-gradient(90deg,transparent 0%,rgba(
   <span class="badge">DSS Edition</span>
   <button class="sound-toggle" id="soundToggle" onclick="toggleSound()">🔊</button>
   <button class="theme-toggle-btn" id="themeToggle" onclick="toggleTheme()" title="Cambia tema">🌙 <span class="tt-label">Tema</span></button>
-  <button id="adminDashBtn" onclick="openAdminDashboard()" title="Admin Dashboard" style="display:none;position:absolute;top:12px;right:340px;padding:6px 12px;border-radius:8px;background:rgba(251,191,36,.12);border:1px solid rgba(251,191,36,.3);color:#fbbf24;cursor:pointer;font-weight:700;font-size:.72rem;z-index:10">👑 Admin</button>
-  <button onclick="openMicroVideoCreator()" title="Micro-Video AI" style="position:absolute;top:12px;right:230px;padding:6px 12px;border-radius:8px;background:rgba(139,92,246,.1);border:1px solid rgba(139,92,246,.25);color:#8b5cf6;cursor:pointer;font-weight:700;font-size:.72rem;z-index:10">🎬 Video</button>
-  <button onclick="openConnectionsPanel()" title="Connessioni AI" style="position:absolute;top:12px;right:145px;padding:6px 12px;border-radius:8px;background:rgba(102,187,106,.1);border:1px solid rgba(102,187,106,.25);color:#66bb6a;cursor:pointer;font-weight:700;font-size:.72rem;z-index:10">🔌 AI</button>
-  <button class="auth-btn" id="authBtn" onclick="openAuthModal()" title="Login / Registrati" style="position:absolute;top:12px;right:12px;padding:6px 12px;border-radius:8px;background:rgba(255,107,53,.15);border:1px solid rgba(255,107,53,.3);color:var(--a1);cursor:pointer;font-weight:700;font-size:.72rem;z-index:10">🔐 Accedi</button>
+  <div class="header-actions">
+    <button id="adminDashBtn" class="header-act-btn ha-admin" onclick="openAdminDashboard()" title="Admin Dashboard" style="display:none">👑 Admin</button>
+    <button class="header-act-btn ha-video" onclick="openMicroVideoCreator()" title="Micro-Video AI">🎬 Video</button>
+    <button class="header-act-btn ha-ai" onclick="openConnectionsPanel()" title="Connessioni AI">🔌 AI</button>
+    <button class="header-act-btn ha-auth" id="authBtn" onclick="openAuthModal()" title="Login / Registrati">🔐 Accedi</button>
+  </div>
 </header>
 <div class="mode-switcher">
   <div class="mode-switcher-track">
@@ -2889,7 +2898,12 @@ async function doGateAuth(){
     }
     // Auth success handled by onAuthStateChange
   }catch(e){
-    errDiv.textContent=e.message||'Errore di autenticazione';errDiv.style.display='block';
+    let msg=e.message||'Errore di autenticazione';
+    if(msg.includes('Invalid login credentials'))msg='Email o password non corretti. Prova "Password dimenticata?"';
+    if(msg.includes('Email not confirmed'))msg='Email non confermata. Controlla la posta (anche spam).';
+    if(msg.includes('User not found'))msg='Nessun account con questa email. Registrati prima.';
+    if(msg.toLowerCase().includes('rate limit'))msg='Troppi tentativi. Attendi qualche minuto.';
+    errDiv.textContent=msg;errDiv.style.display='block';
     errDiv.style.background='rgba(255,0,0,.12)';errDiv.style.color='#ff5555';
     btn.disabled=false;btn.textContent=_gateMode==='login'?'🚀 Accedi':'🚀 Registrati';
   }
@@ -2913,7 +2927,13 @@ try{
     });
     // Listen for auth changes
     supabaseClient.auth.onAuthStateChange((event,session)=>{
-      if(event==='SIGNED_IN'&&session){
+      if(event==='PASSWORD_RECOVERY'&&session){
+        supaUser=session.user;
+        hideAuthGate();
+        updateAuthUI();
+        showPasswordResetModal();
+      }
+      else if(event==='SIGNED_IN'&&session){
         supaUser=session.user;
         hideAuthGate();
         updateAuthUI();
@@ -2945,6 +2965,37 @@ function updateAuthUI(){
     btn.title='Login / Registrati';
     btn.onclick=()=>openAuthModal();
     if(adminBtn)adminBtn.style.display='none';
+  }
+}
+
+// V12.2e: Password recovery modal
+function showPasswordResetModal(){
+  const ov=document.createElement('div');
+  ov.id='pwResetModal';
+  ov.style.cssText='position:fixed;inset:0;z-index:99999;background:rgba(0,0,0,.8);display:flex;align-items:center;justify-content:center;padding:20px';
+  ov.innerHTML=`<div style="background:var(--card);border-radius:16px;padding:24px;max-width:400px;width:100%;border:1px solid rgba(255,107,53,.2)">
+    <h3 style="margin:0 0 16px;color:var(--a1)">🔑 Nuova Password</h3>
+    <p style="font-size:.8rem;color:var(--t2);margin-bottom:16px">Inserisci la tua nuova password (minimo 6 caratteri)</p>
+    <input type="password" id="newPwInput" placeholder="Nuova password" style="width:100%;padding:11px 14px;margin-bottom:8px;border-radius:8px;background:var(--input-bg);border:1px solid var(--input-border);color:var(--t1);font-size:.85rem;box-sizing:border-box"/>
+    <input type="password" id="newPwConfirm" placeholder="Conferma password" style="width:100%;padding:11px 14px;margin-bottom:12px;border-radius:8px;background:var(--input-bg);border:1px solid var(--input-border);color:var(--t1);font-size:.85rem;box-sizing:border-box"/>
+    <div id="pwResetError" style="display:none;padding:8px;border-radius:8px;background:rgba(255,0,0,.12);color:#ff5555;font-size:.72rem;margin-bottom:10px"></div>
+    <button onclick="doPasswordReset()" style="width:100%;padding:12px;border-radius:10px;background:var(--gf);color:#fff;border:none;cursor:pointer;font-weight:800;font-size:.9rem">✅ Salva Password</button>
+  </div>`;
+  document.body.appendChild(ov);
+}
+async function doPasswordReset(){
+  const pw=document.getElementById('newPwInput')?.value;
+  const pw2=document.getElementById('newPwConfirm')?.value;
+  const errDiv=document.getElementById('pwResetError');
+  if(!pw||pw.length<6){errDiv.textContent='Password minimo 6 caratteri';errDiv.style.display='block';return;}
+  if(pw!==pw2){errDiv.textContent='Le password non coincidono';errDiv.style.display='block';return;}
+  try{
+    const{error}=await supabaseClient.auth.updateUser({password:pw});
+    if(error)throw error;
+    document.getElementById('pwResetModal')?.remove();
+    showToast('✅ Password aggiornata con successo!');
+  }catch(e){
+    errDiv.textContent=e.message||'Errore aggiornamento password';errDiv.style.display='block';
   }
 }
 
@@ -3032,7 +3083,11 @@ async function doAuth(){
     showToast('✅ Accesso effettuato!');
     syncToSupabase();
   }catch(e){
-    errDiv.textContent=e.message||'Errore di autenticazione';errDiv.style.display='block';
+    let msg=e.message||'Errore di autenticazione';
+    if(msg.includes('Invalid login credentials'))msg='Email o password non corretti. Prova "Password dimenticata?"';
+    if(msg.includes('Email not confirmed'))msg='Email non confermata. Controlla la posta (anche spam).';
+    if(msg.includes('User not found'))msg='Nessun account con questa email. Registrati prima.';
+    errDiv.textContent=msg;errDiv.style.display='block';
     errDiv.style.background='rgba(255,0,0,.12)';errDiv.style.color='#ff5555';
     btn.disabled=false;btn.textContent=_authMode==='login'?'🚀 Accedi':'🚀 Registrati';
   }
@@ -3791,7 +3846,7 @@ async function aiCall(systemPrompt,userPrompt,maxTokens=300,temperature=0.9,slot
     }
     if(sh)sh.remove();
     return result;
-  }catch(e){if(sh)sh.remove();console.warn('AI call failed:',e);return null;}
+  }catch(e){if(sh)sh.remove();console.warn('AI call failed:',e);showToast('⚠️ Errore AI. Controlla connessione e impostazioni.');return null;}
 }
 async function chatAiCall(chatMsgs){
   if(!isAI())return null;
@@ -4494,7 +4549,7 @@ async function aiEnrichOnOpen(gameType){
       const hs=await aiHotOrNotHooks(3);
       hs.forEach(h=>aiPool.hooks.push(h));
     }
-  }catch(e){console.warn('AI enrich failed:',e);}
+  }catch(e){console.warn('AI enrich failed:',e);showToast('⚠️ AI enrich non riuscito.');}
 }
 function toggleSettings(){toggleAiDrawer();}
 function saveAiSettings(){
@@ -7429,7 +7484,7 @@ async function fightGenerate(sysA,sysB,userPrompt,maxTokens=200){
       aiCall(sysB,userPrompt,maxTokens,0.85,hasSecondary?'secondary':'primary')
     ]);
     return{a,b};
-  }catch(e){console.warn('Fight generate failed:',e);return null;}
+  }catch(e){console.warn('Fight generate failed:',e);showToast('⚠️ Errore generazione AI Fight.');return null;}
 }
 
 function fightArenaHTML(textA,textB,labelA,labelB,loading=false){
@@ -8521,7 +8576,7 @@ function autorunSaveBlock(idx){
 function autorunCopyHook(){
   const hook=autorunState.result.winningHook;
   if(!hook)return;
-  navigator.clipboard.writeText(hook).then(()=>showToast('📋 Copiato!')).catch(()=>{});
+  navigator.clipboard.writeText(hook).then(()=>showToast('📋 Copiato!')).catch(()=>showToast('❌ Errore copia'));
 }
 
 function autorunSwapHook(altIdx){
@@ -15974,6 +16029,38 @@ function initLayout(){
   // Move smart-filters into main-col
   const sf=document.querySelector('.smart-filters');
   if(sf){mainCol.appendChild(sf);}
+  // V12.2e: Welcome card for new users
+  if(!localStorage.getItem(hlKey('welcomeDismissed'))){
+    const wc=document.createElement('div');
+    wc.id='welcomeCard';
+    wc.style.cssText='background:linear-gradient(135deg,rgba(255,107,53,.08),rgba(232,147,12,.05));border:1px solid rgba(255,107,53,.2);border-radius:16px;padding:20px;margin:8px 0 16px;position:relative';
+    wc.innerHTML=`<button onclick="this.parentElement.remove();localStorage.setItem('${hlKey('welcomeDismissed')}','1')" style="position:absolute;top:10px;right:12px;background:none;border:none;color:var(--t2);cursor:pointer;font-size:1rem" title="Chiudi">✕</button>
+      <h3 style="margin:0 0 12px;font-size:1rem;font-weight:800;color:var(--a1)">👋 Benvenuto in HOOKA!</h3>
+      <p style="font-size:.82rem;color:var(--t1);margin-bottom:14px;line-height:1.5">Ecco come iniziare in 4 step:</p>
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:10px">
+        <div style="background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:10px;padding:12px;text-align:center">
+          <div style="font-size:1.3rem;margin-bottom:4px">1️⃣</div>
+          <div style="font-size:.75rem;font-weight:700;color:var(--t1)">Compila il Profilo</div>
+          <div style="font-size:.65rem;color:var(--t2);margin-top:2px">Nicchia, offerta, pubblico</div>
+        </div>
+        <div style="background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:10px;padding:12px;text-align:center">
+          <div style="font-size:1.3rem;margin-bottom:4px">2️⃣</div>
+          <div style="font-size:.75rem;font-weight:700;color:var(--t1)">Gioca ai Giochi</div>
+          <div style="font-size:.65rem;color:var(--t2);margin-top:2px">Genera hook creativi</div>
+        </div>
+        <div style="background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:10px;padding:12px;text-align:center">
+          <div style="font-size:1.3rem;margin-bottom:4px">3️⃣</div>
+          <div style="font-size:.75rem;font-weight:700;color:var(--t1)">Salva nel Mazzo</div>
+          <div style="font-size:.65rem;color:var(--t2);margin-top:2px">I migliori hook, pronti all'uso</div>
+        </div>
+        <div style="background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:10px;padding:12px;text-align:center">
+          <div style="font-size:1.3rem;margin-bottom:4px">4️⃣</div>
+          <div style="font-size:.75rem;font-weight:700;color:var(--t1)">Crea Script in Fucina</div>
+          <div style="font-size:.65rem;color:var(--t2);margin-top:2px">Trasforma hook in contenuti</div>
+        </div>
+      </div>`;
+    mainCol.appendChild(wc);
+  }
   // Insert app-layout before container
   container.parentNode.insertBefore(appLayout,container);
   // Move container content into main-col (remove .container wrapper)

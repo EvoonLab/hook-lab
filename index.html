@@ -144,7 +144,8 @@ body::after{content:'';position:fixed;top:0;left:0;right:0;height:2px;background
 [data-theme="light"] .score-display{color:var(--t1)}
 [data-theme="light"] .fight-setup{background:rgba(168,85,247,.03);border-color:rgba(168,85,247,.1)}
 [data-theme="light"] .fight-setup-col select{background:var(--input-bg);border-color:var(--input-border);color:var(--t1)}
-[data-theme="light"] .creative-hub{background:var(--card);border-color:rgba(0,184,148,.15)}
+[data-theme="light"] .creative-hub{background:rgba(0,0,0,.4)}
+[data-theme="light"] .creative-hub>*{background:var(--card);border-color:rgba(0,184,148,.15)}
 [data-theme="light"] .hub-workspace{border-color:rgba(0,0,0,.1)}
 [data-theme="light"] .hub-card{background:rgba(0,0,0,.02);border-color:rgba(0,0,0,.08)}
 [data-theme="light"] .hub-action-btn{background:rgba(0,0,0,.03);border-color:rgba(0,0,0,.1);color:var(--t1)}
@@ -699,6 +700,8 @@ body::after{content:'';position:fixed;top:0;left:0;right:0;height:2px;background
 .hub-tab{flex:1;padding:12px 16px;font-size:.8rem;font-weight:700;text-align:center;cursor:pointer;color:var(--t2);transition:var(--tr);border-bottom:2px solid transparent;white-space:nowrap;min-width:100px}
 .hub-tab:hover{color:var(--t1);background:rgba(255,255,255,.03)}
 .hub-tab.active{color:var(--a1);border-bottom-color:var(--a1);background:rgba(255,107,53,.05)}
+.hub-tab-secondary{opacity:.5;font-size:.68rem;min-width:70px}
+.hub-tab-secondary.active{opacity:1}
 .hub-panel{display:none;padding:16px;min-height:200px}
 .hub-panel.active{display:block;max-height:550px;overflow-y:auto;position:relative;scrollbar-width:thin}
 .hub-panel.active.expanded{max-height:none}
@@ -1147,8 +1150,10 @@ body::after{content:'';position:fixed;top:0;left:0;right:0;height:2px;background
 .np-gen-hook-actions button{padding:4px 10px;border-radius:10px;font-size:.65rem;font-weight:600;border:1px solid rgba(255,255,255,.1);background:rgba(255,255,255,.05);cursor:pointer;transition:var(--tr);color:var(--t1)}
 .np-gen-hook-actions button:hover{background:rgba(255,107,53,.15);border-color:rgba(255,107,53,.3)}
 /* Creative Hub */
-.creative-hub{background:var(--card);border-radius:var(--r);padding:16px;margin:12px auto;border-left:4px solid #00b894;display:none;max-width:900px}
+/* V12.2c: Creative Hub as overlay modal */
+.creative-hub{position:fixed;inset:0;z-index:9990;display:none;background:rgba(0,0,0,.75);padding:30px 20px;overflow-y:auto}
 .creative-hub.visible{display:block}
+.creative-hub>*{max-width:900px;margin:0 auto;background:var(--card);border-radius:16px;padding:16px;border-left:4px solid #00b894}
 .hub-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px}
 .hub-title{font-size:1.1rem;font-weight:800;display:flex;align-items:center;gap:8px}
 .hub-actions{display:flex;gap:8px}
@@ -1564,8 +1569,10 @@ body.light .shimmer::after{background:linear-gradient(90deg,transparent 0%,rgba(
 .fucina-entry-title{font-size:.85rem;font-weight:800;color:#a855f7}
 .fucina-entry-desc{font-size:.73rem;color:var(--t2);margin-top:3px;line-height:1.4}
 .fucina-entry-count{padding:4px 12px;background:rgba(168,85,247,.15);border-radius:20px;font-size:.7rem;font-weight:700;color:#c084fc;white-space:nowrap}
-.fucina-standalone{display:none;margin:18px 0;padding:0 4px}
+/* V12.2c: Fucina as overlay modal */
+.fucina-standalone{position:fixed;inset:0;z-index:9990;display:none;background:rgba(0,0,0,.75);padding:30px 20px;overflow-y:auto}
 .fucina-standalone.visible{display:block}
+.fucina-standalone>*{max-width:900px;margin:0 auto}
 .fucina-standalone-header{background:linear-gradient(135deg,rgba(168,85,247,.12),rgba(236,72,153,.08));border:1px solid rgba(168,85,247,.2);border-radius:var(--r) var(--r) 0 0;padding:16px 20px;border-bottom:3px solid;border-image:linear-gradient(135deg,#a855f7,#ec4899) 1}
 .fucina-standalone-top{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
 .fucina-standalone-left{display:flex;align-items:center;gap:10px}
@@ -2220,6 +2227,8 @@ body.light .shimmer::after{background:linear-gradient(90deg,transparent 0%,rgba(
     <div class="hub-tabs">
       <div class="hub-tab active" onclick="switchHub('piano')">&#128197; Piano</div>
       <div class="hub-tab" onclick="switchHub('note')">&#128221; Note</div>
+      <div class="hub-tab hub-tab-secondary" onclick="switchHub('mondo')">&#129504; Mondo</div>
+      <div class="hub-tab hub-tab-secondary" onclick="switchHub('raccolta')">&#128218; Raccolta</div>
     </div>
     <div class="hub-panel active" id="hubPiano">
       <div class="cal-header">
@@ -9029,7 +9038,7 @@ function saveHubItems(){localStorage.setItem(hlKey('hubItems'),JSON.stringify(hu
 
 function openHub(){
   const hub=document.getElementById('creativeHub');
-  if(hub){hub.style.display='';hub.classList.add('visible');renderHub();hub.scrollIntoView({behavior:'smooth',block:'start'});}
+  if(hub){hub.style.display='';hub.classList.add('visible');renderHub();hub.onclick=function(e){if(e.target===hub)closeHub();};}
 }
 function closeHub(){
   const hub=document.getElementById('creativeHub');
@@ -10737,7 +10746,7 @@ function openFucinaStandalone(){
   fs.style.display='';fs.classList.add('visible');
   renderFucinaList();
   updateFucinaBreadcrumb('Lista Script');
-  fs.scrollIntoView({behavior:'smooth',block:'start'});
+  fs.onclick=function(e){if(e.target===fs)closeFucinaStandalone();};
 }
 function closeFucinaStandalone(){
   const fs=document.getElementById('fucinaStandalone');
@@ -12039,6 +12048,8 @@ function switchMode(mode){
   // Slide indicator
   const indicator=document.getElementById('modeIndicator');
   if(indicator){const idx=mode==='post'?0:mode==='stories'?1:2;indicator.style.transform=`translateX(${idx*100}%)`;}
+  // V12.2c: Auto-collapse hub when switching modes
+  document.querySelector('.hub')?.classList.remove('hub-expanded');
   // Remove any existing mode-specific content
   document.getElementById('modeComingSoon')?.remove();
   document.getElementById('storiesContainer')?.remove();

@@ -880,7 +880,8 @@ body::after{content:'';position:fixed;top:0;left:0;right:0;height:2px;background
 .sound-toggle{position:absolute;top:12px;right:12px;background:none;border:none;font-size:1rem;cursor:pointer;opacity:.5;transition:var(--tr);z-index:5}
 .sound-toggle:hover{opacity:1}
 /* V12.2e: Header actions flex row */
-.header-actions{position:absolute;top:10px;right:50px;display:flex;gap:6px;align-items:center;z-index:10}
+/* V12.2f: header actions leave room for team/user button */
+.header-actions{position:absolute;top:10px;right:12px;display:flex;gap:6px;align-items:center;z-index:10}
 .header-act-btn{padding:6px 12px;border-radius:8px;cursor:pointer;font-weight:700;font-size:.72rem;border:1px solid;transition:var(--tr)}
 .ha-admin{background:rgba(251,191,36,.12);border-color:rgba(251,191,36,.3);color:#fbbf24}
 .ha-video{background:rgba(139,92,246,.1);border-color:rgba(139,92,246,.25);color:#8b5cf6}
@@ -2032,9 +2033,10 @@ body.light .shimmer::after{background:linear-gradient(90deg,transparent 0%,rgba(
 .team-card .tc-role{font-size:.65rem;color:var(--t2);margin-top:4px}
 .team-card.admin{border-color:rgba(255,215,0,.15);background:linear-gradient(135deg,rgba(255,215,0,.04),rgba(255,107,53,.04))}
 .team-card.admin:hover{border-color:rgba(255,215,0,.5);box-shadow:0 8px 30px rgba(255,215,0,.15)}
-.team-switch-btn{position:fixed;top:12px;right:12px;z-index:100;background:var(--card);border:1px solid rgba(255,255,255,.1);padding:6px 14px;border-radius:20px;color:var(--t2);font-size:.75rem;font-weight:600;cursor:pointer;transition:var(--tr);display:flex;align-items:center;gap:6px}
+/* V12.2f: team button is now inline in header-actions, not fixed */
+.team-switch-btn{background:var(--card);border:1px solid rgba(255,255,255,.1);padding:6px 14px;border-radius:20px;color:var(--t2);font-size:.75rem;font-weight:600;cursor:default;transition:var(--tr);display:flex;align-items:center;gap:6px}
 .team-switch-btn:hover{border-color:var(--a1);color:var(--t1)}
-@media(max-width:480px){.team-grid{grid-template-columns:repeat(2,1fr)}.team-switch-btn{top:8px;right:8px;font-size:.7rem;padding:5px 10px}}
+@media(max-width:480px){.team-grid{grid-template-columns:repeat(2,1fr)}.team-switch-btn{font-size:.7rem;padding:5px 10px}}
 
 /* ===== CHAT AI ===== */
 .chat-section{max-width:900px;margin:16px auto;padding:0 20px}
@@ -2137,9 +2139,6 @@ body.light .shimmer::after{background:linear-gradient(90deg,transparent 0%,rgba(
   <p class="team-sub">Seleziona il tuo profilo team</p>
   <div class="team-grid" id="teamGrid"></div>
 </div>
-<button class="team-switch-btn" id="teamSwitchBtn" onclick="showTeamSelector()" style="display:none">
-  <span id="teamCurrentIcon"></span> <span id="teamCurrentName"></span> &#9662;
-</button>
 <header class="header">
   <div class="logo-wrap">
     <svg class="logo-icon" viewBox="0 0 44 44" width="44" height="44">
@@ -2161,6 +2160,10 @@ body.light .shimmer::after{background:linear-gradient(90deg,transparent 0%,rgba(
     <button class="header-act-btn ha-video" onclick="openMicroVideoCreator()" title="Micro-Video AI">🎬 Video</button>
     <button class="header-act-btn ha-ai" onclick="openConnectionsPanel()" title="Connessioni AI">🔌 AI</button>
     <button class="header-act-btn ha-auth" id="authBtn" onclick="openAuthModal()" title="Login / Registrati">🔐 Accedi</button>
+    <!-- V12.2f: Team/user button inline in header -->
+    <div class="team-switch-btn" id="teamSwitchBtn" style="display:none">
+      <span id="teamCurrentIcon"></span> <span id="teamCurrentName"></span>
+    </div>
   </div>
 </header>
 <div class="mode-switcher">
@@ -2921,8 +2924,8 @@ try{
         hideAuthGate();
         updateAuthUI();
         syncFromSupabase();
-        // Show team selector if no team chosen yet
-        if(!localStorage.getItem('hl_lastTeam'))showTeamSelector();
+        // V12.2f: Auto-assign team silently (no selector)
+        if(!localStorage.getItem('hl_lastTeam'))autoAssignTeam();
       }
     });
     // Listen for auth changes
@@ -2938,7 +2941,8 @@ try{
         hideAuthGate();
         updateAuthUI();
         syncFromSupabase();
-        if(!localStorage.getItem('hl_lastTeam'))showTeamSelector();
+        // V12.2f: Auto-assign team silently (no selector)
+        if(!localStorage.getItem('hl_lastTeam'))autoAssignTeam();
       }
       else if(event==='SIGNED_OUT'){
         supaUser=null;
@@ -2946,6 +2950,23 @@ try{
         showAuthGate();
       }
     });
+    // V12.2f: Explicit recovery hash fallback (race condition fix)
+    if(window.location.hash.includes('type=recovery')){
+      console.log('[HOOKA] Recovery token detected in URL hash');
+      setTimeout(()=>{
+        if(!document.getElementById('pwResetModal')){
+          console.log('[HOOKA] Recovery modal not shown, forcing...');
+          supabaseClient.auth.getSession().then(({data:{session}})=>{
+            if(session){
+              supaUser=session.user;
+              hideAuthGate();
+              updateAuthUI();
+              showPasswordResetModal();
+            }
+          });
+        }
+      },2000);
+    }
   }
 }catch(e){console.warn('[HOOKA] Supabase init error:',e);}
 
@@ -3098,7 +3119,7 @@ async function resetGatePassword(){
   if(!email){showToast('Inserisci prima la tua email');return;}
   if(!supabaseClient){showToast('Supabase non connesso');return;}
   try{
-    const{error}=await supabaseClient.auth.resetPasswordForEmail(email,{redirectTo:window.location.origin+window.location.pathname});
+    const{error}=await supabaseClient.auth.resetPasswordForEmail(email,{redirectTo:window.location.origin+window.location.pathname.replace(/\/index\.html$/,'/')});
     if(error)throw error;
     const errDiv=document.getElementById('gateError');
     errDiv.style.display='block';errDiv.style.background='rgba(0,184,148,.12)';errDiv.style.color='#00b894';
@@ -3483,6 +3504,30 @@ if(supabaseClient&&supaUser){
 }
 // Onboarding for new users
 if(!localStorage.getItem('hl_onboarded')){setTimeout(()=>{const to=document.getElementById('teamOverlay');if(to&&to.style.display!=='none')return;if(typeof showOnboarding==='function')showOnboarding();},1500);}
+}
+
+// V12.2f: Auto-assign team without showing selector
+function autoAssignTeam(){
+const email=supaUser?.email||'';
+let teamId;
+if(isAdminEmail(email)){teamId='admin_loris';}
+else{teamId='team1';}
+currentTeamId=teamId;
+localStorage.setItem('hl_lastTeam',teamId);
+const team=TEAMS.find(t=>t.id===teamId);
+const displayName=getUserDisplayName();
+const btn=document.getElementById('teamSwitchBtn');
+if(btn){
+  btn.style.display='flex';
+  document.getElementById('teamCurrentIcon').textContent=team?.emoji||'🔥';
+  document.getElementById('teamCurrentName').textContent=team?.isAdmin?displayName+' 👑':displayName;
+}
+reloadAllData();
+if(supabaseClient&&supaUser){
+  supabaseClient.from('profiles').upsert({id:supaUser.id,role:teamId,username:displayName},{onConflict:'id'}).then(()=>console.log('[HOOKA] Team auto-assigned:',teamId));
+}
+// Onboarding for new users
+if(!localStorage.getItem('hl_onboarded')){setTimeout(()=>{if(typeof showOnboarding==='function')showOnboarding();},1500);}
 }
 
 function reloadAllData(){
@@ -6003,7 +6048,8 @@ document.addEventListener('DOMContentLoaded',()=>{
       const btn=document.getElementById('teamSwitchBtn');btn.style.display='flex';
       const dn=getUserDisplayName();
       document.getElementById('teamCurrentIcon').textContent=team.emoji;
-      document.getElementById('teamCurrentName').textContent=team.isAdmin?dn+' 👑':(team.role==='Manager'?dn+' 📋':team.name);
+      // V12.2f: Always show user display name, not team name
+      document.getElementById('teamCurrentName').textContent=team.isAdmin?dn+' 👑':(team.role==='Manager'?dn+' 📋':dn);
     }
   }
   // Don't show team selector here — it's shown after auth gate clears

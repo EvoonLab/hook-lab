@@ -2166,7 +2166,7 @@ body.light .shimmer::after{background:linear-gradient(90deg,transparent 0%,rgba(
   <button class="theme-toggle-btn" id="themeToggle" onclick="toggleTheme()" title="Cambia tema">🌙 <span class="tt-label">Tema</span></button>
   <div class="header-actions">
     <button id="adminDashBtn" class="header-act-btn ha-admin" onclick="openAdminDashboard()" title="Admin Dashboard" style="display:none">👑 Admin</button>
-    <button class="header-act-btn ha-video" onclick="openMicroVideoCreator()" title="Micro-Video AI">🎬 Video</button>
+    <!-- V12.4: Micro-Video removed (CSS animation only, not real video) -->
     <button class="header-act-btn ha-ai" onclick="openConnectionsPanel()" title="Connessioni AI">🔌 AI</button>
     <button class="header-act-btn ha-auth" id="authBtn" onclick="openAuthModal()" title="Login / Registrati">🔐 Accedi</button>
     <!-- V12.2f: Team/user button inline in header -->
@@ -3842,15 +3842,15 @@ function getCtxPrompt(){
     }
     if(hints.length)parts.push(`Feedback sui blocchi script: ${hints.join('. ')}.`);
   }
-  // 7. Resource texts (first 500 chars total)
+  // 7. Resource texts (V12.4: expanded from 500 to 3000 chars, prioritize recent)
   if(resources.texts.length){
-    let resText=resources.texts.map(t=>t.content).join(' ').substring(0,500);
-    parts.push(`Contesto aggiuntivo: ${resText}`);
+    let resText=resources.texts.slice(-5).map(t=>`[${t.name||'doc'}]: ${t.content}`).join('\n---\n').substring(0,3000);
+    parts.push(`CONTESTO DAL MONDO DELL'UTENTE (usa queste info per personalizzare TUTTO):\n${resText}`);
   }
-  // 8. Notes (first 200 chars)
+  // 8. Notes (expanded from 200 to 500 chars)
   const notes=localStorage.getItem(hlKey('notes'))||'';
   if(notes.trim().length>10){
-    parts.push(`Note dell'utente: ${notes.substring(0,200)}`);
+    parts.push(`Note personali dell'utente: ${notes.substring(0,500)}`);
   }
   return parts.join('\n');
 }
@@ -9868,10 +9868,64 @@ function renderSaved(){
   list.innerHTML=working.map(it=>{
     const stars=Array.from({length:5},(_,s)=>`<span class="s${(it.rating||0)>s?' on':''}" onclick="event.stopPropagation();rateItem(${it.idx},${s+1})">★</span>`).join('');
     const badge=it._cat==='script'?`<div class="script-badge">${SCRIPT_TYPES[it.scriptRef?.type]?.icon||'📝'} ${(it.scriptRef?.title||'Script').substring(0,30)} · ${it.scriptRef?.blockCount||'?'} blocchi</div>`:it._cat==='blocco'?`<div class="block-badge">🧩 ${it.blockMeta?.blockLabel||'Blocco'} · ${it.blockMeta?.scriptType||''}</div>`:'';
-    return`<div class="saved-item"><div class="st">${it.type}</div><div class="sx">${it.text.replace(/\n/g,'<br>').substring(0,300)}</div>${badge}<div class="saved-stars">${stars}</div><div class="saved-actions"><button class="exp-btn" onclick="savedToFucinaSmart(${it.idx})" title="Crea Script Smart in Fucina" style="background:linear-gradient(135deg,rgba(168,85,247,.15),rgba(236,72,153,.15))">🔥</button><button class="exp-btn" onclick="transformToPost(savedItems[${it.idx}].text)" title="Trasforma in Post">📱</button><button class="exp-btn" onclick="showExportPanel(${it.idx})" title="Esporta">📤</button><button class="cal-btn" onclick="quickAddCal(${it.idx})" title="Aggiungi al piano">📅</button><button class="del" onclick="deleteItem(${it.idx})">✕</button></div></div>`;
+    return`<div class="saved-item" onclick="expandMazzoItem(${it.idx})" style="cursor:pointer"><div class="st">${it.type}${it.mode==='stories'?' 📸':''}</div><div class="sx">${it.text.replace(/\n/g,'<br>').substring(0,300)}</div>${badge}<div class="saved-stars">${stars}</div><div class="saved-actions"><button class="exp-btn" onclick="event.stopPropagation();savedToFucinaSmart(${it.idx})" title="Crea Script Smart in Fucina">🔥</button><button class="exp-btn" onclick="event.stopPropagation();transformToPost(savedItems[${it.idx}].text)" title="Trasforma in Post">📱</button><button class="exp-btn" onclick="event.stopPropagation();showExportPanel(${it.idx})" title="Esporta">📤</button><button class="cal-btn" onclick="event.stopPropagation();quickAddCal(${it.idx})" title="Aggiungi al piano">📅</button><button class="del" onclick="event.stopPropagation();deleteItem(${it.idx})">✕</button></div></div>`;
   }).join('')+'<button class="saved-clear" onclick="clearAllSaved()">Svuota mazzo</button>';
 }
 function setSavedFilter(f){savedFilter=f;renderSaved();}
+// V12.4: Mazzo item expand/edit/send to specific block
+function expandMazzoItem(idx){
+  const item=savedItems[idx];if(!item)return;
+  // First expand tutorial
+  if(!localStorage.getItem('hl_mazzo_tutorial')){
+    localStorage.setItem('hl_mazzo_tutorial','1');
+  }
+  document.getElementById('mazzoItemModal')?.remove();
+  const ov=document.createElement('div');ov.id='mazzoItemModal';
+  ov.style.cssText='position:fixed;inset:0;z-index:9998;background:rgba(0,0,0,.85);display:flex;align-items:center;justify-content:center;padding:20px;backdrop-filter:blur(4px)';
+  ov.onclick=e=>{if(e.target===ov)ov.remove();};
+  const starsHtml=Array.from({length:5},(_,s)=>`<span style="cursor:pointer;font-size:1.2rem;${(item.rating||0)>s?'color:#f59e0b':'color:rgba(255,255,255,.2)'}" onclick="event.stopPropagation();savedItems[${idx}].rating=${s+1};localStorage.setItem(hlKey('saved'),JSON.stringify(savedItems));expandMazzoItem(${idx})">★</span>`).join('');
+  // Build block picker for Fucina
+  const currentScript=fucinaScripts[fucinaCurrentScript];
+  let blockPickerHtml='';
+  if(currentScript){
+    const type=getScriptType(currentScript.type);
+    if(type){
+      blockPickerHtml=`<div style="margin-top:12px;padding:10px;background:rgba(255,107,53,.06);border:1px solid rgba(255,107,53,.15);border-radius:10px">
+        <div style="font-size:.68rem;font-weight:800;color:var(--a1);margin-bottom:6px">🔥 MANDA A BLOCCO FUCINA (${type.name})</div>
+        <div style="display:flex;flex-wrap:wrap;gap:4px">${currentScript.blocks.map((b,bi)=>`<button onclick="event.stopPropagation();insertMazzoToBlock(${idx},${bi})" style="padding:4px 10px;border-radius:6px;background:${b.text.trim()?'rgba(0,180,148,.08)':'rgba(255,255,255,.04)'};border:1px solid ${b.text.trim()?'rgba(0,180,148,.2)':'rgba(255,255,255,.1)'};color:${b.text.trim()?'#00b894':'var(--t2)'};cursor:pointer;font-size:.62rem;font-weight:700">${b.label}${b.text.trim()?' ✓':''}</button>`).join('')}
+        </div></div>`;
+    }
+  }
+  ov.innerHTML=`<div style="background:var(--card,#1a1a2e);border-radius:16px;padding:20px;max-width:600px;width:100%;max-height:80vh;overflow-y:auto;border:1px solid rgba(255,255,255,.1)">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
+      <div style="font-size:.65rem;text-transform:uppercase;letter-spacing:1.5px;color:var(--a4,#f59e0b);font-weight:700">${item.type}${item.mode==='stories'?' 📸':''}</div>
+      <span onclick="document.getElementById('mazzoItemModal')?.remove()" style="cursor:pointer;font-size:1.1rem;opacity:.5">✕</span>
+    </div>
+    <textarea id="mazzoEditText" style="width:100%;min-height:120px;background:var(--input-bg,#1a1a2e);border:1px solid var(--input-border,rgba(255,255,255,.1));border-radius:10px;color:var(--t1,#eee);padding:12px;font-size:.82rem;line-height:1.5;resize:vertical;box-sizing:border-box">${item.text}</textarea>
+    <div style="display:flex;align-items:center;gap:8px;margin:10px 0">${starsHtml}<span style="font-size:.65rem;color:var(--t2)">Rating</span></div>
+    <div style="display:flex;flex-wrap:wrap;gap:6px;margin-top:10px">
+      <button onclick="saveMazzoEdit(${idx})" style="padding:8px 16px;border-radius:8px;background:var(--gf,linear-gradient(135deg,#ff6b35,#e8930c));color:#fff;border:none;cursor:pointer;font-weight:800;font-size:.75rem">💾 Salva Modifiche</button>
+      <button onclick="navigator.clipboard.writeText(document.getElementById('mazzoEditText').value).then(()=>showToast('📋 Copiato!'))" style="padding:8px 16px;border-radius:8px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);color:var(--t1);cursor:pointer;font-weight:700;font-size:.75rem">📋 Copia</button>
+      <button onclick="event.stopPropagation();savedToFucinaSmart(${idx})" style="padding:8px 16px;border-radius:8px;background:rgba(168,85,247,.12);border:1px solid rgba(168,85,247,.2);color:#a855f7;cursor:pointer;font-weight:700;font-size:.75rem">🔥 Script Smart</button>
+      <button onclick="event.stopPropagation();showExportPanel(${idx})" style="padding:8px 16px;border-radius:8px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);color:var(--t2);cursor:pointer;font-weight:700;font-size:.75rem">📤 Esporta</button>
+    </div>
+    ${blockPickerHtml}
+    <div style="margin-top:10px;font-size:.58rem;color:var(--t3,#555)">Salvato: ${new Date(item.timestamp).toLocaleDateString('it-IT')} • ${item.source||'Gioco'}</div>
+  </div>`;
+  document.body.appendChild(ov);
+}
+function saveMazzoEdit(idx){
+  const ta=document.getElementById('mazzoEditText');
+  if(ta&&savedItems[idx]){savedItems[idx].text=ta.value;localStorage.setItem(hlKey('saved'),JSON.stringify(savedItems));showToast('✅ Salvato!');renderSaved();}
+}
+function insertMazzoToBlock(itemIdx,blockIdx){
+  const item=savedItems[itemIdx];if(!item)return;
+  const script=fucinaScripts[fucinaCurrentScript];if(!script)return;
+  script.blocks[blockIdx].text=item.text;script.updatedAt=Date.now();saveFucinaScripts();
+  document.getElementById('mazzoItemModal')?.remove();
+  showToast('✅ Inserito nel blocco '+script.blocks[blockIdx].label);
+  if(typeof renderFucinaEditor==='function')renderFucinaEditor();
+}
 
 // ===== GAME RECORDS =====
 let gameRecords=JSON.parse(localStorage.getItem(hlKey('records'))||'{}');
@@ -10914,7 +10968,7 @@ const BLOCK_PROMPTS={
     amplifica:'Espandi il gancio: crea TENSIONE e CURIOSITA. Non rivelare tutto. Fai crescere l\'urgenza di continuare a leggere/guardare. Usa domande retoriche, dati shock, o scenario "e se...". Max 3-4 frasi.',
     valore:'Questa e\' la pepita d\'oro: il contenuto vero che il pubblico vuole. Un insight, un dato, una verita\' scomoda, un metodo controintuitivo. Deve far dire "non ci avevo mai pensato". Conciso e memorabile. Max 3-4 frasi.',
     identifica:'Scrivi la frase di identificazione: "Se anche tu...", "Lo so perche\' ci sono passato", "Questa e\' per chi...". Il lead deve sentirsi VISTO. Connessione emotiva diretta, come parlassi a un amico. Max 2-3 frasi.',
-    cta:'Call-to-action per FOLLOW/SALVA/CONDIVIDI. Non supplicare. Comanda con personalita\'. Es: "Salva questo prima che lo tolga", "Seguimi se vuoi il prossimo". 1-2 frasi max.'
+    cta:'CTA per ATTRAZIONE — L\'obiettivo è ENGAGEMENT (commenti). Scrivi una CTA che invita a COMMENTARE con una PAROLA CHIAVE specifica legata al tema dell\'hook. Es: "Commenta AMAZON se vuoi il prossimo video", "Scrivi SI se ti rivedi", "Commenta 🔥 se sei d\'accordo". MAI dire "seguimi" o "link in bio". L\'obiettivo è far commentare per far esplodere l\'algoritmo. 1-2 frasi max. La parola chiave deve essere legata al TEMA SPECIFICO dello script.'
   },
   educazione:{
     _system:'Sei un esperto di contenuti educativi per social media in italiano. Crei contenuti che sono il CUORE del topic. L\'obiettivo e\' trasferire valore reale: informazione, panoramiche, demolizione di obiezioni, Q&A. Sei autorevole ma mai noioso. Ogni blocco deve far sentire il pubblico piu\' intelligente dopo averlo letto.',
@@ -10923,7 +10977,7 @@ const BLOCK_PROMPTS={
     errore:'L\'errore comune che TUTTI fanno (e perche\' e\' sbagliato). Demolisci una credenza diffusa con un fatto o un ragionamento. Fai sentire il lettore "lo faccio anche io". Max 3-4 frasi.',
     soluzione:'Il metodo/approccio GIUSTO. Strutturato, chiaro, azionabile. Non teoria — passi concreti o framework mentale. Il lettore deve poter AGIRE subito dopo aver letto. Max 3-4 frasi.',
     prova:'La PROVA che funziona: numeri, risultati, testimonianza, caso studio. Dati concreti > parole. Se non hai dati, usa logica inattaccabile. Max 2-3 frasi.',
-    cta:'Call-to-action per SALVA/CONDIVIDI. "Salva per quando ti servira\'", "Manda a chi ne ha bisogno". Max 1-2 frasi.'
+    cta:'CTA per EDUCAZIONE — L\'obiettivo è SALVATAGGI e CONDIVISIONI. Invita a SALVARE il post ("Salva questo prima che lo perdi"), CONDIVIDERE ("Manda a chi ha bisogno di sentirlo"), o SEGUIRE per il prossimo contenuto educativo. NON vendere nulla. NON invitare a scrivere in DM. L\'obiettivo è far percepire che il prossimo contenuto sarà ancora più utile. 1-2 frasi max.'
   },
   vendita:{
     _system:'Sei un esperto di copywriting di vendita per social media in italiano. Crei contenuti di VENDITA che convertono. Usi social proof (studenti, clienti, risultati), storia personale, valorizzazione del servizio/prodotto, e dimostri il metodo di delivery. Non sei aggressivo — sei convincente con i FATTI.',
@@ -10933,7 +10987,7 @@ const BLOCK_PROMPTS={
     trasforma:'Il PRIMA/DOPO. Dipingi la vita dopo la soluzione. Sii concreto e visivo: cosa cambia nella giornata, nei numeri, nelle emozioni. Il lettore deve DESIDERARE quel futuro. Max 3-4 frasi.',
     come:'Il tuo prodotto/servizio come PONTE verso la trasformazione. Non elenco feature — mostra il percorso. "Ecco come funziona:", "In 3 step:", "Il metodo che usiamo:". Max 3-4 frasi.',
     prova:'PROVA SOCIALE: testimonial reali, screenshot di risultati, numeri di studenti/clienti. Piu\' specifico = piu\' credibile. Nomi, numeri, tempistiche. Max 2-3 frasi.',
-    cta:'CTA di VENDITA: offerta, link, scarsita\' (vera), deadline. Urgenza + chiarezza. "Posti limitati", "Solo fino a [data]", "Clicca il link in bio". Max 2-3 frasi.'
+    cta:'CTA per VENDITA — L\'obiettivo è CONVERSIONE DIRETTA. Invita a SCRIVERE IN DM con una parola specifica ("Scrivi PRONTO in DM e ti spiego come funziona"), oppure a cliccare il LINK IN BIO, oppure a COMMENTARE per ricevere info ("Commenta INFO e ti mando i dettagli"). Aggiungi SCARCITY reale: "Solo X posti", "Chiudo le iscrizioni [giorno]". MAI generico. La CTA deve essere SPECIFICA per il prodotto/servizio descritto nello script. 2-3 frasi max.'
   },
   // V12.3b: Story script type prompts
   promo_day:{
@@ -12272,7 +12326,7 @@ function generateHookaPdf(title,sections,filename){
     doc.setTextColor(40);doc.setFont('helvetica','normal');doc.setFontSize(9);
     if(sec.table){
       doc.autoTable({startY:y,margin:{left:mx,right:mx},headStyles:{fillColor:[255,107,53],fontSize:8,font:'helvetica'},
-        bodyStyles:{fontSize:8,cellPadding:3},head:[sec.table.head],body:sec.table.body,
+        bodyStyles:{fontSize:8,cellPadding:3},head:sec.table.head,body:sec.table.body,
         theme:'grid',styles:{overflow:'linebreak',cellWidth:'wrap'},columnStyles:sec.table.colStyles||{}});
       y=doc.lastAutoTable.finalY+10;
     }
@@ -12308,7 +12362,7 @@ function doExportPdf(){
   Object.entries(byType).forEach(([type,hooks])=>{
     sections.push({heading:type+' ('+hooks.length+')',table:{
       head:[['#','Hook','Rating']],
-      body:hooks.map((h,i)=>[(i+1)+'',h.text.substring(0,200),stars(h.rating||0)]),
+      body:hooks.map((h,i)=>{let txt=h.text||'';try{if(txt.startsWith('{')||txt.startsWith('['))txt=JSON.parse(txt).text||JSON.parse(txt).hook||txt;}catch(e){}return[(i+1)+'',txt.substring(0,200).replace(/\n/g,' '),stars(h.rating||0)];}),
       colStyles:{0:{cellWidth:10},2:{cellWidth:25}}
     }});
   });
@@ -13099,12 +13153,13 @@ function renderStoriesMode(){
     </div>
     <!-- Planner toolbar -->
     <div style="display:flex;gap:6px;padding:8px 18px;background:var(--card);border:1px solid rgba(255,255,255,.08);border-top:none;flex-wrap:wrap">
-      <button onclick="exportSequencePdf()" style="padding:4px 10px;border-radius:6px;font-size:.62rem;font-weight:700;background:rgba(239,68,68,.08);border:1px solid rgba(239,68,68,.2);color:#ef4444;cursor:pointer">📕 PDF</button>
-      <button onclick="exportSequenceMd()" style="padding:4px 10px;border-radius:6px;font-size:.62rem;font-weight:700;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.1);color:var(--t2);cursor:pointer">📥 .md</button>
-      <button onclick="importSequenceMd()" style="padding:4px 10px;border-radius:6px;font-size:.62rem;font-weight:700;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.1);color:var(--t2);cursor:pointer">📤 Carica .md</button>
-      <button onclick="resetSequenceTemplate()" style="padding:4px 10px;border-radius:6px;font-size:.62rem;font-weight:700;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.1);color:var(--t2);cursor:pointer">🔄 Reset</button>
-      <button onclick="copySequenceAll()" style="padding:4px 10px;border-radius:6px;font-size:.62rem;font-weight:700;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.1);color:var(--t2);cursor:pointer">📋 Copia Tutto</button>
-      <button onclick="clickupSendSequence()" style="padding:4px 10px;border-radius:6px;font-size:.62rem;font-weight:700;background:rgba(126,87,255,.08);border:1px solid rgba(126,87,255,.2);color:#7e57ff;cursor:pointer">📤 ClickUp</button>
+      <button onclick="exportSequencePdf()" title="Scarica sequenza come PDF formattato con tabella giorno per giorno" style="padding:4px 10px;border-radius:6px;font-size:.62rem;font-weight:700;background:rgba(239,68,68,.08);border:1px solid rgba(239,68,68,.2);color:#ef4444;cursor:pointer">📕 PDF</button>
+      <button onclick="exportSequenceMd()" title="Scarica come file Markdown (.md) — importabile dopo" style="padding:4px 10px;border-radius:6px;font-size:.62rem;font-weight:700;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.1);color:var(--t2);cursor:pointer">📥 .md</button>
+      <button onclick="importSequenceMd()" title="Carica un file .md per importare una sequenza salvata" style="padding:4px 10px;border-radius:6px;font-size:.62rem;font-weight:700;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.1);color:var(--t2);cursor:pointer">📤 Carica .md</button>
+      <button onclick="resetSequenceTemplate()" title="Ripristina template originale (la versione attuale va in archivio)" style="padding:4px 10px;border-radius:6px;font-size:.62rem;font-weight:700;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.1);color:var(--t2);cursor:pointer">🔄 Reset</button>
+      <button onclick="copySequenceAll()" title="Copia tutta la sequenza negli appunti come testo" style="padding:4px 10px;border-radius:6px;font-size:.62rem;font-weight:700;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.1);color:var(--t2);cursor:pointer">📋 Copia Tutto</button>
+      <button onclick="clickupSendSequence()" title="Manda intera sequenza a ClickUp come task (devi aver connesso il token)" style="padding:4px 10px;border-radius:6px;font-size:.62rem;font-weight:700;background:rgba(126,87,255,.08);border:1px solid rgba(126,87,255,.2);color:#7e57ff;cursor:pointer">📤 ClickUp</button>
+      <button onclick="showSequenceArchive()" title="Vedi sequenze archiviate e ripristina le vecchie" style="padding:4px 10px;border-radius:6px;font-size:.62rem;font-weight:700;background:rgba(34,197,94,.08);border:1px solid rgba(34,197,94,.2);color:#22c55e;cursor:pointer">📜 Archivio</button>
     </div>
     <div class="story-board" id="storyBoard">${dayCols}</div>
   </div>
@@ -13372,15 +13427,50 @@ function createNewSequence(){
   showToast('✅ Sequenza "'+name.trim()+'" creata!');
 }
 
+// V12.4: Archive sequence before reset
+function archiveSequence(key){
+  if(!storyPlanner.archive)storyPlanner.archive=[];
+  const seq=storyPlanner.sequences[key];
+  if(seq&&seq.days?.length){
+    storyPlanner.archive.unshift({key,name:seq.name,days:JSON.parse(JSON.stringify(seq.days)),archivedAt:Date.now()});
+    if(storyPlanner.archive.length>20)storyPlanner.archive=storyPlanner.archive.slice(0,20);
+    saveStoryPlanner();
+  }
+}
+function showSequenceArchive(){
+  if(!storyPlanner.archive?.length){showToast('Nessuna sequenza archiviata');return;}
+  document.getElementById('seqArchiveModal')?.remove();
+  const ov=document.createElement('div');ov.id='seqArchiveModal';
+  ov.style.cssText='position:fixed;inset:0;z-index:9998;background:rgba(0,0,0,.85);display:flex;align-items:center;justify-content:center;padding:20px';
+  ov.onclick=e=>{if(e.target===ov)ov.remove();};
+  const items=storyPlanner.archive.map((a,i)=>`<div style="padding:10px;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.06);border-radius:8px;margin:6px 0;display:flex;justify-content:space-between;align-items:center">
+    <div><div style="font-weight:700;font-size:.8rem;color:var(--t1)">${a.name}</div><div style="font-size:.6rem;color:var(--t2)">${a.days?.length||0} giorni • ${new Date(a.archivedAt).toLocaleDateString('it-IT')}</div></div>
+    <button onclick="restoreArchive(${i})" style="padding:5px 12px;border-radius:6px;background:rgba(0,184,148,.08);border:1px solid rgba(0,184,148,.2);color:#00b894;cursor:pointer;font-size:.65rem;font-weight:700">♻️ Ripristina</button>
+  </div>`).join('');
+  ov.innerHTML=`<div style="background:var(--card,#1a1a2e);border-radius:16px;padding:20px;max-width:500px;width:100%;max-height:70vh;overflow-y:auto;border:1px solid rgba(255,255,255,.1)">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px"><h3 style="margin:0;font-size:.95rem">📜 Archivio Sequenze</h3><span onclick="document.getElementById('seqArchiveModal')?.remove()" style="cursor:pointer;opacity:.5">✕</span></div>
+    ${items}</div>`;
+  document.body.appendChild(ov);
+}
+function restoreArchive(i){
+  const a=storyPlanner.archive[i];if(!a)return;
+  const key='restored_'+Date.now().toString(36);
+  storyPlanner.sequences[key]={name:a.name+' (restored)',days:JSON.parse(JSON.stringify(a.days))};
+  storyPlanner.activeCycle=key;saveStoryPlanner();refreshStoriesUI();
+  document.getElementById('seqArchiveModal')?.remove();
+  showToast('✅ Sequenza ripristinata!');
+}
 function resetSequenceTemplate(){
   const cycle=storyPlanner.activeCycle;
   if(cycle==='promo'){
-    showConfirmModal('🔄 Reset Promo','Ripristinare il template originale Promo Cycle? Perderai le modifiche.',()=>{
+    showConfirmModal('🔄 Reset Promo','Ripristinare il template originale? La versione attuale sarà archiviata.',()=>{
+      archiveSequence('promo');
       storyPlanner.sequences.promo={name:'Promo Cycle',days:JSON.parse(JSON.stringify(PROMO_CYCLE_TEMPLATE))};
       saveStoryPlanner();refreshStoriesUI();
     },{danger:true,confirmText:'Reset'});
   }else if(cycle==='out_promo'){
-    showConfirmModal('🔄 Reset Out Promo','Ripristinare il template originale Out of Promo? Perderai le modifiche.',()=>{
+    showConfirmModal('🔄 Reset Out Promo','Ripristinare il template originale? La versione attuale sarà archiviata.',()=>{
+      archiveSequence('out_promo');
       storyPlanner.sequences.out_promo={name:'Out of Promo',days:JSON.parse(JSON.stringify(OUT_PROMO_TEMPLATE))};
       saveStoryPlanner();refreshStoriesUI();
     },{danger:true,confirmText:'Reset'});
@@ -15211,8 +15301,8 @@ async function openAdminDashboard(){
   const existing=document.getElementById('adminDashOverlay');if(existing)existing.remove();
 
   const ov=document.createElement('div');ov.id='adminDashOverlay';
-  ov.style.cssText='position:fixed;inset:0;z-index:99999;background:rgba(0,0,0,.92);overflow-y:auto;padding:20px';
-  ov.innerHTML='<div style="max-width:900px;margin:0 auto;padding:20px"><h2 style="text-align:center;color:#fbbf24">👑 Admin Dashboard</h2><p style="text-align:center;color:var(--t2);font-size:.75rem">Caricamento dati...</p></div>';
+  ov.style.cssText='position:fixed;inset:0;z-index:99999;background:#0d0d1a;overflow-y:auto;padding:20px';
+  ov.innerHTML='<div style="max-width:900px;margin:0 auto;padding:20px;background:#12122a;border-radius:16px;border:1px solid rgba(251,191,36,.15)"><h2 style="text-align:center;color:#fbbf24">👑 Admin Dashboard</h2><p style="text-align:center;color:var(--t2);font-size:.75rem">Caricamento dati...</p></div>';
   document.body.appendChild(ov);
 
   try{
@@ -15235,6 +15325,7 @@ async function openAdminDashboard(){
 
     // Render dashboard
     const container=ov.querySelector('div');
+    container.style.cssText='max-width:900px;margin:0 auto;padding:20px;background:#12122a;border-radius:16px;border:1px solid rgba(251,191,36,.15)';
     container.innerHTML=`
       <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px">
         <h2 style="color:#fbbf24;margin:0">👑 Admin Dashboard</h2>
@@ -16301,7 +16392,7 @@ function initLayout(){
     wc.style.cssText='background:linear-gradient(135deg,rgba(255,107,53,.08),rgba(232,147,12,.05));border:1px solid rgba(255,107,53,.2);border-radius:16px;padding:20px;margin:8px 0 16px;position:relative';
     wc.innerHTML=`<button onclick="this.parentElement.remove();localStorage.setItem('${hlKey('welcomeDismissed')}','1')" style="position:absolute;top:10px;right:12px;background:none;border:none;color:var(--t2);cursor:pointer;font-size:1rem" title="Chiudi">✕</button>
       <h3 style="margin:0 0 12px;font-size:1rem;font-weight:800;color:var(--a1)">👋 Benvenuto in HOOKA!</h3>
-      <p style="font-size:.82rem;color:var(--t1);margin-bottom:14px;line-height:1.5">Ecco come iniziare in 4 step:</p>
+      <p style="font-size:.82rem;color:var(--t1);margin-bottom:14px;line-height:1.5">Ecco come iniziare in 5 step:</p>
       <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:10px">
         <div style="background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:10px;padding:12px;text-align:center">
           <div style="font-size:1.3rem;margin-bottom:4px">1️⃣</div>
@@ -16322,6 +16413,11 @@ function initLayout(){
           <div style="font-size:1.3rem;margin-bottom:4px">4️⃣</div>
           <div style="font-size:.75rem;font-weight:700;color:var(--t1)">Crea Script in Fucina</div>
           <div style="font-size:.65rem;color:var(--t2);margin-top:2px">Trasforma hook in contenuti</div>
+        </div>
+        <div style="background:rgba(255,107,53,.06);border:1px solid rgba(255,107,53,.2);border-radius:10px;padding:12px;text-align:center">
+          <div style="font-size:1.3rem;margin-bottom:4px">⚡</div>
+          <div style="font-size:.75rem;font-weight:700;color:var(--a1)">Connetti l'IA</div>
+          <div style="font-size:.65rem;color:var(--t2);margin-top:2px">Vai su ⚙️ → Connessioni AI</div>
         </div>
       </div>`;
     mainCol.appendChild(wc);

@@ -794,6 +794,15 @@ body::after{content:'';position:fixed;top:0;left:0;right:0;height:2px;background
 .saved-toggle .count{position:absolute;top:-3px;right:-3px;background:var(--a3);color:white;width:20px;height:20px;border-radius:50%;font-size:.65rem;font-weight:700;display:flex;align-items:center;justify-content:center}
 .saved-drawer{position:fixed;top:0;right:-380px;width:360px;max-width:90vw;height:100vh;background:var(--bg);border-left:1px solid rgba(255,255,255,.1);z-index:200;transition:right .4s;overflow-y:auto;padding:20px}
 .saved-drawer.open{right:0}
+/* V12.3: Expandable mazzo */
+.saved-drawer.expanded{width:100%;max-width:100%}
+.saved-drawer.expanded #savedList{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:8px}
+.saved-drawer.expanded .saved-clear{grid-column:1/-1}
+/* V12.3: Mode tabs */
+.saved-mode-tabs{display:flex;gap:4px;margin-bottom:10px;padding:3px;background:var(--card2);border-radius:10px}
+.saved-mode-tab{flex:1;text-align:center;padding:6px 8px;border-radius:8px;font-size:.68rem;font-weight:700;color:var(--t2);cursor:pointer;transition:var(--tr)}
+.saved-mode-tab.active{background:var(--gf);color:#fff}
+.saved-mode-tab:hover:not(.active){background:rgba(255,255,255,.05)}
 .saved-overlay{position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:199;opacity:0;pointer-events:none;transition:opacity .3s}
 .saved-overlay.open{opacity:1;pointer-events:all}
 .saved-drawer h2{font-size:1.2rem;font-weight:800;margin-bottom:4px;background:var(--gf);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
@@ -2735,7 +2744,12 @@ body.light .shimmer::after{background:linear-gradient(90deg,transparent 0%,rgba(
 <button class="saved-toggle" onclick="toggleSaved()">&#9733;<span class="count" id="savedCount">0</span></button>
 <div class="saved-overlay" id="savedOverlay" onclick="toggleSaved()"></div>
 <div class="saved-drawer" id="savedDrawer">
-  <h2>Il Tuo Mazzo</h2><p class="ss">Le combo salvate per i tuoi contenuti</p>
+  <div style="display:flex;justify-content:space-between;align-items:center">
+    <h2>Il Tuo Mazzo</h2>
+    <button onclick="toggleMazzoExpand()" id="mazzoExpandBtn" style="padding:4px 10px;border-radius:8px;background:var(--input-bg);border:1px solid var(--input-border);color:var(--t2);cursor:pointer;font-size:.7rem" title="Espandi/Riduci">⛶</button>
+  </div>
+  <p class="ss">Le combo salvate per i tuoi contenuti</p>
+  <div class="saved-mode-tabs" id="savedModeTabs"></div>
   <div class="saved-search"><input type="text" id="savedSearchInput" placeholder="Cerca nei salvati..." oninput="renderSaved()" /></div>
   <div class="saved-cats" id="savedCats"></div>
   <div class="saved-sort"><select id="savedSortSel" onchange="savedSort=this.value;renderSaved()"><option value="date">Recenti</option><option value="rating">Rating</option><option value="type">Tipo</option></select></div>
@@ -5215,14 +5229,14 @@ let currentFlipIndex=0,currentDevilIndex=0;
 function rand(a){return a[Math.floor(Math.random()*a.length)];}
 function showToast(m){const t=document.getElementById('toast');t.textContent=m;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2000);}
 function animateScore(){setTimeout(()=>{document.querySelectorAll('.score-display:not(.pop)').forEach(el=>el.classList.add('pop'));},50);}
-function saveItem(type,text){if(savedItems.some(i=>i.text===text)){showToast('Già nel mazzo!');return false;}savedItems.unshift({type,text,timestamp:Date.now(),category:'hook',rating:0});localStorage.setItem(hlKey('saved'),JSON.stringify(savedItems));updateSavedCount();stats.hooksWritten++;saveStats();showToast('Salvato!');sSave();sendWebhook('hook_saved',{type,text:text.substring(0,500)});sendTeamNotification('hook_saved',{type,text:text.substring(0,100)});logHistory('mazzo','save',{type,text:text.substring(0,300)});return true;}
+function saveItem(type,text){if(savedItems.some(i=>i.text===text)){showToast('Già nel mazzo!');return false;}savedItems.unshift({type,text,timestamp:Date.now(),category:'hook',rating:0,mode:currentMode||'post'});localStorage.setItem(hlKey('saved'),JSON.stringify(savedItems));updateSavedCount();stats.hooksWritten++;saveStats();showToast('Salvato!');sSave();sendWebhook('hook_saved',{type,text:text.substring(0,500)});sendTeamNotification('hook_saved',{type,text:text.substring(0,100)});logHistory('mazzo','save',{type,text:text.substring(0,300)});return true;}
 function saveScript(idx){
   const script=fucinaScripts[idx];if(!script)return false;
-  const type=SCRIPT_TYPES[script.type];
+  const type=getScriptType(script.type);
   if(savedItems.some(i=>i.scriptRef?.id===script.id)){showToast('Script già nel mazzo!');return false;}
   const fullText=script.blocks.filter(b=>b.text.trim()).map(b=>`[${b.label}]\n${b.text}`).join('\n\n');
   if(!fullText.trim()){showToast('Script vuoto!');return false;}
-  savedItems.unshift({type:'Script '+type.name,text:fullText,timestamp:Date.now(),category:'script',rating:0,scriptRef:{id:script.id,type:script.type,title:script.title||script.blocks[0]?.text?.substring(0,50)||'Senza titolo',blockCount:script.blocks.filter(b=>b.text.trim()).length}});
+  savedItems.unshift({type:'Script '+type.name,text:fullText,timestamp:Date.now(),category:'script',rating:0,mode:currentMode||'post',scriptRef:{id:script.id,type:script.type,title:script.title||script.blocks[0]?.text?.substring(0,50)||'Senza titolo',blockCount:script.blocks.filter(b=>b.text.trim()).length}});
   localStorage.setItem(hlKey('saved'),JSON.stringify(savedItems));updateSavedCount();showToast('Script salvato nel Mazzo!');sSave();return true;
 }
 function copyFullScript(){
@@ -5235,7 +5249,7 @@ function saveBlock(sIdx,bIdx){
   const script=fucinaScripts[sIdx];if(!script)return false;
   const block=script.blocks[bIdx];if(!block||!block.text.trim()){showToast('Blocco vuoto!');return false;}
   if(savedItems.some(i=>i.text===block.text)){showToast('Già nel mazzo!');return false;}
-  savedItems.unshift({type:block.label,text:block.text,timestamp:Date.now(),category:'blocco',rating:0,blockMeta:{scriptType:script.type,blockKey:block.key,blockLabel:block.label}});
+  savedItems.unshift({type:block.label,text:block.text,timestamp:Date.now(),category:'blocco',rating:0,mode:currentMode||'post',blockMeta:{scriptType:script.type,blockKey:block.key,blockLabel:block.label}});
   localStorage.setItem(hlKey('saved'),JSON.stringify(savedItems));updateSavedCount();showToast('Blocco salvato!');sSave();return true;
 }
 function rateItem(idx,stars){
@@ -9489,12 +9503,30 @@ function copyExport(idx){
 }
 
 // ===== HUB SWITCH =====
+// V12.3: Mode-aware hub tabs
+function renderHubTabs(){
+  const tabsEl=document.querySelector('.hub-tabs');
+  if(!tabsEl)return;
+  if(currentMode==='stories'){
+    tabsEl.innerHTML=`
+      <div class="hub-tab active" onclick="switchHub('piano')">📅 Piano</div>
+      <div class="hub-tab" onclick="switchHub('mondo')">🧠 Mondo</div>
+      <div class="hub-tab" onclick="switchHub('raccolta')">📸 Raccolta Storie</div>
+      <div class="hub-tab" onclick="switchHub('note')">📝 Note</div>`;
+  } else {
+    tabsEl.innerHTML=`
+      <div class="hub-tab active" onclick="switchHub('piano')">📅 Piano</div>
+      <div class="hub-tab" onclick="switchHub('note')">📝 Note</div>
+      <div class="hub-tab" onclick="switchHub('mondo')">🧠 Mondo</div>
+      <div class="hub-tab" onclick="switchHub('raccolta')">📚 Raccolta</div>`;
+  }
+}
 function switchHub(tab){
-  const tabs=['piano','note','mondo','raccolta'];
+  const tabs=currentMode==='stories'?['piano','mondo','raccolta','note']:['piano','note','mondo','raccolta'];
   document.querySelectorAll('.hub-tab').forEach((t,i)=>t.classList.toggle('active',tabs[i]===tab));
   document.querySelectorAll('.hub-panel').forEach(p=>p.classList.remove('active'));
   const panelMap={piano:'hubPiano',note:'hubNote',mondo:'hubMondo',raccolta:'hubRaccolta'};
-  document.getElementById(panelMap[tab]).classList.add('active');
+  document.getElementById(panelMap[tab])?.classList.add('active');
   // V12.2b: expand hub on tab click
   document.querySelector('.hub')?.classList.add('hub-expanded');
   if(tab==='piano')renderCalendar();
@@ -9502,7 +9534,7 @@ function switchHub(tab){
   if(tab==='mondo'){renderVoice();setTimeout(updateMondoProgress,100);}
   if(tab==='raccolta')renderRaccolta();
   sClick();
-  document.getElementById('hub').scrollIntoView({behavior:'smooth',block:'start'});
+  document.getElementById('hub')?.scrollIntoView({behavior:'smooth',block:'start'});
 }
 // V12.2b: Chat floating toggle
 function toggleChatFloat(){
@@ -9729,6 +9761,8 @@ function notesActionTo(action){
 
 // ===== SAVED =====
 function toggleSaved(){document.getElementById('savedDrawer').classList.toggle('open');document.getElementById('savedOverlay').classList.toggle('open');if(document.getElementById('savedDrawer').classList.contains('open'))renderSaved();}
+// V12.3: Expand/collapse mazzo to full page
+function toggleMazzoExpand(){const d=document.getElementById('savedDrawer');d.classList.toggle('expanded');document.getElementById('mazzoExpandBtn').textContent=d.classList.contains('expanded')?'⇥':'⛶';renderSaved();}
 // renderSaved moved below with search/filter
 function quickAddCal(idx){const today=new Date().toISOString().split('T')[0];if(!calendar[today])calendar[today]=[];const text=savedItems[idx].text.split('\n')[0].replace(/\[.*?\]/g,'').trim();calendar[today].push(text);saveCalendar();renderCalendar();showToast('Aggiunto a oggi!');}
 
@@ -9785,17 +9819,29 @@ function importBackup(e){
 let savedFilter='all';
 let savedCategory='all';
 let savedSort='date';
+let savedModeFilter='all'; // V12.3: Post/Stories mode filter
 function renderSaved(){
   const list=document.getElementById('savedList');
   const searchVal=(document.getElementById('savedSearchInput')?.value||'').toLowerCase().trim();
+  // V12.3: Mode tabs (Post/Stories)
+  const modeTabEl=document.getElementById('savedModeTabs');
+  if(modeTabEl){
+    const isStory=i=>(i.mode==='stories')||(i.source&&/story|storie/i.test(i.source));
+    const postCount=savedItems.filter(i=>!isStory(i)).length;
+    const storyCount=savedItems.filter(i=>isStory(i)).length;
+    modeTabEl.innerHTML=`<span class="saved-mode-tab${savedModeFilter==='all'?' active':''}" onclick="savedModeFilter='all';renderSaved()">Tutti (${savedItems.length})</span><span class="saved-mode-tab${savedModeFilter==='post'?' active':''}" onclick="savedModeFilter='post';renderSaved()">📱 Post (${postCount})</span><span class="saved-mode-tab${savedModeFilter==='stories'?' active':''}" onclick="savedModeFilter='stories';renderSaved()">📸 Stories (${storyCount})</span>`;
+  }
   // Category tabs
   const catsEl=document.getElementById('savedCats');
   if(catsEl){
     const counts={all:savedItems.length,hook:savedItems.filter(i=>(i.category||'hook')==='hook').length,script:savedItems.filter(i=>i.category==='script').length,blocco:savedItems.filter(i=>i.category==='blocco').length};
     catsEl.innerHTML=['all','hook','script','blocco'].map(c=>`<span class="saved-cat${savedCategory===c?' active':''}" onclick="savedCategory='${c}';renderSaved()">${c==='all'?'Tutti':c==='hook'?'Hook':c==='script'?'Script':'Blocchi'} (${counts[c]})</span>`).join('');
   }
-  // Filter by category
+  // Filter by mode
   let working=savedItems.map((it,i)=>({...it,idx:i,_cat:it.category||'hook'}));
+  if(savedModeFilter==='post')working=working.filter(it=>it.mode!=='stories'&&!(it.source&&/story|storie/i.test(it.source)));
+  else if(savedModeFilter==='stories')working=working.filter(it=>it.mode==='stories'||(it.source&&/story|storie/i.test(it.source)));
+  // Filter by category
   if(savedCategory!=='all')working=working.filter(it=>it._cat===savedCategory);
   // Type sub-filters
   const types=[...new Set(working.map(i=>i.type))];
@@ -10550,6 +10596,8 @@ function renderNewspaper(data){
 }
 
 // ===== LA FUCINA (Script Studio) =====
+// V12.3: Helper to look up script type from both Post and Story dictionaries
+function getScriptType(typeKey){return SCRIPT_TYPES[typeKey]||STORY_SCRIPT_TYPES[typeKey]||null;}
 let fucinaScripts=JSON.parse(localStorage.getItem(hlKey('scripts'))||'[]');
 let fucinaView='list'; // list | setup | editor
 let fucinaCurrentScript=null;
@@ -10611,6 +10659,38 @@ const STORY_SCRIPT_TYPES={
       {key:'hook_visivo',label:'Hook Visivo',hint:'Descrizione di cosa mostrare visivamente per fermare lo swipe'},
       {key:'testo',label:'Testo/Copy',hint:'Il copy della storia'},
       {key:'interazione',label:'CTA/Interazione',hint:'Sondaggio, quiz, swipe up, DM, sticker'}
+    ]},
+  // V12.3: New story script types
+  story_carousel:{icon:'🎠',name:'Carosello Storie',desc:'5-8 slide verticali con flusso narrativo',color:'#8b5cf6',
+    blocks:[
+      {key:'hook_visivo',label:'Hook Visivo (Slide 1)',hint:'La prima slide che ferma lo swipe — immagine + testo impattante'},
+      {key:'problema',label:'Problema (Slide 2)',hint:'Il dolore o la frustrazione del tuo pubblico'},
+      {key:'soluzione',label:'Soluzione (Slide 3-4)',hint:'Il tuo metodo o approccio — passo per passo'},
+      {key:'proof',label:'Prova (Slide 5-6)',hint:'Screenshot, numeri, testimonianza — social proof'},
+      {key:'cta',label:'CTA Finale (Slide 7-8)',hint:'Swipe up, DM, link — chiamata all\'azione chiara'}
+    ]},
+  story_funnel:{icon:'🎯',name:'Funnel Stories',desc:'3-5 storie di vendita rapida',color:'#f59e0b',
+    blocks:[
+      {key:'attenzione',label:'Attenzione',hint:'Storia che ferma: domanda provocatoria, dato shock, behind the scenes'},
+      {key:'curiosita',label:'Curiosità',hint:'Crea interesse: "Ho scoperto che...", teaser del valore'},
+      {key:'desiderio',label:'Desiderio',hint:'Mostra il risultato: prima/dopo, testimonianza, lifestyle'},
+      {key:'azione',label:'Azione',hint:'CTA chiara: "Scrivi PRONTO in DM", link, countdown'},
+      {key:'urgenza',label:'Urgenza',hint:'Ultima storia: scarcity, timer, "Solo X posti rimasti"'}
+    ]},
+  story_qa:{icon:'❓',name:'Q&A Stories',desc:'Sessione domande e risposte strutturata',color:'#06b6d4',
+    blocks:[
+      {key:'intro',label:'Intro Q&A',hint:'Annuncia la sessione: "Mi avete chiesto..." o usa sticker domande'},
+      {key:'domanda1',label:'Domanda 1',hint:'La domanda più comune — risposta breve e diretta'},
+      {key:'domanda2',label:'Domanda 2',hint:'Domanda più profonda — risposta con valore'},
+      {key:'approfondimento',label:'Approfondimento',hint:'Collegamento al tuo prodotto/servizio — naturale, non forzato'},
+      {key:'cta',label:'CTA Finale',hint:'Invita a fare altre domande o a prendere il prossimo passo'}
+    ]},
+  story_ugc:{icon:'🏆',name:'Social Proof Stories',desc:'Sfrutta contenuti e testimonianze',color:'#22c55e',
+    blocks:[
+      {key:'intro',label:'Intro',hint:'Contestualizza: "Guardate cosa mi ha scritto..." o "Risultato di un cliente"'},
+      {key:'screenshot',label:'Screenshot/Testimonianza',hint:'Mostra il DM, la review, il commento — descrivi il visivo'},
+      {key:'commento',label:'Il Tuo Commento',hint:'Reagisci alla testimonianza — aggiungi contesto e valore'},
+      {key:'cta',label:'Chiamata all\'Azione',hint:'Invita ad ottenere lo stesso risultato — DM, link, iscrizione'}
     ]}
 };
 
@@ -10896,7 +10976,7 @@ function renderFucinaList(){
   }
   let html=`<div class="fucina-header"><div class="fucina-title">I Tuoi Script</div><button class="action-btn btn-hot" style="padding:8px 20px;font-size:.8rem" onclick="startFucinaSetup()">+ Nuovo</button></div>`;
   fucinaScripts.forEach((s,i)=>{
-    const t=SCRIPT_TYPES[s.type];
+    const t=getScriptType(s.type);
     const filled=s.blocks.filter(b=>b.text.trim()).length;
     const total=s.blocks.length;
     const date=new Date(s.updatedAt||s.createdAt).toLocaleDateString('it-IT',{day:'numeric',month:'short'});
@@ -10936,9 +11016,10 @@ function renderFucinaSetup(){
   let html=`<div class="fucina-header"><button class="fucina-back" onclick="renderFucinaList()">← Indietro</button><div class="fucina-title">Nuovo Script</div></div>`;
   html+=`<div class="fucina-setup">`;
 
-  // Step 1: Script type
+  // Step 1: Script type (V12.3: mode-aware — show Post or Story types)
+  const typeSource=currentMode==='stories'?STORY_SCRIPT_TYPES:SCRIPT_TYPES;
   html+=`<div class="setup-section"><div class="setup-label">1. Tipo di Script</div><div class="setup-types">`;
-  for(const[k,t]of Object.entries(SCRIPT_TYPES)){
+  for(const[k,t]of Object.entries(typeSource)){
     html+=`<div class="setup-type${s.type===k?' selected':''}" onclick="fucinaSetup.type='${k}';renderFucinaSetup()">
       <div class="st-icon">${t.icon}</div><div class="st-name">${t.name}</div><div class="st-desc">${t.desc}</div>
       <div class="st-blocks">${t.blocks.length} blocchi</div></div>`;
@@ -11002,7 +11083,7 @@ async function generateAiHook(){
   if(!isAI()){showToast('⚙️ Configura AI prima');openConnectionsPanel();return;}
   btn.disabled=true;btn.textContent='⏳ Genero...';
   const ctx=getCtxPrompt();
-  const type=SCRIPT_TYPES[fucinaSetup.type];
+  const type=getScriptType(fucinaSetup.type);
   const bpSys=BLOCK_PROMPTS[fucinaSetup.type]?._system||'';
   const hookInstr=BLOCK_PROMPTS[fucinaSetup.type]?.hook||'';
   const hook=await aiCallByName('hook_generator',
@@ -11410,7 +11491,10 @@ const GAME_COLORS={slot:'#ff6b35',flip:'#e8930c',collision:'#c44a18',devil:'#ff8
 
 function renderRaccolta(){
   const el=document.getElementById('raccoltaContent');
-  const hooks=(gameHistory.hooks||[]).slice();
+  let hooks=(gameHistory.hooks||[]).slice();
+  // V12.3: Filter by mode
+  if(currentMode==='stories')hooks=hooks.filter(h=>h.game&&/story/i.test(h.game));
+  else if(currentMode==='post')hooks=hooks.filter(h=>!h.game||!/story/i.test(h.game));
   // Stats
   const total=hooks.length;
   const avgRating=total?((hooks.reduce((s,h)=>s+(h.rating||0),0)/total).toFixed(1)):'-';
@@ -12178,6 +12262,8 @@ function switchMode(mode){
   if(indicator){const idx=mode==='post'?0:mode==='stories'?1:2;indicator.style.transform=`translateX(${idx*100}%)`;}
   // V12.2c: Auto-collapse hub when switching modes
   document.querySelector('.hub')?.classList.remove('hub-expanded');
+  // V12.3: Update hub tabs for current mode
+  renderHubTabs();
   // Remove any existing mode-specific content
   document.getElementById('modeComingSoon')?.remove();
   document.getElementById('storiesContainer')?.remove();
@@ -12826,11 +12912,29 @@ function renderStoriesMode(){
   });
 
   sc.innerHTML=`
+  <!-- V12.3: Games First layout for Stories -->
   <!-- Tutorial button -->
   <div style="display:flex;justify-content:flex-end;margin-bottom:8px">
     <button onclick="replayStoryTutorial()" style="padding:5px 14px;border-radius:8px;background:rgba(255,107,53,.08);border:1px solid rgba(255,107,53,.15);color:var(--a1);cursor:pointer;font-size:.68rem;font-weight:700;transition:var(--tr)">❓ Tutorial Storie</button>
   </div>
-  <!-- STORY VOICE PROFILE -->
+
+  <!-- STORY GAME AREA (inline, like Post games) — MOVED TO TOP -->
+  <div class="game-area" id="storyGameArea" style="max-width:920px;margin:16px auto"></div>
+
+  <!-- STORY GAMES — 4 Categories — MOVED TO TOP -->
+  ${gamesHtml}
+
+  <!-- STUDIO: Hub + Fucina (Stories) -->
+  <div class="section-header sh-studio" style="border-color:#00b894">
+    <div class="sh-icon">🧩</div>
+    <div class="sh-text"><h3>Studio Storie</h3><p>Hub di analisi e Fucina per le tue storie</p></div>
+    <span class="sh-count" style="display:flex;gap:6px">
+      <button class="hub-action-btn" onclick="openHub()" style="font-size:.7rem">🧩 Hub</button>
+      <button class="hub-action-btn" onclick="document.querySelector('.fucina-stories')?.scrollIntoView({behavior:'smooth',block:'start'})" style="font-size:.7rem;border-color:rgba(255,107,53,.3);background:rgba(255,107,53,.06)">🔥 Fucina</button>
+    </span>
+  </div>
+
+  <!-- STORY VOICE PROFILE — MOVED BELOW GAMES -->
   <div class="story-voice-panel">
     <div class="story-voice-header" onclick="document.getElementById('svBody').classList.toggle('open');this.querySelector('.sv-arrow').textContent=document.getElementById('svBody').classList.contains('open')?'▼':'▶'">
       <h3>📝 Il Tuo Stile Storie <span style="font-size:.62rem;font-weight:400;color:var(--t2)">— Cattura il tuo linguaggio</span></h3>
@@ -12894,6 +12998,7 @@ function renderStoriesMode(){
       <button onclick="importSequenceMd()" style="padding:4px 10px;border-radius:6px;font-size:.62rem;font-weight:700;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.1);color:var(--t2);cursor:pointer">📤 Carica .md</button>
       <button onclick="resetSequenceTemplate()" style="padding:4px 10px;border-radius:6px;font-size:.62rem;font-weight:700;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.1);color:var(--t2);cursor:pointer">🔄 Reset</button>
       <button onclick="copySequenceAll()" style="padding:4px 10px;border-radius:6px;font-size:.62rem;font-weight:700;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.1);color:var(--t2);cursor:pointer">📋 Copia Tutto</button>
+      <button onclick="clickupSendSequence()" style="padding:4px 10px;border-radius:6px;font-size:.62rem;font-weight:700;background:rgba(126,87,255,.08);border:1px solid rgba(126,87,255,.2);color:#7e57ff;cursor:pointer">📤 ClickUp</button>
     </div>
     <div class="story-board" id="storyBoard">${dayCols}</div>
   </div>
@@ -12912,21 +13017,6 @@ function renderStoriesMode(){
     <div id="fucinaBoardContainer" style="overflow-x:auto;padding-bottom:8px"></div>
   </div>
 
-  <!-- STUDIO: Hub + Fucina (Stories) -->
-  <div class="section-header sh-studio" style="border-color:#00b894">
-    <div class="sh-icon">🧩</div>
-    <div class="sh-text"><h3>Studio Storie</h3><p>Hub di analisi e Fucina per le tue storie</p></div>
-    <span class="sh-count" style="display:flex;gap:6px">
-      <button class="hub-action-btn" onclick="openHub()" style="font-size:.7rem">🧩 Hub</button>
-      <button class="hub-action-btn" onclick="document.querySelector('.fucina-stories')?.scrollIntoView({behavior:'smooth',block:'start'})" style="font-size:.7rem;border-color:rgba(255,107,53,.3);background:rgba(255,107,53,.06)">🔥 Fucina</button>
-    </span>
-  </div>
-
-  <!-- STORY GAME AREA (inline, like Post games) -->
-  <div class="game-area" id="storyGameArea" style="max-width:920px;margin:16px auto"></div>
-
-  <!-- STORY GAMES — 4 Categories -->
-  ${gamesHtml}
   `;
 
   const firstGame=target.querySelector('.smart-filters')||target.querySelector('.section-header');
@@ -13896,6 +13986,21 @@ function clickupSendStoryCard(dayIdx,storyIdx){
   if(!copy){showToast('⚠️ Scrivi prima il copy!');return;}
   const content=`📱 STORY COPY:\n${copy}\n\n📷 Visual: ${visual}\n🎯 CTA: ${cta}`;
   openClickUpPicker(content,'story');
+}
+// V12.3: Send entire sequence to ClickUp
+function clickupSendSequence(){
+  const seq=storyPlanner.sequences[storyPlanner.activeCycle];
+  if(!seq||!seq.days?.length){showToast('⚠️ Nessuna sequenza attiva');return;}
+  let content=`📅 SEQUENZA: ${seq.name}\n${seq.days.length} giorni\n\n`;
+  seq.days.forEach((d,i)=>{
+    content+=`━━━ GIORNO ${i+1}: ${d.tema||''} ━━━\n${d.desc||''}\n`;
+    (d.stories||[]).forEach((s,j)=>{
+      content+=`  ${j+1}. [${s.tipo}] ${s.testo||'(vuoto)'}\n`;
+      if(s.nota_visiva)content+=`     📷 ${s.nota_visiva}\n`;
+    });
+    content+='\n';
+  });
+  openClickUpPicker(content,'story_sequence');
 }
 
 // Keep old function name as alias for compatibility

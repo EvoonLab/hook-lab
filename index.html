@@ -9760,7 +9760,16 @@ function notesActionTo(action){
 }
 
 // ===== SAVED =====
-function toggleSaved(){document.getElementById('savedDrawer').classList.toggle('open');document.getElementById('savedOverlay').classList.toggle('open');if(document.getElementById('savedDrawer').classList.contains('open'))renderSaved();}
+function toggleSaved(){
+  const drawer=document.getElementById('savedDrawer');
+  const overlay=document.getElementById('savedOverlay');
+  drawer.classList.toggle('open');overlay.classList.toggle('open');
+  // V12.3b: Elevate z-index when Fucina/Hub popup is open
+  const popupOpen=document.querySelector('.fucina-standalone.visible,.creative-hub.visible');
+  if(popupOpen){drawer.style.zIndex='9995';overlay.style.zIndex='9994';}
+  else{drawer.style.zIndex='';overlay.style.zIndex='';}
+  if(drawer.classList.contains('open'))renderSaved();
+}
 // V12.3: Expand/collapse mazzo to full page
 function toggleMazzoExpand(){const d=document.getElementById('savedDrawer');d.classList.toggle('expanded');document.getElementById('mazzoExpandBtn').textContent=d.classList.contains('expanded')?'⇥':'⛶';renderSaved();}
 // renderSaved moved below with search/filter
@@ -10925,6 +10934,61 @@ const BLOCK_PROMPTS={
     come:'Il tuo prodotto/servizio come PONTE verso la trasformazione. Non elenco feature — mostra il percorso. "Ecco come funziona:", "In 3 step:", "Il metodo che usiamo:". Max 3-4 frasi.',
     prova:'PROVA SOCIALE: testimonial reali, screenshot di risultati, numeri di studenti/clienti. Piu\' specifico = piu\' credibile. Nomi, numeri, tempistiche. Max 2-3 frasi.',
     cta:'CTA di VENDITA: offerta, link, scarsita\' (vera), deadline. Urgenza + chiarezza. "Posti limitati", "Solo fino a [data]", "Clicca il link in bio". Max 2-3 frasi.'
+  },
+  // V12.3b: Story script type prompts
+  promo_day:{
+    _system:'Sei un esperto di Instagram Stories per business italiani. Crei sequenze di storie giornaliere per cicli promozionali. Ogni storia è breve (1-2 frasi max), diretta, con impatto visivo forte. Il tono è personale, come se parlassi in camera guardando negli occhi.',
+    tema:'Descrivi il tema portante della giornata in modo che guidi tutte le storie. Deve essere chiaro e specifico (non generico). 1 frase.',
+    storia1:'Prima storia della sequenza: APERTURA. Deve fermare lo swipe. Volto in camera + frase diretta. Max 1-2 frasi brevissime.',
+    storia2:'Seconda storia: SVILUPPO. Approfondisci il tema, crea curiosità. Breve e diretto. Max 1-2 frasi.',
+    storia3:'Terza storia: CONTENUTO CORE. Il messaggio principale del giorno. Max 2 frasi.',
+    storia4:'Quarta storia: RINFORZO. Rafforza il messaggio con prova o emozione. Max 1-2 frasi.',
+    cta:'CTA finale: scarsity/urgenza progressiva. "Ultimi posti", "Link in bio", "Scrivi PRONTO in DM". Max 1 frase.'
+  },
+  out_promo_day:{
+    _system:'Sei un esperto di Instagram Stories per nurturing e FOMO tra cicli promozionali. Crei storie che mantengono il pubblico caldo senza vendere direttamente. Tono personale, valore gratis, risultati dei clienti.',
+    tema:'Tema del giorno fuori promo: esclusività, risultati, valore gratis, backstage. 1 frase chiara.',
+    storia1:'Hook del giorno: cattura attenzione senza vendere. Curiosità, behind the scenes, o domanda. Max 1-2 frasi.',
+    storia2:'Sviluppo: espandi il tema con valore o curiosità. Max 1-2 frasi.',
+    storia3:'Social proof o contenuto: screenshot risultati, testimonianza, o tip utile. Max 2 frasi.',
+    storia4:'Chiusura FOMO: lascia il desiderio aperto. "Se vuoi sapere come...", "Presto vi racconto...". Max 1 frase.'
+  },
+  story_singola:{
+    _system:'Sei un esperto di Instagram Stories singole. Crei storie che funzionano da sole: hook visivo potente, copy breve e memorabile, interazione che genera risposte.',
+    hook_visivo:'Descrivi COSA MOSTRARE nella storia (inquadratura, sfondo, elemento visivo). Deve fermare lo swipe. Max 1-2 frasi descrittive.',
+    testo:'Il copy della storia: breve, diretto, memorabile. Come se parlassi a un amico. Max 2 frasi.',
+    interazione:'Elemento interattivo: sondaggio ("Tu cosa fai?"), quiz, "rispondi in DM", sticker domande. Max 1 frase.'
+  },
+  story_carousel:{
+    _system:'Sei un esperto di sequenze di storie Instagram a carosello (5-8 slide). Ogni slide è un passo del funnel narrativo. Copy brevissimo, impatto visivo forte, progressione logica.',
+    hook_visivo:'SLIDE 1: La slide che ferma lo swipe. Descrivi il visivo + il testo overlay. Deve creare curiosità IMMEDIATA. Max 2 frasi.',
+    problema:'SLIDE 2: Il problema del target. Specifico, doloroso, riconoscibile. Il lettore deve dire "è il mio problema". Max 2 frasi.',
+    soluzione:'SLIDE 3-4: La soluzione passo per passo. Concisa, azionabile. Non teoria — passi concreti. Max 3 frasi.',
+    proof:'SLIDE 5-6: La prova. Screenshot, numero, risultato concreto. Più specifico = più credibile. Max 2 frasi.',
+    cta:'SLIDE FINALE: CTA chiara. "Salva questa sequenza", "Scrivi INFO in DM", "Link in bio". 1 frase.'
+  },
+  story_funnel:{
+    _system:'Sei un esperto di micro-funnel di vendita via Instagram Stories (3-5 storie rapide). Ogni storia è un passo: attenzione → curiosità → desiderio → azione → urgenza. Tono diretto, zero fuffa.',
+    attenzione:'Storia ATTENZIONE: ferma lo scroll con domanda provocatoria, dato shock, o behind the scenes inaspettato. Max 1-2 frasi.',
+    curiosita:'Storia CURIOSITÀ: teaser del valore. "Ho scoperto che...", "Non credevo che...". Apri un loop. Max 1-2 frasi.',
+    desiderio:'Storia DESIDERIO: mostra il risultato. Prima/dopo, testimonianza, lifestyle raggiunto. Max 2 frasi.',
+    azione:'Storia AZIONE: CTA chiara e specifica. "Scrivi PRONTO in DM", "Clicca il link", countdown. Max 1 frase.',
+    urgenza:'Storia URGENZA: scarcity reale. "Solo X posti", "Chiudo domani", timer. Max 1 frase.'
+  },
+  story_qa:{
+    _system:'Sei un esperto di sessioni Q&A via Instagram Stories. Crei sequenze strutturate: intro coinvolgente, risposte utili e dirette, collegamento naturale al prodotto/servizio.',
+    intro:'INTRO Q&A: annuncia la sessione. "Mi avete chiesto tanto di..." o usa sticker domande. Tono entusiasta. Max 1-2 frasi.',
+    domanda1:'DOMANDA 1: la più comune/facile. Risposta breve, diretta, utile. Max 2 frasi.',
+    domanda2:'DOMANDA 2: più profonda. Risposta con valore reale, insight non ovvio. Max 2-3 frasi.',
+    approfondimento:'COLLEGAMENTO: dalla risposta al tuo prodotto/servizio. Naturale, non forzato. "Proprio per questo ho creato...". Max 2 frasi.',
+    cta:'CTA: invita altre domande o al prossimo passo. "Vuoi sapere di più? Scrivi in DM" o "Domani ne parliamo ancora". Max 1 frase.'
+  },
+  story_ugc:{
+    _system:'Sei un esperto di social proof e UGC (User Generated Content) via Instagram Stories. Sfrutti testimonianze, screenshot, risultati dei clienti per vendere senza vendere.',
+    intro:'INTRO: contestualizza. "Guardate cosa mi ha scritto...", "Risultato di ieri", "Devo farvi vedere una cosa". Max 1 frase.',
+    screenshot:'SCREENSHOT/TESTIMONIANZA: descrivi cosa mostrare (DM, review, commento, prima/dopo). Il visivo deve essere la PROVA. Max 1-2 frasi.',
+    commento:'IL TUO COMMENTO: reagisci alla testimonianza. Aggiungi contesto, spiega perché è significativo. Max 2 frasi.',
+    cta:'CTA: invita ad ottenere lo stesso risultato. "Vuoi anche tu? Scrivi RISULTATI in DM". Max 1 frase.'
   }
 };
 const BLOCK_FB_TAGS=[
@@ -11129,8 +11193,21 @@ function openFucinaEditor(idx){
   renderFucinaEditor();
 }
 
+// V12.3b: Toggle block expand/collapse without full re-render (fixes jumping)
+function toggleFucinaBlock(i){
+  const cards=document.querySelectorAll('#fucinaContent .block-card');
+  const wasExpanded=fucinaExpandedBlock===i;
+  cards.forEach((c,j)=>{
+    if(j===i&&!wasExpanded){c.classList.add('expanded','active');fucinaExpandedBlock=i;}
+    else{c.classList.remove('expanded','active');}
+  });
+  if(wasExpanded)fucinaExpandedBlock=-1;
+}
 function renderFucinaEditor(){
   const el=document.getElementById('fucinaContent');
+  // V12.3b: Save scroll position before re-render
+  const container=document.querySelector('.fucina-standalone');
+  const prevScroll=container?.scrollTop||0;
   const script=fucinaScripts[fucinaCurrentScript];
   if(!script){renderFucinaList();return;}
   const type=SCRIPT_TYPES[script.type];
@@ -11152,7 +11229,7 @@ function renderFucinaEditor(){
     const isDone=block.text.trim().length>0;
     const isExpanded=fucinaExpandedBlock===i;
     html+=`<div class="block-card${isDone?' completed':''}${isExpanded?' expanded active':''}">
-      <div class="block-header" onclick="fucinaExpandedBlock=${isExpanded?-1:i};renderFucinaEditor()">
+      <div class="block-header" onclick="toggleFucinaBlock(${i})">
         <div class="block-num ${isDone?'done':'pending'}">${i+1}</div>
         <div class="block-label">${block.label} <span class="block-hint">${def?def.hint:''}</span></div>
         <div class="block-check ${isDone?'done':''}">✓</div>
@@ -11224,6 +11301,8 @@ function renderFucinaEditor(){
   </div>`;
 
   el.innerHTML=html;
+  // V12.3b: Restore scroll position after re-render
+  requestAnimationFrame(()=>{if(container)container.scrollTop=prevScroll;});
 }
 
 function updateFucinaBlock(i,text){
@@ -11269,7 +11348,7 @@ function saveFucinaAutoTitle(){
 async function aiSuggestBlock(i){
   if(!isAI())return;
   const script=fucinaScripts[fucinaCurrentScript];
-  const type=SCRIPT_TYPES[script.type];
+  const type=getScriptType(script.type);
   const block=script.blocks[i];
   const def=type.blocks[i];
 
@@ -11281,6 +11360,24 @@ async function aiSuggestBlock(i){
   script.blocks.forEach((b,j)=>{
     if(j<i&&b.text.trim())context+=`[${b.label}]: ${b.text}\n`;
   });
+
+  // V12.3b: Include completed scripts of same type as style examples
+  const completedScripts=fucinaScripts.filter((s,j)=>j!==fucinaCurrentScript&&s.type===script.type&&s.blocks.filter(b=>b.text.trim()).length===s.blocks.length).slice(-2);
+  let examplesCtx='';
+  if(completedScripts.length){
+    examplesCtx='\n\nESEMPI DI SCRIPT COMPLETATI DALL\'UTENTE (stesso tipo — IMPARA IL SUO STILE, il suo modo di scrivere ogni blocco):\n';
+    completedScripts.forEach((ex,ei)=>{
+      examplesCtx+=`--- Esempio ${ei+1}: "${ex.title||'Senza titolo'}" ---\n`;
+      ex.blocks.forEach(b=>{if(b.text.trim())examplesCtx+=`[${b.label}]: ${b.text.substring(0,200)}\n`;});
+      examplesCtx+='\n';
+    });
+  }
+  // V12.3b: Include top-rated hooks from Mazzo
+  const topMazzoHooks=savedItems.filter(it=>(it.category||'hook')==='hook'&&it.rating>=3).slice(0,3);
+  let mazzoCtx='';
+  if(topMazzoHooks.length){
+    mazzoCtx='\nHook migliori salvati dall\'utente (reference per tono e stile):\n'+topMazzoHooks.map(h=>`"${h.text.substring(0,100)}"`).join('\n')+'\n';
+  }
 
   const ctx=getCtxPrompt();
   const bp=BLOCK_PROMPTS[script.type];
@@ -11309,23 +11406,27 @@ async function aiSuggestBlock(i){
     const lastNote=relFb.filter(f=>f.note).slice(-1)[0];
     if(lastNote)blockHints+=`Nota dell'utente: "${lastNote.note}"\n`;
   }
-  // CASCADE: extract hook text for continuity
+  // CASCADE: extract hook text for continuity (V12.3b: strengthened)
   const hookText=script.blocks[0]?.text?.trim()||'';
   const cascadeRule=hookText&&i>0?`
-REGOLA DI CONTINUITÀ NARRATIVA:
+REGOLA DI CONTINUITÀ NARRATIVA (FONDAMENTALE):
 L'HOOK ORIGINALE (la promessa al lettore): "${hookText}"
-Lo script DEVE sviluppare la PROMESSA fatta nell'hook. Ogni blocco è il passo successivo di UN'UNICA narrazione coerente.
-Rileggi ATTENTAMENTE i blocchi precedenti. Il tuo blocco deve CONTINUARE il filo narrativo, non iniziarne uno nuovo.
-NON ripetere concetti già trattati nei blocchi precedenti. NON introdurre temi nuovi scollegati dall'hook.
-Il lettore deve sentire che ogni blocco lo avvicina alla conclusione promessa dall'hook.
+
+REGOLE ASSOLUTE:
+1. Lo script DEVE sviluppare la PROMESSA fatta nell'hook. Ogni blocco è il passo successivo di UN'UNICA narrazione coerente.
+2. Rileggi ATTENTAMENTE i blocchi precedenti. Il tuo blocco deve CONTINUARE il filo narrativo, non iniziarne uno nuovo.
+3. NON ripetere concetti già trattati nei blocchi precedenti. NON introdurre temi nuovi scollegati dall'hook.
+4. NON scrivere un blocco GENERICO che potrebbe andare bene per qualsiasi script. Questo blocco deve essere SPECIFICO per QUESTO hook e QUESTO contesto.
+5. Se l'hook parla di un argomento specifico, il blocco "${block.label}" deve sviluppare QUEL argomento — mai andare off-topic con frasi vaghe.
+6. USA il lessico dell'utente se disponibile nel contesto. Imita il suo stile, non scrivere come un robot.
 `:'';
 
   const blockType=type.id||'attrazione';
   const blockPromptName='block_'+blockType;
   const basePrompt=bp?._system||getPrompt(blockPromptName)?.system_prompt||'Sei un copywriter italiano esperto di social media e content marketing.';
-  const prompt=`${ctx}
+  const prompt=`${ctx}${mazzoCtx}
 Stai scrivendo uno script di tipo "${type.name}" (${type.desc}).
-${cascadeRule}${context?`Ecco i blocchi precedenti dello script:\n${context}\n`:''}
+${cascadeRule}${examplesCtx}${context?`Ecco i blocchi precedenti dello script:\n${context}\n`:''}
 ${blockHints}${userDraftHint}${optsHint}
 ISTRUZIONE PER QUESTO BLOCCO — "${block.label}":
 ${blockInstruction}
@@ -11362,8 +11463,13 @@ Rispondi SOLO con il testo del blocco. Nient'altro.`;
 function openMazzoFloat(blockIdx){
   if(blockIdx!==undefined) mazzoFloatTarget=blockIdx;
   mazzoFloatFilter='all';
-  document.getElementById('mazzoFloat').classList.add('open');
-  document.getElementById('mazzoFloatOverlay').classList.add('open');
+  const mf=document.getElementById('mazzoFloat');
+  const mo=document.getElementById('mazzoFloatOverlay');
+  mf.classList.add('open');mo.classList.add('open');
+  // V12.3b: Elevate z-index when inside Fucina popup
+  const popupOpen=document.querySelector('.fucina-standalone.visible');
+  if(popupOpen){mf.style.zIndex='9995';mo.style.zIndex='9994';}
+  else{mf.style.zIndex='';mo.style.zIndex='';}
   const search=document.getElementById('mazzoFloatSearch');if(search)search.value='';
   renderMazzoFloat();
 }

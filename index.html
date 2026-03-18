@@ -2175,8 +2175,9 @@ body.light .shimmer::after{background:linear-gradient(90deg,transparent 0%,rgba(
     <button class="mode-tab" data-mode="stories" onclick="switchMode('stories')">
       <span class="mt-icon">📸</span><span class="mt-label">Stories</span>
     </button>
-    <button class="mode-tab" data-mode="workshop" onclick="switchMode('workshop')">
+    <button class="mode-tab" data-mode="workshop" onclick="switchMode('workshop')" style="position:relative">
       <span class="mt-icon">🎓</span><span class="mt-label">Workshop</span>
+      <span style="position:absolute;top:-4px;right:-2px;font-size:.45rem;background:var(--a1);color:#fff;padding:1px 5px;border-radius:6px;font-weight:800;letter-spacing:.5px">SOON</span>
     </button>
   </div>
 </div>
@@ -2858,6 +2859,13 @@ function getUserDisplayName(){
 function hideAuthGate(){
   const gate=document.getElementById('authGate');
   if(gate){gate.style.opacity='0';gate.style.transition='opacity .4s';setTimeout(()=>{gate.style.display='none';},400);}
+  // V12.2g: Profile nudge on first load
+  setTimeout(()=>{
+    if(typeof calcProfileCompletion==='function'&&calcProfileCompletion()<40&&!sessionStorage.getItem('hl_profile_nudge')){
+      sessionStorage.setItem('hl_profile_nudge','1');
+      showToast('👋 Completa il tuo profilo ('+calcProfileCompletion()+'%) per risultati AI migliori!',5000);
+    }
+  },2000);
 }
 function showAuthGate(){
   const gate=document.getElementById('authGate');
@@ -4344,7 +4352,7 @@ async function sendChatMessage(overrideText){
   addChatBubble('user',text);
   saveChatHistory();
   if(!isAI()){
-    const fallback='Connetti un provider AI dalle impostazioni (⚙️) per usare la chat.';
+    const fallback='Connetti un provider AI per usare la chat. <a href="#" onclick="openConnectionsPanel();return false" style="color:var(--a1);font-weight:700">⚙️ Configura AI</a>';
     chatHistory.push({role:'assistant',content:fallback,ts:Date.now()});
     addChatBubble('assistant',fallback);
     saveChatHistory();return;
@@ -10347,7 +10355,7 @@ function loadNewspaper(){
   if(!isAI()){
     el.innerHTML=`<div class="np-empty">
       <div class="np-empty-title">AI non connessa</div>
-      <div class="np-empty-desc">Connetti un provider AI nelle impostazioni per attivare il Feed personalizzato con trend e notizie della tua nicchia.</div>
+      <div class="np-empty-desc">Connetti un provider AI per attivare il Feed personalizzato. <a href="#" onclick="openConnectionsPanel();return false" style="color:var(--a1);font-weight:700">⚙️ Configura AI</a></div>
     </div>`;
     return;
   }
@@ -10991,7 +10999,7 @@ function renderFucinaSetup(){
 
 async function generateAiHook(){
   const btn=document.getElementById('aiHookGenBtn');
-  if(!isAI()){showToast('Configura AI nelle impostazioni');return;}
+  if(!isAI()){showToast('⚙️ Configura AI prima');openConnectionsPanel();return;}
   btn.disabled=true;btn.textContent='⏳ Genero...';
   const ctx=getCtxPrompt();
   const type=SCRIPT_TYPES[fucinaSetup.type];
@@ -14268,7 +14276,7 @@ async function runPersonaSwitch(){
   if(!tema){showToast('Scrivi un tema!');return;}
   const res=document.getElementById('psResults');
   res.innerHTML='<div style="text-align:center;padding:30px;color:var(--t2)">🎭 Genero 3 angoli...</div>';
-  if(!isAI()){res.innerHTML='<div style="text-align:center;padding:30px;color:var(--t2)">Configura un\'AI per usare questo gioco</div>';return;}
+  if(!isAI()){res.innerHTML='<div style="text-align:center;padding:30px;color:var(--t2)">Configura un\'AI per usare questo gioco <a href="#" onclick="openConnectionsPanel();return false" style="color:var(--a1);font-weight:700">⚙️ Apri Impostazioni</a></div>';return;}
   const prompt=`${getStoryCtxPrompt()}\n\nScrivi la STESSA storia Instagram sul tema "${tema}" da 3 angoli diversi:\n\n1. MENTOR (autorevole, guida)\n2. AMICO (confidenziale, vicino)\n3. PROVOCATORE (sfida, scomoda)\n\nPer ogni angolo scrivi:\nANGOLO: [nome]\nCOPY: [2-3 frasi brevi, formato story]\n\nSolo copy diretto, niente spiegazioni.`;
   try{
     const r=await callAI(prompt,400);
@@ -14366,7 +14374,7 @@ async function runUrgencyLadder(){
   if(!tema){showToast('Scrivi un tema!');return;}
   const res=document.getElementById('ulResults');
   res.innerHTML='<div style="text-align:center;padding:30px;color:var(--t2)">🔥 Genero la scala di urgenza...</div>';
-  if(!isAI()){res.innerHTML='<div style="text-align:center;padding:30px;color:var(--t2)">Configura un\'AI</div>';return;}
+  if(!isAI()){res.innerHTML='<div style="text-align:center;padding:30px;color:var(--t2)">Configura un\'AI <a href="#" onclick="openConnectionsPanel();return false" style="color:var(--a1);font-weight:700">⚙️ Apri Impostazioni</a></div>';return;}
   const prompt=`${getStoryCtxPrompt()}\n\nTema: "${tema}"\n\nScrivi 5 versioni della STESSA storia Instagram con urgenza CRESCENTE:\n- Livello 2: Soft, informativo\n- Livello 4: Interesse, curiosità\n- Livello 6: Desiderio, FOMO leggero\n- Livello 8: Urgenza forte, scarcity\n- Livello 10: Massima urgenza, ultima chance\n\nFormato per ogni livello:\nLIVELLO [N]: [copy 2-3 frasi]\n\nSolo copy diretto.`;
   try{
     const r=await callAI(prompt,500);
@@ -14482,7 +14490,7 @@ async function runStoryAnatomy(){
   if(!text){showToast('Incolla una storia da analizzare!');return;}
   const res=document.getElementById('saResults');
   res.innerHTML='<div style="text-align:center;padding:30px;color:var(--t2)">🔬 Analizzo...</div>';
-  if(!isAI()){res.innerHTML='<div style="text-align:center;padding:30px;color:var(--t2)">Configura un\'AI</div>';return;}
+  if(!isAI()){res.innerHTML='<div style="text-align:center;padding:30px;color:var(--t2)">Configura un\'AI <a href="#" onclick="openConnectionsPanel();return false" style="color:var(--a1);font-weight:700">⚙️ Apri Impostazioni</a></div>';return;}
   const prompt=`Analizza questa storia Instagram come un esperto di copywriting:\n\n"${text}"\n\nDai un punteggio da 1 a 10 per ogni aspetto e spiega brevemente:\n1. HOOK (cattura attenzione nei primi 2 sec)\n2. EMOZIONE (quale emozione evoca)\n3. STRUTTURA (flusso narrativo)\n4. CTA (call to action finale)\n5. AUTENTICITÀ (suona vera o finta)\n6. STRATEGIA (quale leva usa: urgency, scarcity, FOMO, etc)\n\nFormato:\nHOOK: [voto]/10 — [spiegazione breve]\nEMOZIONE: [voto]/10 — [spiegazione breve]\n...\n\nFinisci con:\nVOTO TOTALE: [media]/10\nCONSIGLIO: [1 frase per migliorarla]`;
   try{
     const r=await callAI(prompt,500);
@@ -14532,7 +14540,7 @@ async function runStoryDuel(){
   const tema=document.getElementById('sdTema')?.value?.trim()||'Lancio di un prodotto digitale';
   const res=document.getElementById('sdResults');
   res.innerHTML='<div style="text-align:center;padding:30px;color:var(--t2)">⚔️ Le AI si sfidano...</div>';
-  if(!isAI()){res.innerHTML='<div style="text-align:center;padding:30px;color:var(--t2)">Configura almeno un\'AI</div>';return;}
+  if(!isAI()){res.innerHTML='<div style="text-align:center;padding:30px;color:var(--t2)">Configura almeno un\'AI <a href="#" onclick="openConnectionsPanel();return false" style="color:var(--a1);font-weight:700">⚙️ Apri Impostazioni</a></div>';return;}
   const basePrompt=`${getStoryCtxPrompt()}\n\nScrivi una sequenza di 3 storie Instagram sul tema "${tema}". Per ogni storia: tipo (volto/screenshot/storytelling/cta) + copy (2-3 frasi). Formato story, diretto, emotivo.`;
   try{
     const stileA='Usa uno stile EMOTIVO e PERSONALE. Racconta come se parlassi a un amico.';
@@ -14595,7 +14603,7 @@ async function runStyleClash(stileA,stileB){
   const tema=document.getElementById('scTema')?.value?.trim()||'Lancio prodotto';
   const res=document.getElementById('scResults');
   res.innerHTML='<div style="text-align:center;padding:30px;color:var(--t2)">🎪 Genero i 2 stili...</div>';
-  if(!isAI()){res.innerHTML='<div style="text-align:center;padding:30px;color:var(--t2)">Configura un\'AI</div>';return;}
+  if(!isAI()){res.innerHTML='<div style="text-align:center;padding:30px;color:var(--t2)">Configura un\'AI <a href="#" onclick="openConnectionsPanel();return false" style="color:var(--a1);font-weight:700">⚙️ Apri Impostazioni</a></div>';return;}
   try{
     const [rA,rB]=await Promise.all([
       callAI(`${getStoryCtxPrompt()}\nScrivi una storia Instagram sul tema "${tema}" in stile ${stileA}. Max 3 frasi, formato story.`,200),
